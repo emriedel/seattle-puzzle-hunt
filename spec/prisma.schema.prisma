@@ -1,0 +1,71 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+/*
+  V1: hunts with linear locations, two puzzle types
+*/
+
+model Hunt {
+  id                          String     @id
+  title                       String
+  neighborhood                String
+  estimatedTimeMinutes        Int
+  globalLocationRadiusMeters  Int
+  createdAt                   DateTime   @default(now())
+  updatedAt                   DateTime   @updatedAt
+  locations                   Location[] 
+  playSessions                PlaySession[]
+  logbookEntries              LogbookEntry[]
+}
+
+model Location {
+  id                  String   @id
+  hunt                Hunt     @relation(fields: [huntId], references: [id])
+  huntId              String
+  name                String
+  order               Int
+  lat                 Float
+  lng                 Float
+  narrativeSnippet    String
+  puzzleType          String   // enum: 'number_code' | 'word_code' (enforced in app)
+  puzzlePrompt        String
+  puzzleImage         String?  // optional path/url
+  puzzleAnswer        String   // canonical stored answer (string, uppercase for word_code)
+  puzzleAnswerLength  Int
+  nextRiddle          String
+  nextLocationId      String?  // nullable for final location
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  @@index([huntId, order])
+}
+
+model PlaySession {
+  id                    String   @id @default(dbgenerated("gen_random_uuid()"))
+  hunt                  Hunt     @relation(fields: [huntId], references: [id])
+  huntId                String
+  clientId              String   // local client identifier
+  startedAt             DateTime @default(now())
+  completedAt           DateTime?
+  wrongLocationChecks   Int      @default(0)
+  wrongPuzzleGuesses    Int      @default(0)
+  totalTimeSeconds      Int?     // optional post-compute
+}
+
+model LogbookEntry {
+  id        String   @id @default(dbgenerated("gen_random_uuid()"))
+  hunt      Hunt     @relation(fields: [huntId], references: [id])
+  huntId    String
+  session   PlaySession? @relation(fields: [sessionId], references: [id])
+  sessionId String?
+  name      String?
+  message   String?
+  createdAt DateTime @default(now())
+}
+
