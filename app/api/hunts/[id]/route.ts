@@ -20,10 +20,12 @@ export async function GET(
             lat: true,
             lng: true,
             narrativeSnippet: true,
+            locationFoundText: true,
             puzzleType: true,
             puzzlePrompt: true,
             puzzleImage: true,
             puzzleAnswerLength: true,
+            puzzleSuccessText: true,
             nextRiddle: true,
             nextLocationId: true,
             // Explicitly exclude puzzleAnswer

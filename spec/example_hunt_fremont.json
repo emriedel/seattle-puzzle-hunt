@@ -10,7 +10,8 @@
       "name": "The Fremont Troll",
       "order": 1,
       "coordinates": { "lat": 47.6540, "lng": -122.3476 },
-      "narrative_snippet": "You start beneath the Aurora Bridge, where a concrete giant clutching a VW keeps watch.",
+      "narrative_snippet": "Your hunt begins beneath the Aurora Bridge. Head to the coordinates above to find where a concrete giant clutches a Volkswagen Beetle in its grip.",
+      "location_found_text": "You've found it! The massive Fremont Troll looms above you, a quirky guardian of the underpass. Look carefully at the details carved into the concrete around you.",
       "puzzle": {
         "type": "number_code",
         "prompt": "Find the four-digit year carved nearby on the concrete. Add the digits together and multiply the result by 3. Enter the result as a 2-digit number (zero-pad if needed).",
@@ -18,6 +19,7 @@
         "answer": "27",
         "answer_length": 2
       },
+      "puzzle_success_text": "Well done! The troll's secrets are revealed. Now follow the next clue to continue your journey through Fremont's hidden corners.",
       "next_riddle": "A legendary traveler from another era stands where the crossroads meet — find the controversial bronze with a raised arm.",
       "next_location_id": "lenin"
     },
@@ -27,7 +29,8 @@
       "name": "Lenin Statue",
       "order": 2,
       "coordinates": { "lat": 47.6546, "lng": -122.3505 },
-      "narrative_snippet": "A statue transplanted here, replanted by stories of irony and history.",
+      "narrative_snippet": "",
+      "location_found_text": "You've arrived! Before you stands a towering bronze figure, transplanted from across the world. This statue has quite a story — read the plaque nearby to learn more.",
       "puzzle": {
         "type": "word_code",
         "prompt": "On the informational plaque nearby, find the six-letter word that refers to the statue's country of origin. Enter it in all caps (6 letters).",
@@ -35,6 +38,7 @@
         "answer": "RUSSIA",
         "answer_length": 6
       },
+      "puzzle_success_text": "Correct! This statue traveled far from its homeland. Your next destination awaits — a place where stories are bought and sold.",
       "next_riddle": "Books stacked to the ceiling, a hanging wooden sign and the faint watch of a window cat will guide you.",
       "next_location_id": "ophelia"
     },
@@ -44,7 +48,8 @@
       "name": "Ophelia's Books",
       "order": 3,
       "coordinates": { "lat": 47.6519, "lng": -122.3490 },
-      "narrative_snippet": "A small shop that feels like stories have been left here intentionally.",
+      "narrative_snippet": "",
+      "location_found_text": "Welcome to a reader's sanctuary! This cozy bookshop has been a Fremont fixture for years. Take a moment to appreciate the carefully curated shelves before solving the puzzle.",
       "puzzle": {
         "type": "word_code",
         "prompt": "Look at the wooden sign — enter the second word, exactly as written, 4 letters.",
@@ -52,6 +57,7 @@
         "answer": "BOOK",
         "answer_length": 4
       },
+      "puzzle_success_text": "Excellent! The bookshop has shared its secret. Your final destination is one of Seattle's most iconic parks — head toward the water.",
       "next_riddle": "Head toward the skyline and the water — a park made from industrial bones keeps time with the sun.",
       "next_location_id": "gasworks"
     },
@@ -61,7 +67,8 @@
       "name": "Gas Works Park - Sundial",
       "order": 4,
       "coordinates": { "lat": 47.6456, "lng": -122.3344 },
-      "narrative_snippet": "Old industrial shapes sit in green fields; find the sundial on the mound and read its cues.",
+      "narrative_snippet": "",
+      "location_found_text": "You've reached the final stop! Gas Works Park transforms industrial history into public space. Climb the hill to find the sundial — a perfect ending point with sweeping views of the city.",
       "puzzle": {
         "type": "number_code",
         "prompt": "At the sundial, note the three highest engraved hour numbers. Add them together and enter the result (3 digits, zero-pad if needed).",
@@ -69,9 +76,9 @@
         "answer": "033",
         "answer_length": 3
       },
+      "puzzle_success_text": "Congratulations! You've completed the Fremont Hidden Corners hunt. Take a moment to enjoy the view — you've earned it!",
       "next_riddle": "",
       "next_location_id": null
     }
   ]
 }
-

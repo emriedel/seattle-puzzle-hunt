@@ -18,7 +18,9 @@ interface LocationData {
   order: number;
   coordinates: { lat: number; lng: number };
   narrative_snippet: string;
+  location_found_text: string;
   puzzle: PuzzleData;
+  puzzle_success_text: string;
   next_riddle: string;
   next_location_id: string | null;
 }
@@ -72,11 +74,13 @@ async function seedHunt(huntData: HuntData) {
         lat: location.coordinates.lat,
         lng: location.coordinates.lng,
         narrativeSnippet: location.narrative_snippet,
+        locationFoundText: location.location_found_text,
         puzzleType: location.puzzle.type,
         puzzlePrompt: location.puzzle.prompt,
         puzzleImage: location.puzzle.image,
         puzzleAnswer: normalizedAnswer,
         puzzleAnswerLength: location.puzzle.answer_length,
+        puzzleSuccessText: location.puzzle_success_text,
         nextRiddle: location.next_riddle,
         nextLocationId: location.next_location_id,
       },
@@ -88,11 +92,13 @@ async function seedHunt(huntData: HuntData) {
         lat: location.coordinates.lat,
         lng: location.coordinates.lng,
         narrativeSnippet: location.narrative_snippet,
+        locationFoundText: location.location_found_text,
         puzzleType: location.puzzle.type,
         puzzlePrompt: location.puzzle.prompt,
         puzzleImage: location.puzzle.image,
         puzzleAnswer: normalizedAnswer,
         puzzleAnswerLength: location.puzzle.answer_length,
+        puzzleSuccessText: location.puzzle_success_text,
         nextRiddle: location.next_riddle,
         nextLocationId: location.next_location_id,
       },

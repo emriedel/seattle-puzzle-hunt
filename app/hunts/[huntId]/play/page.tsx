@@ -14,10 +14,12 @@ interface Location {
   lat: number;
   lng: number;
   narrativeSnippet: string;
+  locationFoundText: string;
   puzzleType: string;
   puzzlePrompt: string;
   puzzleImage: string | null;
   puzzleAnswerLength: number;
+  puzzleSuccessText: string;
   nextRiddle: string;
   nextLocationId: string | null;
 }
@@ -31,7 +33,15 @@ interface Hunt {
   locations: Location[];
 }
 
-type GameState = 'loading' | 'need_location_check' | 'at_location' | 'puzzle_solved' | 'completed';
+type LocationState =
+  | 'finding_location'      // Screen 1: showing clue, need location check
+  | 'at_location_unsolved'  // Screen 2a: found location, puzzle not solved
+  | 'at_location_solved';   // Screen 2b: puzzle solved, showing next clue button
+
+interface HuntProgress {
+  locationIndex: number;
+  state: LocationState;
+}
 
 export default function PlayPage() {
   const params = useParams();
@@ -41,10 +51,12 @@ export default function PlayPage() {
   const [hunt, setHunt] = useState<Hunt | null>(null);
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [currentLocationIndex, setCurrentLocationIndex] = useState(0);
-  const [gameState, setGameState] = useState<GameState>('loading');
+  const [locationState, setLocationState] = useState<LocationState>('finding_location');
   const [statusMessage, setStatusMessage] = useState('');
   const [isChecking, setIsChecking] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const progressKey = `hunt-progress-${huntId}`;
 
   // Load hunt and session
   useEffect(() => {
@@ -62,15 +74,41 @@ export default function PlayPage() {
           return;
         }
         setSessionId(storedSessionId);
-        setGameState('need_location_check');
+
+        // Load progress from localStorage
+        const savedProgress = localStorage.getItem(progressKey);
+        if (savedProgress) {
+          try {
+            const progress: HuntProgress = JSON.parse(savedProgress);
+            setCurrentLocationIndex(progress.locationIndex);
+            setLocationState(progress.state);
+          } catch {
+            // Invalid progress, start fresh
+            setLocationState('finding_location');
+          }
+        } else {
+          setLocationState('finding_location');
+        }
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load hunt');
       }
     }
     loadHunt();
-  }, [huntId]);
+  }, [huntId, progressKey]);
+
+  // Save progress whenever state changes
+  useEffect(() => {
+    if (hunt && sessionId) {
+      const progress: HuntProgress = {
+        locationIndex: currentLocationIndex,
+        state: locationState,
+      };
+      localStorage.setItem(progressKey, JSON.stringify(progress));
+    }
+  }, [currentLocationIndex, locationState, hunt, sessionId, progressKey]);
 
   const currentLocation = hunt?.locations[currentLocationIndex];
+  const previousLocation = currentLocationIndex > 0 ? hunt?.locations[currentLocationIndex - 1] : null;
 
   const checkLocation = async () => {
     if (!sessionId || !currentLocation) return;
@@ -98,8 +136,8 @@ export default function PlayPage() {
       const { inRadius, distance } = await res.json();
 
       if (inRadius) {
-        setStatusMessage('You\'re here! Revealing the puzzle...');
-        setGameState('at_location');
+        setStatusMessage('You\'re here!');
+        setLocationState('at_location_unsolved');
       } else {
         setStatusMessage(
           `You're ${distance}m away. Get within ${hunt?.globalLocationRadiusMeters}m to continue.`
@@ -136,8 +174,8 @@ export default function PlayPage() {
       const { correct } = await res.json();
 
       if (correct) {
-        setStatusMessage('Correct! 🎉');
-        setGameState('puzzle_solved');
+        setStatusMessage('');
+        setLocationState('at_location_solved');
       } else {
         setStatusMessage('Incorrect answer. Try again!');
       }
@@ -153,8 +191,9 @@ export default function PlayPage() {
 
     if (currentLocationIndex < hunt.locations.length - 1) {
       setCurrentLocationIndex(currentLocationIndex + 1);
-      setGameState('need_location_check');
+      setLocationState('finding_location');
       setStatusMessage('');
+      window.scrollTo(0, 0);
     } else {
       completeHunt();
     }
@@ -168,7 +207,8 @@ export default function PlayPage() {
         method: 'POST',
       });
 
-      setGameState('completed');
+      // Clear progress
+      localStorage.removeItem(progressKey);
       router.push(`/hunts/${huntId}/complete?session=${sessionId}`);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to complete hunt');
@@ -192,7 +232,7 @@ export default function PlayPage() {
     );
   }
 
-  if (gameState === 'loading' || !hunt || !currentLocation) {
+  if (!hunt || !currentLocation) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <p>Loading...</p>
@@ -200,10 +240,15 @@ export default function PlayPage() {
     );
   }
 
+  // Determine what clue to show in Screen 1
+  const clueText = currentLocationIndex === 0
+    ? currentLocation.narrativeSnippet  // First location uses its narrativeSnippet
+    : previousLocation?.nextRiddle || '';  // Subsequent locations use previous location's riddle
+
   return (
     <div className="min-h-screen p-4 md:p-8 pb-20">
       <div className="max-w-2xl mx-auto">
-        {/* Header */}
+        {/* Header with Progress */}
         <div className="mb-6">
           <div className="flex items-center justify-between mb-2">
             <h1 className="text-2xl font-bold">{hunt.title}</h1>
@@ -221,26 +266,25 @@ export default function PlayPage() {
           </div>
         </div>
 
-        {/* Current Location Card */}
-        <div className="bg-white border border-gray-200 rounded-lg p-6 mb-4">
-          <h2 className="text-xl font-semibold mb-4">{currentLocation.name}</h2>
+        {/* Screen 1: Finding Location */}
+        {locationState === 'finding_location' && (
+          <div className="bg-white border border-gray-200 rounded-lg p-6">
+            <h2 className="text-lg font-semibold mb-4">
+              {currentLocationIndex === 0 ? 'Your Quest Begins' : 'Next Location'}
+            </h2>
 
-          {/* Narrative */}
-          <div className="mb-6">
-            <p className="text-gray-700 leading-relaxed">
-              {currentLocation.narrativeSnippet}
-            </p>
-          </div>
-
-          {/* Status Message */}
-          {statusMessage && (
-            <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg text-sm">
-              {statusMessage}
+            <div className="mb-6">
+              <p className="text-gray-700 leading-relaxed italic">
+                {clueText}
+              </p>
             </div>
-          )}
 
-          {/* Game State UI */}
-          {gameState === 'need_location_check' && (
+            {statusMessage && (
+              <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg text-sm">
+                {statusMessage}
+              </div>
+            )}
+
             <button
               onClick={checkLocation}
               disabled={isChecking}
@@ -248,14 +292,29 @@ export default function PlayPage() {
             >
               {isChecking ? 'Checking location...' : '🔍 Search for Clues'}
             </button>
-          )}
+          </div>
+        )}
 
-          {gameState === 'at_location' && (
-            <div>
-              <div className="mb-4 p-4 bg-green-50 border border-green-200 rounded-lg">
-                <h3 className="font-semibold mb-2">Puzzle:</h3>
-                <p className="text-sm text-gray-700">{currentLocation.puzzlePrompt}</p>
-              </div>
+        {/* Screen 2a: At Location, Puzzle Unsolved */}
+        {locationState === 'at_location_unsolved' && (
+          <div className="bg-white border border-gray-200 rounded-lg p-6">
+            <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
+              <p className="text-gray-700 leading-relaxed">
+                {currentLocation.locationFoundText}
+              </p>
+            </div>
+
+            <div className="mb-6">
+              <h3 className="font-semibold mb-3 text-lg">Puzzle:</h3>
+              <p className="text-sm text-gray-700 mb-4">
+                {currentLocation.puzzlePrompt}
+              </p>
+
+              {statusMessage && (
+                <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg text-sm">
+                  {statusMessage}
+                </div>
+              )}
 
               {currentLocation.puzzleType === 'number_code' && (
                 <NumberCodeInput
@@ -273,31 +332,36 @@ export default function PlayPage() {
                 />
               )}
             </div>
-          )}
+          </div>
+        )}
 
-          {gameState === 'puzzle_solved' && (
-            <div>
-              <div className="mb-4 p-4 bg-green-100 border border-green-300 rounded-lg">
-                <p className="font-semibold text-green-800 mb-2">✓ Puzzle Solved!</p>
-                {currentLocation.nextRiddle && (
-                  <div className="mt-3">
-                    <p className="text-sm font-semibold mb-1">Next location:</p>
-                    <p className="text-sm text-gray-700 italic">
-                      {currentLocation.nextRiddle}
-                    </p>
-                  </div>
-                )}
-              </div>
-
-              <button
-                onClick={moveToNextLocation}
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold"
-              >
-                {currentLocation.nextLocationId ? 'Continue to Next Location →' : 'Complete Hunt! 🎉'}
-              </button>
+        {/* Screen 2b: At Location, Puzzle Solved */}
+        {locationState === 'at_location_solved' && (
+          <div className="bg-white border border-gray-200 rounded-lg p-6">
+            <div className="mb-6 p-4 bg-green-100 border border-green-300 rounded-lg">
+              <p className="font-semibold text-green-800 mb-3">✓ Puzzle Solved!</p>
+              <p className="text-gray-700 leading-relaxed">
+                {currentLocation.puzzleSuccessText}
+              </p>
             </div>
-          )}
-        </div>
+
+            {currentLocation.nextRiddle && (
+              <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                <p className="text-sm font-semibold mb-2">Your next clue:</p>
+                <p className="text-sm text-gray-700 italic">
+                  {currentLocation.nextRiddle}
+                </p>
+              </div>
+            )}
+
+            <button
+              onClick={moveToNextLocation}
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold"
+            >
+              {currentLocation.nextLocationId ? 'Continue to Next Location →' : 'Complete Hunt! 🎉'}
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Debug Panel */}

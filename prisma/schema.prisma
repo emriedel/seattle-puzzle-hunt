@@ -32,13 +32,15 @@ model Location {
   order               Int
   lat                 Float
   lng                 Float
-  narrativeSnippet    String
+  narrativeSnippet    String   // For first location: starting instructions. For others: unused (clue comes from prev location's nextRiddle)
+  locationFoundText   String   // Flavor text shown when player finds the location (Screen 2)
   puzzleType          String   // enum: 'number_code' | 'word_code' (enforced in app)
   puzzlePrompt        String
   puzzleImage         String?  // optional path/url
   puzzleAnswer        String   // canonical stored answer (string, uppercase for word_code)
   puzzleAnswerLength  Int
-  nextRiddle          String
+  puzzleSuccessText   String   // Flavor text shown when puzzle is solved (Screen 2)
+  nextRiddle          String   // Clue to find the NEXT location (shown in Screen 1 of next location)
   nextLocationId      String?  // nullable for final location
   createdAt           DateTime @default(now())
   updatedAt           DateTime @updatedAt
