@@ -6,6 +6,8 @@ import { getUserLocation } from '@/lib/debug';
 import DebugPanel from '@/components/DebugPanel';
 import NumberCodeInput from '@/components/NumberCodeInput';
 import WordCodeInput from '@/components/WordCodeInput';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 interface Location {
   id: string;
@@ -268,99 +270,106 @@ export default function PlayPage() {
 
         {/* Screen 1: Finding Location */}
         {locationState === 'finding_location' && (
-          <div className="bg-white border border-gray-200 rounded-lg p-6">
-            <h2 className="text-lg font-semibold mb-4">
-              {currentLocationIndex === 0 ? 'Your Quest Begins' : 'Next Location'}
-            </h2>
-
-            <div className="mb-6">
-              <p className="text-gray-700 leading-relaxed italic">
+          <Card>
+            <CardHeader>
+              <CardTitle>
+                {currentLocationIndex === 0 ? 'Your Quest Begins' : 'Next Location'}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <p className="leading-relaxed italic text-muted-foreground">
                 {clueText}
-              </p>
-            </div>
-
-            {statusMessage && (
-              <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg text-sm">
-                {statusMessage}
-              </div>
-            )}
-
-            <button
-              onClick={checkLocation}
-              disabled={isChecking}
-              className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white px-6 py-3 rounded-lg font-semibold"
-            >
-              {isChecking ? 'Checking location...' : '🔍 Search for Clues'}
-            </button>
-          </div>
-        )}
-
-        {/* Screen 2a: At Location, Puzzle Unsolved */}
-        {locationState === 'at_location_unsolved' && (
-          <div className="bg-white border border-gray-200 rounded-lg p-6">
-            <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
-              <p className="text-gray-700 leading-relaxed">
-                {currentLocation.locationFoundText}
-              </p>
-            </div>
-
-            <div className="mb-6">
-              <h3 className="font-semibold mb-3 text-lg">Puzzle:</h3>
-              <p className="text-sm text-gray-700 mb-4">
-                {currentLocation.puzzlePrompt}
               </p>
 
               {statusMessage && (
-                <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg text-sm">
+                <div className="p-3 bg-blue-500/10 border border-blue-500/20 rounded-lg text-sm">
                   {statusMessage}
                 </div>
               )}
 
-              {currentLocation.puzzleType === 'number_code' && (
-                <NumberCodeInput
-                  length={currentLocation.puzzleAnswerLength}
-                  onSubmit={submitPuzzleAnswer}
-                  disabled={isChecking}
-                />
-              )}
+              <Button
+                onClick={checkLocation}
+                disabled={isChecking}
+                className="w-full"
+                size="lg"
+              >
+                {isChecking ? 'Checking location...' : '🔍 Search for Clues'}
+              </Button>
+            </CardContent>
+          </Card>
+        )}
 
-              {currentLocation.puzzleType === 'word_code' && (
-                <WordCodeInput
-                  length={currentLocation.puzzleAnswerLength}
-                  onSubmit={submitPuzzleAnswer}
-                  disabled={isChecking}
-                />
-              )}
-            </div>
-          </div>
+        {/* Screen 2a: At Location, Puzzle Unsolved */}
+        {locationState === 'at_location_unsolved' && (
+          <Card>
+            <CardContent className="pt-6 space-y-6">
+              <div className="p-4 bg-green-500/10 border border-green-500/20 rounded-lg">
+                <p className="leading-relaxed">
+                  {currentLocation.locationFoundText}
+                </p>
+              </div>
+
+              <div className="space-y-4">
+                <h3 className="font-semibold text-lg">Puzzle:</h3>
+                <p className="text-sm text-muted-foreground">
+                  {currentLocation.puzzlePrompt}
+                </p>
+
+                {statusMessage && (
+                  <div className="p-3 bg-blue-500/10 border border-blue-500/20 rounded-lg text-sm">
+                    {statusMessage}
+                  </div>
+                )}
+
+                {currentLocation.puzzleType === 'number_code' && (
+                  <NumberCodeInput
+                    length={currentLocation.puzzleAnswerLength}
+                    onSubmit={submitPuzzleAnswer}
+                    disabled={isChecking}
+                  />
+                )}
+
+                {currentLocation.puzzleType === 'word_code' && (
+                  <WordCodeInput
+                    length={currentLocation.puzzleAnswerLength}
+                    onSubmit={submitPuzzleAnswer}
+                    disabled={isChecking}
+                  />
+                )}
+              </div>
+            </CardContent>
+          </Card>
         )}
 
         {/* Screen 2b: At Location, Puzzle Solved */}
         {locationState === 'at_location_solved' && (
-          <div className="bg-white border border-gray-200 rounded-lg p-6">
-            <div className="mb-6 p-4 bg-green-100 border border-green-300 rounded-lg">
-              <p className="font-semibold text-green-800 mb-3">✓ Puzzle Solved!</p>
-              <p className="text-gray-700 leading-relaxed">
-                {currentLocation.puzzleSuccessText}
-              </p>
-            </div>
-
-            {currentLocation.nextRiddle && (
-              <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                <p className="text-sm font-semibold mb-2">Your next clue:</p>
-                <p className="text-sm text-gray-700 italic">
-                  {currentLocation.nextRiddle}
+          <Card>
+            <CardContent className="pt-6 space-y-6">
+              <div className="p-4 bg-green-500/10 border border-green-500/20 rounded-lg">
+                <p className="font-semibold mb-3">✓ Puzzle Solved!</p>
+                <p className="leading-relaxed">
+                  {currentLocation.puzzleSuccessText}
                 </p>
               </div>
-            )}
 
-            <button
-              onClick={moveToNextLocation}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold"
-            >
-              {currentLocation.nextLocationId ? 'Continue to Next Location →' : 'Complete Hunt! 🎉'}
-            </button>
-          </div>
+              {currentLocation.nextRiddle && (
+                <div className="p-4 bg-blue-500/10 border border-blue-500/20 rounded-lg">
+                  <p className="text-sm font-semibold mb-2">Your next clue:</p>
+                  <p className="text-sm italic text-muted-foreground">
+                    {currentLocation.nextRiddle}
+                  </p>
+                </div>
+              )}
+
+              <Button
+                onClick={moveToNextLocation}
+                className="w-full"
+                size="lg"
+              >
+                {currentLocation.nextLocationId ? 'Continue to Next Location →' : 'Complete Hunt! 🎉'}
+              </Button>
+            </CardContent>
+          </Card>
         )}
       </div>
 

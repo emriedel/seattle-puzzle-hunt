@@ -5,6 +5,8 @@ import { useParams, useRouter } from 'next/navigation';
 import { v4 as uuidv4 } from 'uuid';
 import { getUserLocation } from '@/lib/debug';
 import DebugPanel from '@/components/DebugPanel';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 interface Location {
   id: string;
@@ -136,48 +138,54 @@ export default function HuntDetailPage() {
   return (
     <div className="min-h-screen p-4 md:p-8">
       <div className="max-w-2xl mx-auto">
-        <h1 className="text-3xl font-bold mb-4">{hunt.title}</h1>
+        <h1 className="text-3xl font-bold mb-6">{hunt.title}</h1>
 
-        <div className="bg-white border border-gray-200 rounded-lg p-6 mb-6">
-          <div className="space-y-2 mb-6">
-            <p className="text-gray-600">📍 {hunt.neighborhood}</p>
-            <p className="text-gray-600">⏱️ ~{hunt.estimatedTimeMinutes} minutes</p>
-            <p className="text-gray-600">📏 Must be within {hunt.globalLocationRadiusMeters}m of each location</p>
-          </div>
-
-          <div className="mb-6">
-            <h2 className="font-semibold mb-2">Hunt Stops ({hunt.locations.length}):</h2>
-            <ol className="list-decimal list-inside space-y-1 text-gray-700">
-              {hunt.locations.map((loc) => (
-                <li key={loc.id}>{loc.name}</li>
-              ))}
-            </ol>
-          </div>
-
-          <div className="mb-4">
-            <p className="text-sm text-gray-600 mb-4">
-              Starting location: {hunt.locations[0].name}
-              <br />
-              <span className="text-xs">
-                ({hunt.locations[0].lat.toFixed(4)}, {hunt.locations[0].lng.toFixed(4)})
-              </span>
-            </p>
-          </div>
-
-          {locationStatus && (
-            <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded text-sm">
-              {locationStatus}
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle>Hunt Details</CardTitle>
+            <CardDescription>Get ready for your adventure through {hunt.neighborhood}</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="space-y-2">
+              <p className="flex items-center gap-2">
+                <span>📍</span>
+                <span>{hunt.neighborhood}</span>
+              </p>
+              <p className="flex items-center gap-2">
+                <span>⏱️</span>
+                <span>~{hunt.estimatedTimeMinutes} minutes</span>
+              </p>
+              <p className="flex items-center gap-2">
+                <span>🗺️</span>
+                <span>{hunt.locations.length} stops</span>
+              </p>
             </div>
-          )}
 
-          <button
-            onClick={handleStartHunt}
-            disabled={checkingLocation}
-            className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white px-6 py-3 rounded-lg font-semibold"
-          >
-            {checkingLocation ? 'Checking location...' : 'Start Hunt'}
-          </button>
-        </div>
+            <div>
+              <p className="text-sm text-muted-foreground mb-2">
+                Starting coordinates:
+              </p>
+              <p className="text-sm font-mono">
+                {hunt.locations[0].lat.toFixed(4)}, {hunt.locations[0].lng.toFixed(4)}
+              </p>
+            </div>
+
+            {locationStatus && (
+              <div className="p-3 bg-blue-500/10 border border-blue-500/20 rounded-lg text-sm">
+                {locationStatus}
+              </div>
+            )}
+
+            <Button
+              onClick={handleStartHunt}
+              disabled={checkingLocation}
+              className="w-full"
+              size="lg"
+            >
+              {checkingLocation ? 'Checking location...' : 'Start Hunt'}
+            </Button>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Debug Panel */}

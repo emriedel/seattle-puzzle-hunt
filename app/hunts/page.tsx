@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 interface Hunt {
   id: string;
@@ -33,24 +34,28 @@ export default async function HuntsPage() {
         <h1 className="text-3xl font-bold mb-6">Available Hunts</h1>
 
         {hunts.length === 0 ? (
-          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-            <p className="text-yellow-800">
-              No hunts available yet. Make sure to seed the database with hunt data.
-            </p>
-          </div>
+          <Card>
+            <CardContent className="pt-6">
+              <p className="text-muted-foreground">
+                No hunts available yet. Make sure to seed the database with hunt data.
+              </p>
+            </CardContent>
+          </Card>
         ) : (
           <div className="space-y-4">
             {hunts.map((hunt) => (
-              <Link
-                key={hunt.id}
-                href={`/hunts/${hunt.id}`}
-                className="block bg-white border border-gray-200 rounded-lg p-6 hover:shadow-lg transition-shadow"
-              >
-                <h2 className="text-xl font-semibold mb-2">{hunt.title}</h2>
-                <div className="text-gray-600 space-y-1">
-                  <p>📍 {hunt.neighborhood}</p>
-                  <p>⏱️ ~{hunt.estimatedTimeMinutes} minutes</p>
-                </div>
+              <Link key={hunt.id} href={`/hunts/${hunt.id}`}>
+                <Card className="hover:bg-accent transition-colors cursor-pointer">
+                  <CardHeader>
+                    <CardTitle>{hunt.title}</CardTitle>
+                    <CardDescription>
+                      <span className="flex items-center gap-4 mt-2">
+                        <span>📍 {hunt.neighborhood}</span>
+                        <span>⏱️ ~{hunt.estimatedTimeMinutes} min</span>
+                      </span>
+                    </CardDescription>
+                  </CardHeader>
+                </Card>
               </Link>
             ))}
           </div>

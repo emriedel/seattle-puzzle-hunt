@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
 
 interface WordCodeInputProps {
   length: number;
@@ -62,18 +63,18 @@ export default function WordCodeInput({ length, onSubmit, disabled = false }: Wo
             onChange={e => handleChange(index, e.target.value)}
             onKeyDown={e => handleKeyDown(index, e)}
             disabled={disabled}
-            className="w-12 h-14 text-center text-2xl font-bold uppercase border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none disabled:bg-gray-100"
+            className="w-12 h-14 text-center text-2xl font-bold uppercase bg-background border-2 border-input rounded-lg focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring disabled:opacity-50"
           />
         ))}
       </div>
 
-      <button
+      <Button
         onClick={handleSubmit}
         disabled={!isComplete || disabled}
-        className="px-6 py-2 bg-blue-600 text-white rounded-lg font-semibold disabled:bg-gray-300 disabled:cursor-not-allowed hover:bg-blue-700"
+        size="lg"
       >
         Submit Answer
-      </button>
+      </Button>
     </div>
   );
 }
