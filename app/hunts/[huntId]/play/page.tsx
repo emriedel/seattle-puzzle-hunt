@@ -5,7 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { getUserLocation } from '@/lib/debug';
 import DebugPanel from '@/components/DebugPanel';
 import NumberCodeInput from '@/components/NumberCodeInput';
-import WordCodeInput from '@/components/WordCodeInput';
+import CryptexInput from '@/components/CryptexInput';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
@@ -330,7 +330,7 @@ export default function PlayPage() {
                 )}
 
                 {currentLocation.puzzleType === 'word_code' && (
-                  <WordCodeInput
+                  <CryptexInput
                     length={currentLocation.puzzleAnswerLength}
                     onSubmit={submitPuzzleAnswer}
                     disabled={isChecking}
