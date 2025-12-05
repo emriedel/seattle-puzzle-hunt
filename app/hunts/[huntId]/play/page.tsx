@@ -5,6 +5,8 @@ import { useParams, useRouter } from 'next/navigation';
 import { getUserLocation } from '@/lib/debug';
 import DebugPanel from '@/components/DebugPanel';
 import NumberCodeInput from '@/components/NumberCodeInput';
+import NumericCryptexInput from '@/components/NumericCryptexInput';
+import SafeDialInput from '@/components/SafeDialInput';
 import CryptexInput from '@/components/CryptexInput';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -321,14 +323,26 @@ export default function PlayPage() {
                   </div>
                 )}
 
-                {currentLocation.puzzleType === 'number_code' && (
-                  <NumberCodeInput
-                    length={currentLocation.puzzleAnswerLength}
-                    onSubmit={submitPuzzleAnswer}
-                    disabled={isChecking}
-                  />
-                )}
+                {/* Number-based puzzle inputs */}
+                {currentLocation.puzzleType.startsWith('number_code') && (() => {
+                  const subType = currentLocation.puzzleType.split('.')[1];
+                  const props = {
+                    length: currentLocation.puzzleAnswerLength,
+                    onSubmit: submitPuzzleAnswer,
+                    disabled: isChecking,
+                  };
 
+                  if (subType === 'cryptex') {
+                    return <NumericCryptexInput {...props} />;
+                  } else if (subType === 'safe') {
+                    return <SafeDialInput {...props} />;
+                  } else {
+                    // Default to simple number input
+                    return <NumberCodeInput {...props} />;
+                  }
+                })()}
+
+                {/* Word-based puzzle input */}
                 {currentLocation.puzzleType === 'word_code' && (
                   <CryptexInput
                     length={currentLocation.puzzleAnswerLength}

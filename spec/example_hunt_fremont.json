@@ -13,7 +13,7 @@
       "narrative_snippet": "Your hunt begins beneath the Aurora Bridge. Head to the coordinates above to find where a concrete giant clutches a Volkswagen Beetle in its grip.",
       "location_found_text": "You've found it! The massive Fremont Troll looms above you, a quirky guardian of the underpass. Look carefully at the details carved into the concrete around you.",
       "puzzle": {
-        "type": "number_code",
+        "type": "number_code.cryptex",
         "prompt": "Find the four-digit year carved nearby on the concrete. Add the digits together and multiply the result by 3. Enter the result as a 2-digit number (zero-pad if needed).",
         "image": null,
         "answer": "27",
@@ -70,7 +70,7 @@
       "narrative_snippet": "",
       "location_found_text": "You've reached the final stop! Gas Works Park transforms industrial history into public space. Climb the hill to find the sundial — a perfect ending point with sweeping views of the city.",
       "puzzle": {
-        "type": "number_code",
+        "type": "number_code.safe",
         "prompt": "At the sundial, note the three highest engraved hour numbers. Add them together and enter the result (3 digits, zero-pad if needed).",
         "image": null,
         "answer": "033",
