@@ -68,7 +68,7 @@ function NumericWheel({ value, onChange, disabled }: WheelProps) {
     const currentY = e.touches[0].clientY;
     const deltaY = startY - currentY;
     const sensitivity = 30; // pixels per digit
-    const steps = Math.floor(deltaY / sensitivity);
+    const steps = Math.round(deltaY / sensitivity);
 
     if (Math.abs(steps) > 0) {
       const newIndex = (currentIndex + steps + 10 * 100) % 10; // Add large multiple to handle negatives
@@ -96,7 +96,7 @@ function NumericWheel({ value, onChange, disabled }: WheelProps) {
     const currentY = e.clientY;
     const deltaY = startY - currentY;
     const sensitivity = 30;
-    const steps = Math.floor(deltaY / sensitivity);
+    const steps = Math.round(deltaY / sensitivity);
 
     if (Math.abs(steps) > 0) {
       const newIndex = (currentIndex + steps + 10 * 100) % 10;
