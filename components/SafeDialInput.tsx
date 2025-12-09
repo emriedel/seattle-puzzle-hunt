@@ -288,12 +288,12 @@ export default function SafeDialInput({ length, onSubmit, disabled }: SafeDialIn
       </div>
 
       {/* Control buttons */}
-      <div className="flex gap-3 w-full max-w-xs">
+      <div className="flex gap-3 w-full max-w-xs justify-center">
         <Button
           onClick={handleReset}
           disabled={disabled || currentPosition === 0}
           variant="outline"
-          className="flex-1"
+          className="w-auto px-8"
         >
           Reset
         </Button>
@@ -301,9 +301,10 @@ export default function SafeDialInput({ length, onSubmit, disabled }: SafeDialIn
           onClick={handleSubmit}
           disabled={disabled || !isComplete}
           size="lg"
-          className="flex-1"
+          variant="secondary"
+          className="w-auto px-12"
         >
-          {disabled ? 'Checking...' : isComplete ? 'Submit Answer' : `${currentPosition}/${length} Complete`}
+          {disabled ? 'Checking...' : isComplete ? 'Submit' : `${currentPosition}/${length} Complete`}
         </Button>
       </div>
 

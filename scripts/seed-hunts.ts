@@ -59,12 +59,16 @@ async function seedHunt(huntData: HuntData) {
   for (const location of huntData.locations) {
     // Normalize answer based on type
     let normalizedAnswer = location.puzzle.answer;
-    if (location.puzzle.type === 'word_code') {
+    if (location.puzzle.type === 'word_code' || location.puzzle.type === 'tile_word') {
       normalizedAnswer = location.puzzle.answer.toUpperCase();
-    } else if (location.puzzle.type === 'number_code') {
-      // Zero-pad number codes to answer_length
+    } else if (location.puzzle.type.startsWith('number_code')) {
+      // Zero-pad number codes to answer_length (handles number_code, number_code.cryptex, number_code.safe)
       normalizedAnswer = location.puzzle.answer.padStart(location.puzzle.answer_length, '0');
+    } else if (location.puzzle.type === 'directional_code' || location.puzzle.type === 'simon_code') {
+      // Uppercase directional and color sequences
+      normalizedAnswer = location.puzzle.answer.toUpperCase();
     }
+    // Other types (slider_code, toggle_code, morse_code) use answer as-is
 
     await prisma.location.upsert({
       where: { id: location.id },

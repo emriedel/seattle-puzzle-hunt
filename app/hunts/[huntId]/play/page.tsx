@@ -8,6 +8,11 @@ import NumberCodeInput from '@/components/NumberCodeInput';
 import NumericCryptexInput from '@/components/NumericCryptexInput';
 import SafeDialInput from '@/components/SafeDialInput';
 import CryptexInput from '@/components/CryptexInput';
+import ToggleSwitchInput from '@/components/ToggleSwitchInput';
+import DirectionalPadInput from '@/components/DirectionalPadInput';
+import SimonPatternInput from '@/components/SimonPatternInput';
+import MorseCodeInput from '@/components/MorseCodeInput';
+import TileWordBuilderInput from '@/components/TileWordBuilderInput';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
@@ -346,6 +351,50 @@ export default function PlayPage() {
                 {currentLocation.puzzleType === 'word_code' && (
                   <CryptexInput
                     length={currentLocation.puzzleAnswerLength}
+                    onSubmit={submitPuzzleAnswer}
+                    disabled={isChecking}
+                  />
+                )}
+
+                {/* Toggle switches puzzle */}
+                {currentLocation.puzzleType === 'toggle_code' && (
+                  <ToggleSwitchInput
+                    switchCount={currentLocation.puzzleAnswerLength}
+                    onSubmit={submitPuzzleAnswer}
+                    disabled={isChecking}
+                  />
+                )}
+
+                {/* Directional pad puzzle */}
+                {currentLocation.puzzleType === 'directional_code' && (
+                  <DirectionalPadInput
+                    maxLength={currentLocation.puzzleAnswerLength}
+                    onSubmit={submitPuzzleAnswer}
+                    disabled={isChecking}
+                  />
+                )}
+
+                {/* Simon pattern puzzle */}
+                {currentLocation.puzzleType === 'simon_code' && (
+                  <SimonPatternInput
+                    maxLength={currentLocation.puzzleAnswerLength}
+                    onSubmit={submitPuzzleAnswer}
+                    disabled={isChecking}
+                  />
+                )}
+
+                {/* Morse code puzzle */}
+                {currentLocation.puzzleType === 'morse_code' && (
+                  <MorseCodeInput
+                    onSubmit={submitPuzzleAnswer}
+                    disabled={isChecking}
+                  />
+                )}
+
+                {/* Tile word builder puzzle */}
+                {currentLocation.puzzleType === 'tile_word' && (
+                  <TileWordBuilderInput
+                    tiles={currentLocation.puzzlePrompt.match(/[A-Z]/g) || []}
                     onSubmit={submitPuzzleAnswer}
                     disabled={isChecking}
                   />

@@ -110,15 +110,10 @@ function CryptexWheel({ value, onChange, disabled }: WheelProps) {
     setIsDragging(false);
   };
 
-  // Scroll wheel handler
+  // Scroll wheel handler - disabled to prevent accidental changes while scrolling page
+  // Users can use drag/swipe or arrow buttons instead
   const handleWheel = (e: React.WheelEvent) => {
-    if (disabled) return;
-    e.preventDefault();
-    if (e.deltaY > 0) {
-      incrementLetter();
-    } else if (e.deltaY < 0) {
-      decrementLetter();
-    }
+    // Disabled
   };
 
   return (
@@ -236,9 +231,10 @@ export default function CryptexInput({ length, onSubmit, disabled }: CryptexInpu
         onClick={handleSubmit}
         disabled={disabled || !isComplete}
         size="lg"
-        className="w-full max-w-xs"
+        variant="secondary"
+        className="w-auto px-12"
       >
-        {disabled ? 'Checking...' : 'Submit Answer'}
+        {disabled ? 'Checking...' : 'Submit'}
       </Button>
     </div>
   );

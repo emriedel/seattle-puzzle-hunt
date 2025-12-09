@@ -162,7 +162,147 @@ Key pages:
 
 ---
 
+## Puzzle Types Reference
+
+All available puzzle input types and their configuration.
+
+### Number-Based Puzzles
+
+#### `number_code.cryptex` (Numeric Cryptex Wheels)
+- **Description:** Rotating digit wheels (0-9), cryptex-style
+- **Answer Format:** Zero-padded number string
+- **Interactions:** Swipe/drag/scroll wheels, arrow buttons
+- **Use Cases:** Visual combination locks, tactile number entry
+- **Example JSON:**
+```json
+{
+  "type": "number_code.cryptex",
+  "prompt": "Set the cryptex wheels",
+  "answer": "3725",
+  "answer_length": 4
+}
+```
+
+#### `number_code.safe` (Safe Dial)
+- **Description:** Rotating dial with direction-based input
+- **Answer Format:** Zero-padded number string
+- **Interactions:** Rotate clockwise/counter-clockwise alternately
+- **Use Cases:** Safe combinations, mechanical puzzle locks
+- **Example JSON:**
+```json
+{
+  "type": "number_code.safe",
+  "prompt": "Open the safe",
+  "answer": "033",
+  "answer_length": 3
+}
+```
+
+### Word-Based Puzzles
+
+#### `word_code` (Letter Cryptex)
+- **Description:** Rotating letter wheels (A-Z), cryptex-style
+- **Answer Format:** Uppercase word (e.g., "BOOK")
+- **Interactions:** Swipe/drag/scroll wheels, arrow buttons
+- **Use Cases:** Word locks, letter combinations
+- **Example JSON:**
+```json
+{
+  "type": "word_code",
+  "prompt": "Spell the word on the sign",
+  "answer": "BOOK",
+  "answer_length": 4
+}
+```
+
+#### `tile_word` (Tile Word Builder)
+- **Description:** Drag-and-drop letter tiles into slots
+- **Answer Format:** Uppercase word
+- **Interactions:** HTML5 drag-and-drop
+- **Use Cases:** Anagrams, torn signs, scrambled letters
+- **Example JSON:**
+```json
+{
+  "type": "tile_word",
+  "prompt": "Rearrange the tiles: B, O, O, K",
+  "answer": "BOOK",
+  "answer_length": 4
+}
+```
+**Note:** Tiles can be specified in the prompt or puzzle configuration.
+
+### Sequence Puzzles
+
+#### `directional_code` (Directional Pad)
+- **Description:** Arrow buttons for Up/Down/Left/Right sequences
+- **Answer Format:** Compressed string using UDLR (e.g., "URDL")
+- **Interactions:** Tap directional buttons
+- **Use Cases:** Paths, dance moves, navigation instructions
+- **Example JSON:**
+```json
+{
+  "type": "directional_code",
+  "prompt": "Follow the path: Up, Right, Down, Left",
+  "answer": "URDL",
+  "answer_length": 4
+}
+```
+
+#### `simon_code` (Simon Pattern)
+- **Description:** 4 colored buttons (Red, Green, Blue, Yellow)
+- **Answer Format:** Color initials (e.g., "RGYB")
+- **Interactions:** Tap colored buttons in sequence
+- **Use Cases:** Color patterns, glowing symbols, Simon-style memory
+- **Example JSON:**
+```json
+{
+  "type": "simon_code",
+  "prompt": "Tap the colors in the correct order",
+  "answer": "RGYB",
+  "answer_length": 4
+}
+```
+
+#### `morse_code` (Morse Code Tap)
+- **Description:** Single tap button for dots and dashes
+- **Answer Format:** Morse code string (e.g., "...---...")
+- **Interactions:** Quick tap = dot, long press = dash
+- **Use Cases:** Telegraph messages, lighthouse signals
+- **Example JSON:**
+```json
+{
+  "type": "morse_code",
+  "prompt": "Tap the morse code: SOS",
+  "answer": "...---...",
+  "answer_length": 9
+}
+```
+
+### Binary Puzzles
+
+#### `toggle_code` (Toggle Switches)
+- **Description:** On/Off switches in a panel
+- **Answer Format:** Binary string (e.g., "101100")
+- **Interactions:** Toggle switches on/off
+- **Use Cases:** Circuit breakers, power switches, fusebox
+- **Example JSON:**
+```json
+{
+  "type": "toggle_code",
+  "prompt": "Set switches to the correct pattern",
+  "answer": "101100",
+  "answer_length": 6
+}
+```
+
+### Testing Page
+
+Visit `/test/puzzles` to test all puzzle input types with example answers. This page showcases all available inputs without requiring a full hunt flow.
+
+---
+
 ## Handoff notes for future dev
 - For authoring hunts, JSON is primary canonical source; consider building an admin UI later.
 - Add hints, multi-language support, and optional user accounts in v2.
+- Test page at `/test/puzzles` demonstrates all puzzle types.
 
