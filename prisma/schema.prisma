@@ -15,11 +15,12 @@ model Hunt {
   id                          String     @id
   title                       String
   neighborhood                String
+  description                 String?    // Brief description of the hunt
   estimatedTimeMinutes        Int
   globalLocationRadiusMeters  Int
   createdAt                   DateTime   @default(now())
   updatedAt                   DateTime   @updatedAt
-  locations                   Location[] 
+  locations                   Location[]
   playSessions                PlaySession[]
   logbookEntries              LogbookEntry[]
 }
@@ -29,6 +30,7 @@ model Location {
   hunt                Hunt     @relation(fields: [huntId], references: [id])
   huntId              String
   name                String
+  address             String?  // Optional street address or location description
   order               Int
   lat                 Float
   lng                 Float

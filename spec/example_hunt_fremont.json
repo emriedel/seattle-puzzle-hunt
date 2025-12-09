@@ -2,12 +2,14 @@
   "id": "fremont_hidden_corners",
   "title": "Fremont: Hidden Corners",
   "neighborhood": "Fremont",
+  "description": "Explore Fremont's quirky landmarks and hidden gems on this walking adventure. From concrete trolls to Soviet statues, discover the stories behind the neighborhood's most beloved icons.",
   "estimated_time_minutes": 90,
   "global_location_radius_meters": 40,
   "locations": [
     {
       "id": "troll",
       "name": "The Fremont Troll",
+      "address": "N 36th St & Troll Ave N, under Aurora Bridge",
       "order": 1,
       "coordinates": { "lat": 47.6540, "lng": -122.3476 },
       "narrative_snippet": "Your hunt begins beneath the Aurora Bridge. Head to the coordinates above to find where a concrete giant clutches a Volkswagen Beetle in its grip.",
@@ -27,6 +29,7 @@
     {
       "id": "lenin",
       "name": "Lenin Statue",
+      "address": "600 N 36th St (Fremont Place N & N 36th St)",
       "order": 2,
       "coordinates": { "lat": 47.6546, "lng": -122.3505 },
       "narrative_snippet": "",
@@ -46,6 +49,7 @@
     {
       "id": "ophelia",
       "name": "Ophelia's Books",
+      "address": "3504 Fremont Ave N",
       "order": 3,
       "coordinates": { "lat": 47.6519, "lng": -122.3490 },
       "narrative_snippet": "",
@@ -65,6 +69,7 @@
     {
       "id": "gasworks",
       "name": "Gas Works Park - Sundial",
+      "address": "2101 N Northlake Way",
       "order": 4,
       "coordinates": { "lat": 47.6456, "lng": -122.3344 },
       "narrative_snippet": "",

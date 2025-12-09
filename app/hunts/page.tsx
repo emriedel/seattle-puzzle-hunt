@@ -1,11 +1,20 @@
-import Link from 'next/link';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
+import { HuntCard } from '@/components/HuntCard';
+
+interface Location {
+  id: string;
+  name: string;
+  address: string | null;
+  order: number;
+}
 
 interface Hunt {
   id: string;
   title: string;
   neighborhood: string;
+  description: string | null;
   estimatedTimeMinutes: number;
+  locations: Location[];
 }
 
 async function getHunts(): Promise<Hunt[]> {
@@ -44,19 +53,7 @@ export default async function HuntsPage() {
         ) : (
           <div className="space-y-4">
             {hunts.map((hunt) => (
-              <Link key={hunt.id} href={`/hunts/${hunt.id}`}>
-                <Card className="hover:bg-accent transition-colors cursor-pointer">
-                  <CardHeader>
-                    <CardTitle>{hunt.title}</CardTitle>
-                    <CardDescription>
-                      <span className="flex items-center gap-4 mt-2">
-                        <span>📍 {hunt.neighborhood}</span>
-                        <span>⏱️ ~{hunt.estimatedTimeMinutes} min</span>
-                      </span>
-                    </CardDescription>
-                  </CardHeader>
-                </Card>
-              </Link>
+              <HuntCard key={hunt.id} hunt={hunt} />
             ))}
           </div>
         )}

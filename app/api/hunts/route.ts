@@ -8,7 +8,19 @@ export async function GET() {
         id: true,
         title: true,
         neighborhood: true,
+        description: true,
         estimatedTimeMinutes: true,
+        locations: {
+          select: {
+            id: true,
+            name: true,
+            address: true,
+            order: true,
+          },
+          orderBy: {
+            order: 'asc',
+          },
+        },
       },
     });
 

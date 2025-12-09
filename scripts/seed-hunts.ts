@@ -15,6 +15,7 @@ interface PuzzleData {
 interface LocationData {
   id: string;
   name: string;
+  address?: string;
   order: number;
   coordinates: { lat: number; lng: number };
   narrative_snippet: string;
@@ -29,6 +30,7 @@ interface HuntData {
   id: string;
   title: string;
   neighborhood: string;
+  description?: string;
   estimated_time_minutes: number;
   global_location_radius_meters: number;
   locations: LocationData[];
@@ -43,6 +45,7 @@ async function seedHunt(huntData: HuntData) {
     update: {
       title: huntData.title,
       neighborhood: huntData.neighborhood,
+      description: huntData.description,
       estimatedTimeMinutes: huntData.estimated_time_minutes,
       globalLocationRadiusMeters: huntData.global_location_radius_meters,
     },
@@ -50,6 +53,7 @@ async function seedHunt(huntData: HuntData) {
       id: huntData.id,
       title: huntData.title,
       neighborhood: huntData.neighborhood,
+      description: huntData.description,
       estimatedTimeMinutes: huntData.estimated_time_minutes,
       globalLocationRadiusMeters: huntData.global_location_radius_meters,
     },
@@ -74,6 +78,7 @@ async function seedHunt(huntData: HuntData) {
       where: { id: location.id },
       update: {
         name: location.name,
+        address: location.address,
         order: location.order,
         lat: location.coordinates.lat,
         lng: location.coordinates.lng,
@@ -92,6 +97,7 @@ async function seedHunt(huntData: HuntData) {
         id: location.id,
         huntId: huntData.id,
         name: location.name,
+        address: location.address,
         order: location.order,
         lat: location.coordinates.lat,
         lng: location.coordinates.lng,
