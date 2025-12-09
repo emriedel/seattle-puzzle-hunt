@@ -12,6 +12,7 @@ import DirectionalPadInput from '@/components/DirectionalPadInput';
 import SimonPatternInput from '@/components/SimonPatternInput';
 import MorseCodeInput from '@/components/MorseCodeInput';
 import TileWordBuilderInput from '@/components/TileWordBuilderInput';
+import SlidePuzzleInput from '@/components/SlidePuzzleInput';
 
 interface PuzzleTest {
   name: string;
@@ -114,6 +115,17 @@ export default function PuzzleTestPage() {
         <TileWordBuilderInput
           tiles={['B', 'O', 'O', 'K']}
           onSubmit={(ans) => handleTest('tile_word', ans, 'BOOK')}
+        />
+      ),
+    },
+    {
+      name: 'Slide Puzzle',
+      type: 'slide_puzzle',
+      answer: 'SOLVED',
+      component: (
+        <SlidePuzzleInput
+          imagePath="/puzzle-images/test-puzzle.svg"
+          onSubmit={(ans) => handleTest('slide_puzzle', ans, 'SOLVED')}
         />
       ),
     },

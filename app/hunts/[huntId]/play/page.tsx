@@ -13,6 +13,7 @@ import DirectionalPadInput from '@/components/DirectionalPadInput';
 import SimonPatternInput from '@/components/SimonPatternInput';
 import MorseCodeInput from '@/components/MorseCodeInput';
 import TileWordBuilderInput from '@/components/TileWordBuilderInput';
+import SlidePuzzleInput from '@/components/SlidePuzzleInput';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
@@ -395,6 +396,15 @@ export default function PlayPage() {
                 {currentLocation.puzzleType === 'tile_word' && (
                   <TileWordBuilderInput
                     tiles={currentLocation.puzzlePrompt.match(/[A-Z]/g) || []}
+                    onSubmit={submitPuzzleAnswer}
+                    disabled={isChecking}
+                  />
+                )}
+
+                {/* Slide puzzle */}
+                {currentLocation.puzzleType === 'slide_puzzle' && (
+                  <SlidePuzzleInput
+                    imagePath={currentLocation.puzzleImage || '/puzzle-images/default.jpg'}
                     onSubmit={submitPuzzleAnswer}
                     disabled={isChecking}
                   />

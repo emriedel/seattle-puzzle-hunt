@@ -1,8 +1,8 @@
 {
   "id": "phinney_phantom",
-  "title": "Phinney Ridge: The Phantom Hunt",
+  "title": "The Phinney Phantom",
   "neighborhood": "Phinney Ridge",
-  "description": "Coming soon! A mysterious hunt through Phinney Ridge's hidden corners. Follow ghostly clues through this charming neighborhood.",
+  "description": "Someone has been leaving strange puzzles around the Phinney Ridge neighborhood. Can you help figure out what's going on?",
   "estimated_time_minutes": 60,
   "global_location_radius_meters": 40,
   "locations": [

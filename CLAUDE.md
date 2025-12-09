@@ -295,6 +295,37 @@ All available puzzle input types and their configuration.
 }
 ```
 
+### Image Puzzles
+
+#### `slide_puzzle` (3x3 Slide Puzzle)
+- **Description:** Classic sliding tile puzzle with custom image
+- **Answer Format:** "SOLVED" (auto-validated when puzzle is completed)
+- **Interactions:** Tap tiles adjacent to empty space to slide them
+- **Use Cases:** Image-based puzzles, photo clues, visual recognition
+- **Features:**
+  - 3x3 grid (8 tiles + 1 empty space)
+  - Image automatically split into 9 sections
+  - Scrambled with 20-30 random moves (always solvable)
+  - Smooth slide animations
+  - Auto-validates when solved
+  - Mobile-friendly touch interactions
+- **Image Requirements:**
+  - Square images work best
+  - Store in `/public/puzzle-images/` directory
+  - Reference with path like `/puzzle-images/your-image.jpg`
+  - Recommended size: 300x300px or larger
+- **Example JSON:**
+```json
+{
+  "type": "slide_puzzle",
+  "prompt": "Solve the slide puzzle to reveal the location",
+  "image": "/puzzle-images/fremont-troll.jpg",
+  "answer": "SOLVED",
+  "answer_length": 6
+}
+```
+**Note:** The image path is required in the `image` field, not `puzzleImage`.
+
 ### Testing Page
 
 Visit `/test/puzzles` to test all puzzle input types with example answers. This page showcases all available inputs without requiring a full hunt flow.

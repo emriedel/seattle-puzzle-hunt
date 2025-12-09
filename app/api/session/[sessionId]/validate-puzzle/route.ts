@@ -27,6 +27,9 @@ function normalizeAnswer(answer: string, puzzleType: string, answerLength: numbe
   } else if (puzzleType === 'tile_word') {
     // Tile word - strip non-alpha, uppercase (like word_code)
     return answer.replace(/[^a-zA-Z]/g, '').toUpperCase();
+  } else if (puzzleType === 'slide_puzzle') {
+    // Slide puzzle - auto-validates when solved, answer should be 'SOLVED'
+    return answer.toUpperCase().trim();
   }
   return answer;
 }
