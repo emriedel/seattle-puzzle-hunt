@@ -1,29 +1,9 @@
 import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { getCachedHunts } from '@/lib/hunt-queries';
 
 export async function GET() {
   try {
-    const hunts = await prisma.hunt.findMany({
-      select: {
-        id: true,
-        title: true,
-        neighborhood: true,
-        description: true,
-        estimatedTimeMinutes: true,
-        locations: {
-          select: {
-            id: true,
-            name: true,
-            address: true,
-            order: true,
-          },
-          orderBy: {
-            order: 'asc',
-          },
-        },
-      },
-    });
-
+    const hunts = await getCachedHunts();
     return NextResponse.json(hunts);
   } catch (error) {
     console.error('Error fetching hunts:', error);

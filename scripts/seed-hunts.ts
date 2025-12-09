@@ -120,13 +120,15 @@ async function seedHunt(huntData: HuntData) {
 
 async function main() {
   try {
-    // Read all JSON files from spec directory
-    const specDir = path.join(process.cwd(), 'spec');
-    const files = fs.readdirSync(specDir);
-    const huntFiles = files.filter(f => f.startsWith('example_hunt_') && f.endsWith('.json'));
+    // Read all JSON files from data/hunts directory
+    const huntsDir = path.join(process.cwd(), 'data', 'hunts');
+    const files = fs.readdirSync(huntsDir);
+    const huntFiles = files.filter(f => f.endsWith('.json'));
+
+    console.log(`Found ${huntFiles.length} hunt file(s) in data/hunts/\n`);
 
     for (const file of huntFiles) {
-      const filePath = path.join(specDir, file);
+      const filePath = path.join(huntsDir, file);
       const huntData: HuntData = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
       await seedHunt(huntData);
     }

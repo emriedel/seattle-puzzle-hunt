@@ -1,0 +1,29 @@
+{
+  "id": "phinney_phantom",
+  "title": "Phinney Ridge: The Phantom Hunt",
+  "neighborhood": "Phinney Ridge",
+  "description": "Coming soon! A mysterious hunt through Phinney Ridge's hidden corners. Follow ghostly clues through this charming neighborhood.",
+  "estimated_time_minutes": 60,
+  "global_location_radius_meters": 40,
+  "locations": [
+    {
+      "id": "woodland_park_zoo_entrance",
+      "name": "Woodland Park Zoo Entrance",
+      "address": "5500 Phinney Ave N",
+      "order": 1,
+      "coordinates": { "lat": 47.6685, "lng": -122.3517 },
+      "narrative_snippet": "Your hunt begins at the historic gates of Woodland Park Zoo. This hunt is currently under development - check back soon for the full adventure!",
+      "location_found_text": "Welcome to the Phinney Phantom hunt! This is a placeholder location while we finalize the full hunt experience.",
+      "puzzle": {
+        "type": "number_code.cryptex",
+        "prompt": "This is a test puzzle. Enter 000 to complete this placeholder hunt.",
+        "image": null,
+        "answer": "000",
+        "answer_length": 3
+      },
+      "puzzle_success_text": "Thanks for testing! The full Phinney Ridge hunt is coming soon with exciting puzzles and hidden gems to discover.",
+      "next_riddle": "",
+      "next_location_id": null
+    }
+  ]
+}
