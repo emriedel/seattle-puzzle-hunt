@@ -12,7 +12,7 @@
       "address": "5500 Phinney Ave N",
       "order": 1,
       "coordinates": { "lat": 47.6685, "lng": -122.3517 },
-      "narrative_snippet": "Your hunt begins at the historic gates of Woodland Park Zoo. This hunt is currently under development - check back soon for the full adventure!",
+      "narrative_snippet": "Strange things have been happening in **Phinney Ridge**.\n\nFor weeks, residents have been finding mysterious puzzles scattered throughout the neighborhood. No one knows who's leaving them or why.\n\n---PAGE---\n\nThis morning, you found an envelope slipped under your door. Inside was a single piece of paper with a message:\n\n{{handwritten:scrawl}}If you're clever enough to solve my riddles, start at the zoo gates. The first clue awaits where wild things dream.{{/handwritten}}\n\n---PAGE---\n\nIntrigued, you head to the historic gates of Woodland Park Zoo. Who is this mysterious puzzle-maker? What do they want?\n\nOnly one way to find out — *follow the clues*.",
       "location_found_text": "Welcome to the Phinney Phantom hunt! This is a placeholder location while we finalize the full hunt experience.",
       "puzzle": {
         "type": "number_code.cryptex",

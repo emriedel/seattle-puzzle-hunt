@@ -12,17 +12,17 @@
       "address": "N 36th St & Troll Ave N, under Aurora Bridge",
       "order": 1,
       "coordinates": { "lat": 47.6540, "lng": -122.3476 },
-      "narrative_snippet": "Your hunt begins beneath the Aurora Bridge. Head to the coordinates above to find where a concrete giant clutches a Volkswagen Beetle in its grip.",
+      "narrative_snippet": "Welcome to **Fremont: Hidden Corners**!\n\nYour adventure begins in one of Seattle's most *eccentric* neighborhoods. You'll discover quirky art, hidden stories, and secret messages tucked into everyday corners.\n\n---PAGE---\n\nYour hunt begins beneath the Aurora Bridge, where a concrete giant clutches a Volkswagen Beetle in its grip.\n\nOn your map, someone has scrawled a note:\n\n{{handwritten:scrawl}}Look for the year — the troll remembers{{/handwritten}}\n\nHead to the coordinates above to find your first location!",
       "location_found_text": "You've found it! The massive Fremont Troll looms above you, a quirky guardian of the underpass. Look carefully at the details carved into the concrete around you.",
       "puzzle": {
         "type": "number_code.cryptex",
-        "prompt": "Find the four-digit year carved nearby on the concrete. Add the digits together and multiply the result by 3. Enter the result as a 2-digit number (zero-pad if needed).",
+        "prompt": "Find the **four-digit year** carved nearby on the concrete. Add the digits together and multiply the result by {{color:blue}}3{{/color}}. Enter the result as a 2-digit number (zero-pad if needed).",
         "image": null,
         "answer": "27",
         "answer_length": 2
       },
-      "puzzle_success_text": "Well done! The troll's secrets are revealed. Now follow the next clue to continue your journey through Fremont's hidden corners.",
-      "next_riddle": "A legendary traveler from another era stands where the crossroads meet — find the controversial bronze with a raised arm.",
+      "puzzle_success_text": "Well done! The troll's secrets are revealed.\n\nAs you turn to leave, you notice a message carved into the bridge support:\n\n{{handwritten:elegant}}The journey continues where history stands displaced{{/handwritten}}",
+      "next_riddle": "A legendary traveler from another era stands where the crossroads meet — find the controversial {{color:red}}bronze{{/color}} with a raised arm.",
       "next_location_id": "lenin"
     },
 
@@ -33,16 +33,16 @@
       "order": 2,
       "coordinates": { "lat": 47.6546, "lng": -122.3505 },
       "narrative_snippet": "",
-      "location_found_text": "You've arrived! Before you stands a towering bronze figure, transplanted from across the world. This statue has quite a story — read the plaque nearby to learn more.",
+      "location_found_text": "You've arrived! Before you stands a towering bronze figure, transplanted from across the world.\n\nThis statue has quite a story — read the plaque nearby to learn more about its *unusual* journey to Seattle.",
       "puzzle": {
         "type": "word_code",
-        "prompt": "On the informational plaque nearby, find the six-letter word that refers to the statue's country of origin. Enter it in all caps (6 letters).",
+        "prompt": "On the informational plaque nearby, find the **six-letter word** that refers to the statue's country of origin. Enter it in all caps (6 letters).",
         "image": null,
         "answer": "RUSSIA",
         "answer_length": 6
       },
-      "puzzle_success_text": "Correct! This statue traveled far from its homeland. Your next destination awaits — a place where stories are bought and sold.",
-      "next_riddle": "Books stacked to the ceiling, a hanging wooden sign and the faint watch of a window cat will guide you.",
+      "puzzle_success_text": "Correct! This statue traveled far from its homeland.\n\nTucked under the statue's base, you find a small note:\n\n{{handwritten:graffiti}}Stories live on wooden signs{{/handwritten}}",
+      "next_riddle": "Books stacked to the ceiling, a hanging {{color:orange}}wooden sign{{/color}} and the faint watch of a window cat will guide you.",
       "next_location_id": "ophelia"
     },
 
@@ -53,16 +53,16 @@
       "order": 3,
       "coordinates": { "lat": 47.6519, "lng": -122.3490 },
       "narrative_snippet": "",
-      "location_found_text": "Welcome to a reader's sanctuary! This cozy bookshop has been a Fremont fixture for years. Take a moment to appreciate the carefully curated shelves before solving the puzzle.",
+      "location_found_text": "Welcome to a reader's sanctuary!\n\nThis cozy bookshop has been a Fremont fixture for years. Take a moment to appreciate the carefully curated shelves before solving the puzzle.",
       "puzzle": {
         "type": "word_code",
-        "prompt": "Look at the wooden sign — enter the second word, exactly as written, 4 letters.",
+        "prompt": "Look at the wooden sign hanging outside — enter the **second word**, exactly as written (4 letters).",
         "image": null,
         "answer": "BOOK",
         "answer_length": 4
       },
-      "puzzle_success_text": "Excellent! The bookshop has shared its secret. Your final destination is one of Seattle's most iconic parks — head toward the water.",
-      "next_riddle": "Head toward the skyline and the water — a park made from industrial bones keeps time with the sun.",
+      "puzzle_success_text": "Excellent! The bookshop has shared its secret.\n\nA bookmark falls from a shelf with a message:\n\n{{handwritten}}Where metal meets sky, time tells its story{{/handwritten}}",
+      "next_riddle": "Head toward the skyline and the water — a park made from *industrial bones* keeps time with the {{color:yellow}}sun{{/color}}.",
       "next_location_id": "gasworks"
     },
 
@@ -73,15 +73,15 @@
       "order": 4,
       "coordinates": { "lat": 47.6456, "lng": -122.3344 },
       "narrative_snippet": "",
-      "location_found_text": "You've reached the final stop! Gas Works Park transforms industrial history into public space. Climb the hill to find the sundial — a perfect ending point with sweeping views of the city.",
+      "location_found_text": "You've reached the final stop!\n\nGas Works Park transforms industrial history into public space. Climb the hill to find the sundial — a perfect ending point with sweeping views of the city.",
       "puzzle": {
         "type": "number_code.safe",
-        "prompt": "At the sundial, note the three highest engraved hour numbers. Add them together and enter the result (3 digits, zero-pad if needed).",
+        "prompt": "At the sundial, note the **three highest** engraved hour numbers. Add them together and enter the result (3 digits, zero-pad if needed).",
         "image": null,
         "answer": "033",
         "answer_length": 3
       },
-      "puzzle_success_text": "Congratulations! You've completed the Fremont Hidden Corners hunt. Take a moment to enjoy the view — you've earned it!",
+      "puzzle_success_text": "**Congratulations!** You've completed the Fremont Hidden Corners hunt.\n\nAs the sun catches the skyline, you notice one final message etched into the sundial's base:\n\n{{handwritten:elegant}}Every corner tells a story — you found them all{{/handwritten}}\n\nTake a moment to enjoy the view — you've earned it!",
       "next_riddle": "",
       "next_location_id": null
     }

@@ -14,6 +14,7 @@ import SimonPatternInput from '@/components/SimonPatternInput';
 import MorseCodeInput from '@/components/MorseCodeInput';
 import TileWordBuilderInput from '@/components/TileWordBuilderInput';
 import SlidePuzzleInput from '@/components/SlidePuzzleInput';
+import { TextPagination } from '@/components/TextPagination';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
@@ -285,9 +286,7 @@ export default function PlayPage() {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
-              <p className="leading-relaxed italic text-muted-foreground">
-                {clueText}
-              </p>
+              <TextPagination text={clueText} className="italic text-muted-foreground" />
 
               {statusMessage && (
                 <div className="p-3 bg-blue-500/10 border border-blue-500/20 rounded-lg text-sm">
@@ -312,16 +311,12 @@ export default function PlayPage() {
           <Card>
             <CardContent className="pt-6 space-y-6">
               <div className="p-4 bg-green-500/10 border border-green-500/20 rounded-lg">
-                <p className="leading-relaxed">
-                  {currentLocation.locationFoundText}
-                </p>
+                <TextPagination text={currentLocation.locationFoundText} />
               </div>
 
               <div className="space-y-4">
                 <h3 className="font-semibold text-lg">Puzzle:</h3>
-                <p className="text-sm text-muted-foreground">
-                  {currentLocation.puzzlePrompt}
-                </p>
+                <TextPagination text={currentLocation.puzzlePrompt} className="text-sm text-muted-foreground" />
 
                 {statusMessage && (
                   <div className="p-3 bg-blue-500/10 border border-blue-500/20 rounded-lg text-sm">
@@ -420,17 +415,13 @@ export default function PlayPage() {
             <CardContent className="pt-6 space-y-6">
               <div className="p-4 bg-green-500/10 border border-green-500/20 rounded-lg">
                 <p className="font-semibold mb-3">✓ Puzzle Solved!</p>
-                <p className="leading-relaxed">
-                  {currentLocation.puzzleSuccessText}
-                </p>
+                <TextPagination text={currentLocation.puzzleSuccessText} />
               </div>
 
               {currentLocation.nextRiddle && (
                 <div className="p-4 bg-blue-500/10 border border-blue-500/20 rounded-lg">
                   <p className="text-sm font-semibold mb-2">Your next clue:</p>
-                  <p className="text-sm italic text-muted-foreground">
-                    {currentLocation.nextRiddle}
-                  </p>
+                  <TextPagination text={currentLocation.nextRiddle} className="text-sm italic text-muted-foreground" />
                 </div>
               )}
 

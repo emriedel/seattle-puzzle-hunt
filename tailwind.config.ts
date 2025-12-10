@@ -9,6 +9,12 @@ export default {
   ],
   theme: {
   	extend: {
+  		fontFamily: {
+  			handwritten: ['var(--font-handwritten)', 'cursive'],
+  			'handwritten-scrawl': ['var(--font-handwritten-scrawl)', 'cursive'],
+  			'handwritten-elegant': ['var(--font-handwritten-elegant)', 'cursive'],
+  			'handwritten-graffiti': ['var(--font-handwritten-graffiti)', 'cursive'],
+  		},
   		colors: {
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',

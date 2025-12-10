@@ -162,6 +162,83 @@ Key pages:
 
 ---
 
+## Rich Text Formatting System
+
+All text fields (narrative snippets, puzzle prompts, location found text, success text, riddles) support custom rich text formatting syntax.
+
+### Supported Syntax
+
+#### Handwritten Notes (Multiple Styles)
+Display text as if handwritten on paper or walls - perfect for clues, notes, or messages.
+
+- `{{handwritten}}text{{/handwritten}}` - Default handwriting style (Caveat font)
+- `{{handwritten:scrawl}}text{{/handwritten}}` - Messy/hurried writing (Indie Flower)
+- `{{handwritten:elegant}}text{{/handwritten}}` - Fancy cursive (Dancing Script)
+- `{{handwritten:graffiti}}text{{/handwritten}}` - Street art style (Permanent Marker)
+
+Handwritten blocks are displayed in a separate styled box with amber-tinted background.
+
+#### Inline Formatting
+- `**bold text**` - Bold text
+- `*italic text*` - Italic text
+
+#### Colored Text
+- `{{color:red}}text{{/color}}` - Red text
+- `{{color:blue}}text{{/color}}` - Blue text
+- `{{color:green}}text{{/color}}` - Green text
+- `{{color:yellow}}text{{/color}}` - Yellow text
+- `{{color:orange}}text{{/color}}` - Orange text
+- `{{color:purple}}text{{/color}}` - Purple text
+
+#### Images
+- `{{image:/puzzle-images/your-image.jpg}}` - Embed an inline image
+
+Images should be placed in the `/public/puzzle-images/` directory and referenced with the path starting from `/puzzle-images/`.
+
+#### Line Breaks
+- `\n\n` - Double newline creates a paragraph break
+- Single `\n` is ignored (allows line wrapping in JSON without affecting display)
+
+#### Page Breaks
+For longer narrative content, you can split text into multiple pages:
+- `---PAGE---` - Page break marker
+
+When page breaks are present, users navigate with Next/Back buttons and see a page indicator (e.g., "Page 1 of 3").
+
+### Example JSON Usage
+
+```json
+{
+  "narrative_snippet": "You arrive at the location and notice something strange.\n\n---PAGE---\n\nOn the wall, scrawled in hasty handwriting:\n\n{{handwritten:scrawl}}Meet me at the old bridge at midnight{{/handwritten}}\n\nWhat could this mean?",
+  "puzzle_prompt": "Find the **four-digit code** written in {{color:red}}red paint{{/color}} on the north wall.",
+  "location_found_text": "You've discovered the hidden alcove!\n\n{{image:/puzzle-images/alcove-clue.jpg}}\n\nLook carefully at the symbols above.",
+  "puzzle_success_text": "Well done! You decoded the message.\n\nThe elegant script reads:\n\n{{handwritten:elegant}}The treasure lies where the river bends{{/handwritten}}",
+  "next_riddle": "Head north to where *ancient stones* mark the crossing point."
+}
+```
+
+### Best Practices
+
+1. **Page Breaks**: Use for intro narratives (3+ paragraphs). Keep each page focused - 2-4 paragraphs max.
+2. **Handwriting Styles**: Match the story context:
+   - `scrawl` - Urgent messages, graffiti, quick notes
+   - `elegant` - Formal invitations, old manuscripts, fancy signs
+   - `graffiti` - Street art, rebellious messages, modern urban clues
+   - `default` - General handwritten notes, casual messages
+3. **Images**: Use sparingly. Best for essential visual clues that can't be described in text.
+4. **Colored Text**: Use for emphasis on specific words/phrases, not entire paragraphs.
+5. **Formatting**: Don't overuse. Clear, simple text is often more effective than heavy formatting.
+
+### Technical Notes
+
+- All text is parsed on render using a custom parser (`lib/text-parser.ts`)
+- Handwriting fonts are loaded via Next.js font optimization
+- Images are rendered using Next.js Image component for optimization
+- Single-page content shows no pagination UI; multi-page shows Next/Back buttons
+- Page state resets when moving to a new location
+
+---
+
 ## Puzzle Types Reference
 
 All available puzzle input types and their configuration.
