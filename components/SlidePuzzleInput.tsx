@@ -8,22 +8,25 @@ interface SlidePuzzleInputProps {
   imagePath: string;
   onSubmit: (answer: string) => void;
   disabled?: boolean;
+  showReset?: boolean; // Only show reset button on test page
 }
 
 // Tile positions: 0-8, where 8 is the empty space
 type TilePosition = number[];
 
 const SOLVED_STATE = [0, 1, 2, 3, 4, 5, 6, 7, 8];
-const SCRAMBLE_MOVES = 25; // 20-30 range
+const SCRAMBLE_MOVES = 50; // Increased from 25
 
 export default function SlidePuzzleInput({
   imagePath,
   onSubmit,
   disabled = false,
+  showReset = false,
 }: SlidePuzzleInputProps) {
   const [tiles, setTiles] = useState<TilePosition>(SOLVED_STATE);
   const [emptyIndex, setEmptyIndex] = useState(8);
   const [hasStarted, setHasStarted] = useState(false);
+  const [movingTile, setMovingTile] = useState<number | null>(null);
 
   // Get row and column from index (0-8)
   const getRowCol = (index: number) => ({
@@ -113,6 +116,17 @@ export default function SlidePuzzleInput({
     if (disabled || clickedIndex === emptyIndex) return;
     if (!isAdjacent(clickedIndex, emptyIndex)) return;
 
+    // Track which tile is moving for higher z-index
+    const clickedTileValue = tiles[clickedIndex];
+
+    // Debug logging
+    const fromRow = Math.floor(clickedIndex / 3);
+    const toRow = Math.floor(emptyIndex / 3);
+    const direction = toRow > fromRow ? 'DOWN' : toRow < fromRow ? 'UP' : fromRow === toRow && (emptyIndex % 3) > (clickedIndex % 3) ? 'RIGHT' : 'LEFT';
+    console.log(`Moving tile ${clickedTileValue + 1} ${direction}: from index ${clickedIndex} to ${emptyIndex}, hasStarted: ${hasStarted}`);
+
+    setMovingTile(clickedTileValue);
+
     // Swap clicked tile with empty space
     const newTiles = [...tiles];
     [newTiles[emptyIndex], newTiles[clickedIndex]] =
@@ -120,6 +134,11 @@ export default function SlidePuzzleInput({
 
     setTiles(newTiles);
     setEmptyIndex(clickedIndex);
+
+    // Clear moving tile after animation completes
+    setTimeout(() => {
+      setMovingTile(null);
+    }, 300);
 
     // Check if solved
     if (isSolved(newTiles)) {
@@ -150,6 +169,9 @@ export default function SlidePuzzleInput({
     const tilePercent = 100 / 3; // 33.333...%
     const gapPercent = 0.25; // Small gap percentage
 
+    // Give moving tile higher z-index to ensure it's visible during animation
+    const isMoving = tileValue === movingTile;
+
     return {
       backgroundImage: `url(${imagePath})`,
       backgroundSize: '300%',
@@ -159,8 +181,8 @@ export default function SlidePuzzleInput({
       height: `calc(${tilePercent}% - ${gapPercent}%)`,
       left: `calc(${currentCol * tilePercent}% + ${currentCol * gapPercent / 3}%)`,
       top: `calc(${currentRow * tilePercent}% + ${currentRow * gapPercent / 3}%)`,
-      transition: 'left 0.3s ease-in-out, top 0.3s ease-in-out',
-      zIndex: 1,
+      transition: hasStarted ? 'left 0.3s ease-in-out, top 0.3s ease-in-out' : 'none',
+      zIndex: isMoving ? 10 : 1,
       willChange: 'left, top',
     };
   };
@@ -188,37 +210,24 @@ export default function SlidePuzzleInput({
                 style={getTileStyle(tileValue, index)}
                 aria-label={`Tile ${tileValue + 1}`}
               >
-                {/* Optional: show tile number for debugging */}
-                {/* <div className="absolute top-0 left-0 bg-black/50 text-white text-xs px-1">
-                  {tileValue}
-                </div> */}
               </button>
             );
           })}
-
-        {/* Empty space - invisible but shows where the gap is */}
-        <div
-          className="absolute rounded bg-gray-400/20 pointer-events-none"
-          style={{
-            width: `calc(33.333% - 0.333%)`,
-            height: `calc(33.333% - 0.333%)`,
-            left: `calc(${(emptyIndex % 3) * 33.666}% + ${(emptyIndex % 3) * 0.25}%)`,
-            top: `calc(${Math.floor(emptyIndex / 3) * 33.666}% + ${Math.floor(emptyIndex / 3) * 0.25}%)`,
-          }}
-        />
       </div>
 
-      {/* Controls */}
-      <div className="flex gap-2">
-        <Button
-          onClick={handleReset}
-          disabled={disabled}
-          variant="outline"
-          className="flex-1"
-        >
-          Reset Puzzle
-        </Button>
-      </div>
+      {/* Controls - only show reset on test page */}
+      {showReset && (
+        <div className="flex gap-2">
+          <Button
+            onClick={handleReset}
+            disabled={disabled}
+            variant="outline"
+            className="flex-1"
+          >
+            Reset Puzzle
+          </Button>
+        </div>
+      )}
 
       {/* Solved indicator */}
       {isSolved(tiles) && (

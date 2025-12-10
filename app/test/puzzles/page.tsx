@@ -126,6 +126,7 @@ export default function PuzzleTestPage() {
         <SlidePuzzleInput
           imagePath="/puzzle-images/test-puzzle.svg"
           onSubmit={(ans) => handleTest('slide_puzzle', ans, 'SOLVED')}
+          showReset={true}
         />
       ),
     },
