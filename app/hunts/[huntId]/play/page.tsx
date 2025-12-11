@@ -17,6 +17,9 @@ import SlidePuzzleInput from '@/components/SlidePuzzleInput';
 import { TextPagination } from '@/components/TextPagination';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Header } from '@/components/Header';
+import { NavigationMenu } from '@/components/NavigationMenu';
+import { LocationHistoryViewer } from '@/components/LocationHistoryViewer';
 
 interface Location {
   id: string;
@@ -67,16 +70,33 @@ export default function PlayPage() {
   const [isChecking, setIsChecking] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Navigation state
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [allHunts, setAllHunts] = useState<Array<{id: string; title: string; neighborhood: string}>>([]);
+  const [viewingLocationId, setViewingLocationId] = useState<string | null>(null);
+
   const progressKey = `hunt-progress-${huntId}`;
 
   // Load hunt and session
   useEffect(() => {
     async function loadHunt() {
       try {
+        // Fetch current hunt
         const res = await fetch(`/api/hunts/${huntId}`);
         if (!res.ok) throw new Error('Failed to load hunt');
         const data = await res.json();
         setHunt(data);
+
+        // Fetch all hunts for switcher
+        const allHuntsRes = await fetch('/api/hunts');
+        if (allHuntsRes.ok) {
+          const allHuntsData = await allHuntsRes.json();
+          setAllHunts(allHuntsData.map((h: Hunt) => ({
+            id: h.id,
+            title: h.title,
+            neighborhood: h.neighborhood,
+          })));
+        }
 
         // Get session from localStorage
         const storedSessionId = localStorage.getItem('current-session-id');
@@ -120,6 +140,39 @@ export default function PlayPage() {
 
   const currentLocation = hunt?.locations[currentLocationIndex];
   const previousLocation = currentLocationIndex > 0 ? hunt?.locations[currentLocationIndex - 1] : null;
+
+  // Navigation handlers
+  const handleExitHunt = () => {
+    // Navigate back to hunt detail page, preserving progress
+    router.push(`/hunts/${huntId}`);
+  };
+
+  const handleRestartHunt = () => {
+    // Clear progress and reload the page
+    localStorage.removeItem(progressKey);
+    setCurrentLocationIndex(0);
+    setLocationState('finding_location');
+    setStatusMessage('');
+    window.scrollTo(0, 0);
+  };
+
+  const handleViewLocation = (locationId: string) => {
+    setViewingLocationId(locationId);
+  };
+
+  // Get completed locations for history
+  const completedLocations = hunt?.locations
+    .slice(0, currentLocationIndex)
+    .map(loc => ({
+      id: loc.id,
+      name: loc.name,
+      order: loc.order,
+    })) || [];
+
+  // Get the location data for the history viewer
+  const viewingLocation = viewingLocationId
+    ? hunt?.locations.find(loc => loc.id === viewingLocationId)
+    : null;
 
   const checkLocation = async () => {
     if (!sessionId || !currentLocation) return;
@@ -257,25 +310,66 @@ export default function PlayPage() {
     : previousLocation?.nextRiddle || '';  // Subsequent locations use previous location's riddle
 
   return (
-    <div className="min-h-screen p-4 md:p-8 pb-20">
-      <div className="max-w-2xl mx-auto">
-        {/* Header with Progress */}
-        <div className="mb-6">
-          <div className="flex items-center justify-between mb-2">
-            <h1 className="text-2xl font-bold">{hunt.title}</h1>
-            <span className="text-sm text-gray-600">
-              {currentLocationIndex + 1} / {hunt.locations.length}
-            </span>
+    <>
+      <Header
+        title={hunt.title}
+        showBackButton={false}
+        onMenuClick={() => setMenuOpen(true)}
+      />
+
+      <NavigationMenu
+        open={menuOpen}
+        onOpenChange={setMenuOpen}
+        currentHunt={{
+          id: hunt.id,
+          title: hunt.title,
+          progress: {
+            current: currentLocationIndex + 1,
+            total: hunt.locations.length,
+          },
+        }}
+        completedLocations={completedLocations}
+        allHunts={allHunts}
+        onExitHunt={handleExitHunt}
+        onRestartHunt={handleRestartHunt}
+        onViewLocation={handleViewLocation}
+      />
+
+      <LocationHistoryViewer
+        location={viewingLocation ? {
+          id: viewingLocation.id,
+          name: viewingLocation.name,
+          order: viewingLocation.order,
+          narrativeSnippet: viewingLocation.narrativeSnippet,
+          locationFoundText: viewingLocation.locationFoundText,
+          puzzleType: viewingLocation.puzzleType,
+          puzzlePrompt: viewingLocation.puzzlePrompt,
+          puzzleAnswer: '***', // Show placeholder in history for security
+          puzzleSuccessText: viewingLocation.puzzleSuccessText,
+          nextRiddle: viewingLocation.nextRiddle,
+        } : null}
+        open={!!viewingLocationId}
+        onOpenChange={(open) => !open && setViewingLocationId(null)}
+      />
+
+      <div className="min-h-screen p-4 md:p-8 pb-20">
+        <div className="max-w-2xl mx-auto">
+          {/* Progress Bar */}
+          <div className="mb-6">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-sm text-muted-foreground">
+                Location {currentLocationIndex + 1} of {hunt.locations.length}
+              </span>
+            </div>
+            <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+              <div
+                className="h-full bg-blue-600 transition-all duration-300"
+                style={{
+                  width: `${((currentLocationIndex + 1) / hunt.locations.length) * 100}%`,
+                }}
+              />
+            </div>
           </div>
-          <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
-            <div
-              className="h-full bg-blue-600 transition-all duration-300"
-              style={{
-                width: `${((currentLocationIndex + 1) / hunt.locations.length) * 100}%`,
-              }}
-            />
-          </div>
-        </div>
 
         {/* Screen 1: Finding Location */}
         {locationState === 'finding_location' && (
@@ -435,10 +529,11 @@ export default function PlayPage() {
             </CardContent>
           </Card>
         )}
-      </div>
+        </div>
 
-      {/* Debug Panel */}
-      <DebugPanel locations={hunt.locations} />
-    </div>
+        {/* Debug Panel */}
+        <DebugPanel locations={hunt.locations} />
+      </div>
+    </>
   );
 }

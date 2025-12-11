@@ -8,8 +8,9 @@ import DebugPanel from '@/components/DebugPanel';
 import { MapView } from '@/components/MapView';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowLeft, MapPin, Clock, Navigation } from 'lucide-react';
-import Link from 'next/link';
+import { MapPin, Clock, Navigation } from 'lucide-react';
+import { Header } from '@/components/Header';
+import { NavigationMenu } from '@/components/NavigationMenu';
 
 interface Location {
   id: string;
@@ -36,25 +37,39 @@ export default function HuntDetailPage() {
   const huntId = params.huntId as string;
 
   const [hunt, setHunt] = useState<Hunt | null>(null);
+  const [allHunts, setAllHunts] = useState<Array<{id: string; title: string; neighborhood: string}>>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [checkingLocation, setCheckingLocation] = useState(false);
   const [locationStatus, setLocationStatus] = useState<string>('');
+  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
-    async function fetchHunt() {
+    async function fetchData() {
       try {
-        const res = await fetch(`/api/hunts/${huntId}`);
-        if (!res.ok) throw new Error('Failed to fetch hunt');
-        const data = await res.json();
-        setHunt(data);
+        // Fetch current hunt details
+        const huntRes = await fetch(`/api/hunts/${huntId}`);
+        if (!huntRes.ok) throw new Error('Failed to fetch hunt');
+        const huntData = await huntRes.json();
+        setHunt(huntData);
+
+        // Fetch all hunts for the switcher
+        const allHuntsRes = await fetch('/api/hunts');
+        if (allHuntsRes.ok) {
+          const allHuntsData = await allHuntsRes.json();
+          setAllHunts(allHuntsData.map((h: Hunt) => ({
+            id: h.id,
+            title: h.title,
+            neighborhood: h.neighborhood,
+          })));
+        }
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Unknown error');
       } finally {
         setLoading(false);
       }
     }
-    fetchHunt();
+    fetchData();
   }, [huntId]);
 
   async function handleStartHunt() {
@@ -143,36 +158,45 @@ export default function HuntDetailPage() {
   const startingLocation = hunt.locations[0];
 
   return (
-    <div className="min-h-screen pb-8">
-      <div className="max-w-3xl mx-auto">
-        {/* Header with back button */}
-        <div className="p-4 md:p-6">
-          <Link
-            href="/hunts"
-            className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors mb-4"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Back to hunts
-          </Link>
+    <>
+      <Header
+        title={hunt.title}
+        showBackButton={true}
+        backHref="/hunts"
+        backLabel="All Hunts"
+        onMenuClick={() => setMenuOpen(true)}
+      />
 
-          <h1 className="text-3xl md:text-4xl font-bold mb-3">{hunt.title}</h1>
+      <NavigationMenu
+        open={menuOpen}
+        onOpenChange={setMenuOpen}
+        currentHunt={{
+          id: hunt.id,
+          title: hunt.title,
+        }}
+        allHunts={allHunts}
+      />
 
-          {hunt.description && (
-            <p className="text-muted-foreground text-lg mb-4">{hunt.description}</p>
-          )}
+      <div className="min-h-screen pb-8">
+        <div className="max-w-3xl mx-auto">
+          {/* Hunt info */}
+          <div className="p-4 md:p-6">
+            {hunt.description && (
+              <p className="text-muted-foreground text-lg mb-4">{hunt.description}</p>
+            )}
 
-          {/* Quick stats */}
-          <div className="flex flex-wrap gap-4 text-sm">
-            <div className="flex items-center gap-1.5 text-muted-foreground">
-              <MapPin className="w-4 h-4" />
-              <span>{hunt.locations.length} {hunt.locations.length === 1 ? 'stop' : 'stops'}</span>
-            </div>
-            <div className="flex items-center gap-1.5 text-muted-foreground">
-              <Clock className="w-4 h-4" />
-              <span>~{hunt.estimatedTimeMinutes} min</span>
+            {/* Quick stats */}
+            <div className="flex flex-wrap gap-4 text-sm">
+              <div className="flex items-center gap-1.5 text-muted-foreground">
+                <MapPin className="w-4 h-4" />
+                <span>{hunt.locations.length} {hunt.locations.length === 1 ? 'stop' : 'stops'}</span>
+              </div>
+              <div className="flex items-center gap-1.5 text-muted-foreground">
+                <Clock className="w-4 h-4" />
+                <span>~{hunt.estimatedTimeMinutes} min</span>
+              </div>
             </div>
           </div>
-        </div>
 
         {/* Map section */}
         <div className="px-4 md:px-6 mb-6">
@@ -225,8 +249,9 @@ export default function HuntDetailPage() {
         </div>
       </div>
 
-      {/* Debug Panel */}
-      <DebugPanel locations={hunt.locations} />
-    </div>
+        {/* Debug Panel */}
+        <DebugPanel locations={hunt.locations} />
+      </div>
+    </>
   );
 }

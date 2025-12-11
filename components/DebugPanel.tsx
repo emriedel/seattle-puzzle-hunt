@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { isDebugMode, setDebugMode, setDebugLocation, getDebugLocation } from '@/lib/debug';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { X } from 'lucide-react';
 
 interface Location {
   id: string;
@@ -45,7 +46,7 @@ export default function DebugPanel({ locations = [] }: DebugPanelProps) {
     setCurrentDebugLoc(null);
   };
 
-  if (!debugEnabled && !isOpen) {
+  if (!isOpen) {
     return (
       <Button
         onClick={() => setIsOpen(true)}
@@ -68,10 +69,11 @@ export default function DebugPanel({ locations = [] }: DebugPanelProps) {
           <Button
             onClick={() => setIsOpen(false)}
             variant="ghost"
-            size="sm"
-            className="h-6 w-6 p-0"
+            size="icon"
+            className="h-8 w-8"
+            aria-label="Close debug panel"
           >
-            ✕
+            <X className="h-4 w-4" />
           </Button>
         </div>
       </CardHeader>
