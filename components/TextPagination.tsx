@@ -20,6 +20,11 @@ export function TextPagination({ text, className = '' }: TextPaginationProps) {
   // Parse text into pages
   const pages = parseRichText(text);
 
+  // Safety check: if no pages, return empty div
+  if (!pages || pages.length === 0) {
+    return <div className={className} />;
+  }
+
   // If only one page, don't show pagination UI
   if (pages.length === 1) {
     return (
@@ -29,9 +34,11 @@ export function TextPagination({ text, className = '' }: TextPaginationProps) {
     );
   }
 
-  const currentPage = pages[currentPageIndex];
-  const hasPrevious = currentPageIndex > 0;
-  const hasNext = currentPageIndex < pages.length - 1;
+  // Ensure currentPageIndex is valid
+  const safePageIndex = Math.min(currentPageIndex, pages.length - 1);
+  const currentPage = pages[safePageIndex];
+  const hasPrevious = safePageIndex > 0;
+  const hasNext = safePageIndex < pages.length - 1;
 
   const goToPrevious = () => {
     if (hasPrevious) {
