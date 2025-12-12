@@ -32,7 +32,6 @@ interface Location {
   searchLocationButtonText?: string;
   puzzleType: string;
   puzzleAnswerLength: number;
-  puzzleSuccessText: string;
   nextLocationId: string | null;
 }
 
@@ -41,19 +40,24 @@ interface Hunt {
   title: string;
   neighborhood: string;
   huntIntroText?: string;
+  huntSuccessText?: string;
   estimatedTimeMinutes: number;
   globalLocationRadiusMeters: number | null;
   locations: Location[];
 }
 
-type LocationState =
-  | 'finding_location'      // Screen 1: showing clue, need location check
-  | 'at_location_unsolved'  // Screen 2a: found location, puzzle not solved
-  | 'at_location_solved';   // Screen 2b: puzzle solved, showing next clue button
+// Page-based navigation model:
+// - Page 0: Hunt intro (if huntIntroText exists)
+// - For each location i:
+//   - Page (2*i + 1 + offset): Location riddle
+//   - Page (2*i + 2 + offset): Location found + puzzle
+// - Final page: Hunt success
 
 interface HuntProgress {
-  locationIndex: number;
-  state: LocationState;
+  currentPage: number;
+  maxPageReached: number;
+  solvedLocations: number[]; // Array for JSON serialization
+  visitedLocations: number[]; // Array for JSON serialization
 }
 
 export default function PlayPage() {
@@ -63,8 +67,10 @@ export default function PlayPage() {
 
   const [hunt, setHunt] = useState<Hunt | null>(null);
   const [sessionId, setSessionId] = useState<string | null>(null);
-  const [currentLocationIndex, setCurrentLocationIndex] = useState(0);
-  const [locationState, setLocationState] = useState<LocationState>('finding_location');
+  const [currentPage, setCurrentPage] = useState(0);
+  const [maxPageReached, setMaxPageReached] = useState(0);
+  const [solvedLocations, setSolvedLocations] = useState<Set<number>>(new Set());
+  const [visitedLocations, setVisitedLocations] = useState<Set<number>>(new Set());
   const [statusMessage, setStatusMessage] = useState('');
   const [isChecking, setIsChecking] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -75,6 +81,37 @@ export default function PlayPage() {
   const [viewingLocationId, setViewingLocationId] = useState<string | null>(null);
 
   const progressKey = `hunt-progress-${huntId}`;
+
+  // Helper functions for page calculation
+  const hasIntro = (hunt: Hunt | null) => !!hunt?.huntIntroText;
+  const getOffset = (hunt: Hunt | null) => hasIntro(hunt) ? 1 : 0;
+  const getTotalPages = (hunt: Hunt | null) => {
+    if (!hunt) return 0;
+    const offset = getOffset(hunt);
+    return offset + (hunt.locations.length * 2) + 1; // intro + (riddle + puzzle) * locations + success
+  };
+
+  const getPageType = (page: number, hunt: Hunt | null): 'intro' | 'riddle' | 'puzzle' | 'success' | null => {
+    if (!hunt) return null;
+    const offset = getOffset(hunt);
+    const totalPages = getTotalPages(hunt);
+
+    if (page === 0 && hasIntro(hunt)) return 'intro';
+    if (page === totalPages - 1) return 'success';
+
+    const adjustedPage = page - offset;
+    if (adjustedPage < 0) return null;
+
+    const isRiddlePage = adjustedPage % 2 === 0;
+    return isRiddlePage ? 'riddle' : 'puzzle';
+  };
+
+  const getLocationIndexForPage = (page: number, hunt: Hunt | null): number => {
+    if (!hunt) return 0;
+    const offset = getOffset(hunt);
+    const adjustedPage = page - offset;
+    return Math.floor(adjustedPage / 2);
+  };
 
   // Load hunt and session
   useEffect(() => {
@@ -110,14 +147,15 @@ export default function PlayPage() {
         if (savedProgress) {
           try {
             const progress: HuntProgress = JSON.parse(savedProgress);
-            setCurrentLocationIndex(progress.locationIndex);
-            setLocationState(progress.state);
+            setCurrentPage(progress.currentPage);
+            setMaxPageReached(progress.maxPageReached);
+            setSolvedLocations(new Set(progress.solvedLocations));
+            setVisitedLocations(new Set(progress.visitedLocations));
           } catch {
             // Invalid progress, start fresh
-            setLocationState('finding_location');
+            setCurrentPage(0);
+            setMaxPageReached(0);
           }
-        } else {
-          setLocationState('finding_location');
         }
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load hunt');
@@ -130,26 +168,26 @@ export default function PlayPage() {
   useEffect(() => {
     if (hunt && sessionId) {
       const progress: HuntProgress = {
-        locationIndex: currentLocationIndex,
-        state: locationState,
+        currentPage,
+        maxPageReached,
+        solvedLocations: Array.from(solvedLocations),
+        visitedLocations: Array.from(visitedLocations),
       };
       localStorage.setItem(progressKey, JSON.stringify(progress));
     }
-  }, [currentLocationIndex, locationState, hunt, sessionId, progressKey]);
-
-  const currentLocation = hunt?.locations[currentLocationIndex];
+  }, [currentPage, maxPageReached, solvedLocations, visitedLocations, hunt, sessionId, progressKey]);
 
   // Navigation handlers
   const handleExitHunt = () => {
-    // Navigate back to hunt detail page, preserving progress
     router.push(`/hunts/${huntId}`);
   };
 
   const handleRestartHunt = () => {
-    // Clear progress and reload the page
     localStorage.removeItem(progressKey);
-    setCurrentLocationIndex(0);
-    setLocationState('finding_location');
+    setCurrentPage(0);
+    setMaxPageReached(0);
+    setSolvedLocations(new Set());
+    setVisitedLocations(new Set());
     setStatusMessage('');
     window.scrollTo(0, 0);
   };
@@ -158,9 +196,35 @@ export default function PlayPage() {
     setViewingLocationId(locationId);
   };
 
+  const goToPreviousPage = () => {
+    if (currentPage > 0) {
+      setCurrentPage(currentPage - 1);
+      setStatusMessage('');
+      window.scrollTo(0, 0);
+    }
+  };
+
+  const goToNextPage = () => {
+    if (currentPage < maxPageReached) {
+      setCurrentPage(currentPage + 1);
+      setStatusMessage('');
+      window.scrollTo(0, 0);
+    }
+  };
+
+  const advanceToNextPage = () => {
+    const nextPage = currentPage + 1;
+    setCurrentPage(nextPage);
+    if (nextPage > maxPageReached) {
+      setMaxPageReached(nextPage);
+    }
+    setStatusMessage('');
+    window.scrollTo(0, 0);
+  };
+
   // Get completed locations for history
   const completedLocations = hunt?.locations
-    .slice(0, currentLocationIndex)
+    .filter((loc, idx) => solvedLocations.has(idx))
     .map(loc => ({
       id: loc.id,
       name: loc.name,
@@ -172,8 +236,10 @@ export default function PlayPage() {
     ? hunt?.locations.find(loc => loc.id === viewingLocationId)
     : null;
 
-  const checkLocation = async () => {
-    if (!sessionId || !currentLocation) return;
+  const checkLocation = async (locationIndex: number) => {
+    if (!sessionId || !hunt) return;
+    const location = hunt.locations[locationIndex];
+    if (!location) return;
 
     setIsChecking(true);
     setStatusMessage('Getting your location...');
@@ -188,7 +254,7 @@ export default function PlayPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          locationId: currentLocation.id,
+          locationId: location.id,
           lat: latitude,
           lng: longitude,
         }),
@@ -198,8 +264,9 @@ export default function PlayPage() {
       const { inRadius, distance } = await res.json();
 
       if (inRadius) {
-        setStatusMessage('You\'re here!');
-        setLocationState('at_location_unsolved');
+        setStatusMessage('');
+        setVisitedLocations(prev => new Set([...prev, locationIndex]));
+        advanceToNextPage(); // Auto-advance to puzzle page
       } else {
         const radius = hunt?.globalLocationRadiusMeters ?? 40;
         setStatusMessage(
@@ -217,8 +284,10 @@ export default function PlayPage() {
     }
   };
 
-  const submitPuzzleAnswer = async (answer: string) => {
-    if (!sessionId || !currentLocation) return;
+  const submitPuzzleAnswer = async (answer: string, locationIndex: number) => {
+    if (!sessionId || !hunt) return;
+    const location = hunt.locations[locationIndex];
+    if (!location) return;
 
     setIsChecking(true);
     setStatusMessage('Checking your answer...');
@@ -228,7 +297,7 @@ export default function PlayPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          locationId: currentLocation.id,
+          locationId: location.id,
           answer,
         }),
       });
@@ -238,7 +307,16 @@ export default function PlayPage() {
 
       if (correct) {
         setStatusMessage('');
-        setLocationState('at_location_solved');
+        setSolvedLocations(prev => new Set([...prev, locationIndex]));
+
+        // Check if this is the last location
+        if (locationIndex === hunt.locations.length - 1) {
+          // Last location - advance to hunt success page
+          advanceToNextPage();
+        } else {
+          // Not last location - auto-advance to next location's riddle
+          advanceToNextPage();
+        }
       } else {
         setStatusMessage('Incorrect answer. Try again!');
       }
@@ -246,19 +324,6 @@ export default function PlayPage() {
       setStatusMessage(err instanceof Error ? err.message : 'Validation failed');
     } finally {
       setIsChecking(false);
-    }
-  };
-
-  const moveToNextLocation = () => {
-    if (!hunt) return;
-
-    if (currentLocationIndex < hunt.locations.length - 1) {
-      setCurrentLocationIndex(currentLocationIndex + 1);
-      setLocationState('finding_location');
-      setStatusMessage('');
-      window.scrollTo(0, 0);
-    } else {
-      completeHunt();
     }
   };
 
@@ -295,7 +360,7 @@ export default function PlayPage() {
     );
   }
 
-  if (!hunt || !currentLocation) {
+  if (!hunt) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <p>Loading...</p>
@@ -303,10 +368,13 @@ export default function PlayPage() {
     );
   }
 
-  // Determine what clue to show in Screen 1
-  const clueText = currentLocationIndex === 0
-    ? hunt.huntIntroText || currentLocation.locationRiddle  // First location shows hunt intro or location riddle
-    : currentLocation.locationRiddle;  // All locations show their own riddle
+  const pageType = getPageType(currentPage, hunt);
+  const locationIndex = getLocationIndexForPage(currentPage, hunt);
+  const currentLocation = hunt.locations[locationIndex];
+  const isLocationVisited = visitedLocations.has(locationIndex);
+  const isLocationSolved = solvedLocations.has(locationIndex);
+  const canGoBack = currentPage > 0;
+  const canGoForward = currentPage < maxPageReached;
 
   return (
     <>
@@ -323,7 +391,7 @@ export default function PlayPage() {
           id: hunt.id,
           title: hunt.title,
           progress: {
-            current: currentLocationIndex + 1,
+            current: solvedLocations.size,
             total: hunt.locations.length,
           },
         }}
@@ -342,180 +410,212 @@ export default function PlayPage() {
           locationRiddle: viewingLocation.locationRiddle,
           locationFoundText: viewingLocation.locationFoundText,
           puzzleType: viewingLocation.puzzleType,
-          puzzleAnswer: '***', // Show placeholder in history for security
-          puzzleSuccessText: viewingLocation.puzzleSuccessText,
+          puzzleAnswer: '***',
+          puzzleSuccessText: '',
         } : null}
         open={!!viewingLocationId}
         onOpenChange={(open) => !open && setViewingLocationId(null)}
       />
 
       <div className="min-h-screen p-4 md:p-8 pb-20">
-        <div className="max-w-2xl mx-auto">
-          {/* Progress Bar */}
-          <div className="mb-6">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-sm text-muted-foreground">
-                Location {currentLocationIndex + 1} of {hunt.locations.length}
-              </span>
-            </div>
-            <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
-              <div
-                className="h-full bg-blue-600 transition-all duration-300"
-                style={{
-                  width: `${((currentLocationIndex + 1) / hunt.locations.length) * 100}%`,
-                }}
-              />
-            </div>
-          </div>
+        <div className="max-w-2xl mx-auto space-y-6">
+          {/* Hunt Intro Page */}
+          {pageType === 'intro' && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Welcome</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <TextPagination text={hunt.huntIntroText || ''} />
 
-        {/* Screen 1: Finding Location */}
-        {locationState === 'finding_location' && (
-          <Card>
-            <CardHeader>
-              <CardTitle>
-                {currentLocationIndex === 0 ? 'Your Quest Begins' : 'Next Location'}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <TextPagination text={clueText} className="italic text-muted-foreground" />
+                <Button
+                  onClick={advanceToNextPage}
+                  className="w-full"
+                  size="lg"
+                >
+                  Continue
+                </Button>
+              </CardContent>
+            </Card>
+          )}
 
-              {statusMessage && (
-                <div className="p-3 bg-blue-500/10 border border-blue-500/20 rounded-lg text-sm">
-                  {statusMessage}
-                </div>
-              )}
+          {/* Location Riddle Page */}
+          {pageType === 'riddle' && currentLocation && (
+            <Card>
+              <CardHeader>
+                <CardTitle>
+                  {locationIndex === 0 && !hasIntro(hunt) ? 'Your Quest Begins' : 'Next Location'}
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <TextPagination text={currentLocation.locationRiddle} className="italic text-muted-foreground" />
 
-              <Button
-                onClick={checkLocation}
-                disabled={isChecking}
-                className="w-full"
-                size="lg"
-              >
-                {isChecking ? 'Checking location...' : (currentLocation.searchLocationButtonText || '🔍 Search for Clues')}
-              </Button>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Screen 2a: At Location, Puzzle Unsolved */}
-        {locationState === 'at_location_unsolved' && (
-          <Card>
-            <CardContent className="pt-6 space-y-6">
-              <div className="p-4 bg-green-500/10 border border-green-500/20 rounded-lg">
-                <TextPagination text={currentLocation.locationFoundText} />
-              </div>
-
-              <div className="space-y-4">
                 {statusMessage && (
                   <div className="p-3 bg-blue-500/10 border border-blue-500/20 rounded-lg text-sm">
                     {statusMessage}
                   </div>
                 )}
 
-                {/* Number-based puzzle inputs */}
-                {currentLocation.puzzleType.startsWith('number_code') && (() => {
-                  const subType = currentLocation.puzzleType.split('.')[1];
-                  const props = {
-                    length: currentLocation.puzzleAnswerLength,
-                    onSubmit: submitPuzzleAnswer,
-                    disabled: isChecking,
-                  };
-
-                  if (subType === 'cryptex') {
-                    return <NumericCryptexInput {...props} />;
-                  } else if (subType === 'safe') {
-                    return <SafeDialInput {...props} />;
-                  } else {
-                    // Default to simple number input
-                    return <NumberCodeInput {...props} />;
-                  }
-                })()}
-
-                {/* Word-based puzzle input */}
-                {currentLocation.puzzleType === 'word_code' && (
-                  <CryptexInput
-                    length={currentLocation.puzzleAnswerLength}
-                    onSubmit={submitPuzzleAnswer}
+                {!isLocationVisited && (
+                  <Button
+                    onClick={() => checkLocation(locationIndex)}
                     disabled={isChecking}
-                  />
+                    className="w-full"
+                    size="lg"
+                  >
+                    {isChecking ? 'Checking location...' : (currentLocation.searchLocationButtonText || '🔍 Search for Clues')}
+                  </Button>
+                )}
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Location Puzzle Page */}
+          {pageType === 'puzzle' && currentLocation && (
+            <Card>
+              <CardContent className="pt-6 space-y-6">
+                <TextPagination text={currentLocation.locationFoundText} />
+
+                {!isLocationSolved && (
+                  <div className="space-y-4">
+                    {statusMessage && (
+                      <div className="p-3 bg-blue-500/10 border border-blue-500/20 rounded-lg text-sm">
+                        {statusMessage}
+                      </div>
+                    )}
+
+                    {/* Number-based puzzle inputs */}
+                    {currentLocation.puzzleType.startsWith('number_code') && (() => {
+                      const subType = currentLocation.puzzleType.split('.')[1];
+                      const props = {
+                        length: currentLocation.puzzleAnswerLength,
+                        onSubmit: (answer: string) => submitPuzzleAnswer(answer, locationIndex),
+                        disabled: isChecking,
+                      };
+
+                      if (subType === 'cryptex') {
+                        return <NumericCryptexInput {...props} />;
+                      } else if (subType === 'safe') {
+                        return <SafeDialInput {...props} />;
+                      } else {
+                        return <NumberCodeInput {...props} />;
+                      }
+                    })()}
+
+                    {/* Word-based puzzle input */}
+                    {currentLocation.puzzleType === 'word_code' && (
+                      <CryptexInput
+                        length={currentLocation.puzzleAnswerLength}
+                        onSubmit={(answer) => submitPuzzleAnswer(answer, locationIndex)}
+                        disabled={isChecking}
+                      />
+                    )}
+
+                    {/* Toggle switches puzzle */}
+                    {currentLocation.puzzleType === 'toggle_code' && (
+                      <ToggleSwitchInput
+                        switchCount={currentLocation.puzzleAnswerLength}
+                        onSubmit={(answer) => submitPuzzleAnswer(answer, locationIndex)}
+                        disabled={isChecking}
+                      />
+                    )}
+
+                    {/* Directional pad puzzle */}
+                    {currentLocation.puzzleType === 'directional_code' && (
+                      <DirectionalPadInput
+                        maxLength={currentLocation.puzzleAnswerLength}
+                        onSubmit={(answer) => submitPuzzleAnswer(answer, locationIndex)}
+                        disabled={isChecking}
+                      />
+                    )}
+
+                    {/* Simon pattern puzzle */}
+                    {currentLocation.puzzleType === 'simon_code' && (
+                      <SimonPatternInput
+                        maxLength={currentLocation.puzzleAnswerLength}
+                        onSubmit={(answer) => submitPuzzleAnswer(answer, locationIndex)}
+                        disabled={isChecking}
+                      />
+                    )}
+
+                    {/* Morse code puzzle */}
+                    {currentLocation.puzzleType === 'morse_code' && (
+                      <MorseCodeInput
+                        onSubmit={(answer) => submitPuzzleAnswer(answer, locationIndex)}
+                        disabled={isChecking}
+                      />
+                    )}
+
+                    {/* Tile word builder puzzle */}
+                    {currentLocation.puzzleType === 'tile_word' && (
+                      <TileWordBuilderInput
+                        tiles={currentLocation.locationFoundText.match(/[A-Z]/g) || []}
+                        onSubmit={(answer) => submitPuzzleAnswer(answer, locationIndex)}
+                        disabled={isChecking}
+                      />
+                    )}
+
+                    {/* Slide puzzle */}
+                    {currentLocation.puzzleType === 'slide_puzzle' && (
+                      <SlidePuzzleInput
+                        imagePath="/puzzle-images/default.jpg"
+                        onSubmit={(answer) => submitPuzzleAnswer(answer, locationIndex)}
+                        disabled={isChecking}
+                      />
+                    )}
+                  </div>
                 )}
 
-                {/* Toggle switches puzzle */}
-                {currentLocation.puzzleType === 'toggle_code' && (
-                  <ToggleSwitchInput
-                    switchCount={currentLocation.puzzleAnswerLength}
-                    onSubmit={submitPuzzleAnswer}
-                    disabled={isChecking}
-                  />
+                {isLocationSolved && (
+                  <div className="p-4 bg-green-500/10 border border-green-500/20 rounded-lg">
+                    <p className="font-semibold text-green-700">✓ Puzzle Solved!</p>
+                  </div>
                 )}
+              </CardContent>
+            </Card>
+          )}
 
-                {/* Directional pad puzzle */}
-                {currentLocation.puzzleType === 'directional_code' && (
-                  <DirectionalPadInput
-                    maxLength={currentLocation.puzzleAnswerLength}
-                    onSubmit={submitPuzzleAnswer}
-                    disabled={isChecking}
-                  />
-                )}
+          {/* Hunt Success Page */}
+          {pageType === 'success' && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Hunt Complete!</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <TextPagination text={hunt.huntSuccessText || 'Congratulations! You completed the hunt!'} />
 
-                {/* Simon pattern puzzle */}
-                {currentLocation.puzzleType === 'simon_code' && (
-                  <SimonPatternInput
-                    maxLength={currentLocation.puzzleAnswerLength}
-                    onSubmit={submitPuzzleAnswer}
-                    disabled={isChecking}
-                  />
-                )}
+                <Button
+                  onClick={completeHunt}
+                  className="w-full"
+                  size="lg"
+                >
+                  Complete Hunt 🎉
+                </Button>
+              </CardContent>
+            </Card>
+          )}
 
-                {/* Morse code puzzle */}
-                {currentLocation.puzzleType === 'morse_code' && (
-                  <MorseCodeInput
-                    onSubmit={submitPuzzleAnswer}
-                    disabled={isChecking}
-                  />
-                )}
-
-                {/* Tile word builder puzzle */}
-                {currentLocation.puzzleType === 'tile_word' && (
-                  <TileWordBuilderInput
-                    tiles={currentLocation.locationFoundText.match(/[A-Z]/g) || []}
-                    onSubmit={submitPuzzleAnswer}
-                    disabled={isChecking}
-                  />
-                )}
-
-                {/* Slide puzzle */}
-                {currentLocation.puzzleType === 'slide_puzzle' && (
-                  <SlidePuzzleInput
-                    imagePath="/puzzle-images/default.jpg"
-                    onSubmit={submitPuzzleAnswer}
-                    disabled={isChecking}
-                  />
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Screen 2b: At Location, Puzzle Solved */}
-        {locationState === 'at_location_solved' && (
-          <Card>
-            <CardContent className="pt-6 space-y-6">
-              <div className="p-4 bg-green-500/10 border border-green-500/20 rounded-lg">
-                <p className="font-semibold mb-3">✓ Puzzle Solved!</p>
-                <TextPagination text={currentLocation.puzzleSuccessText} />
-              </div>
-
-              <Button
-                onClick={moveToNextLocation}
-                className="w-full"
-                size="lg"
-              >
-                {currentLocation.nextLocationId ? 'Continue to Next Location →' : 'Complete Hunt! 🎉'}
-              </Button>
-            </CardContent>
-          </Card>
-        )}
+          {/* Previous / Next Navigation */}
+          <div className="flex gap-4">
+            <Button
+              onClick={goToPreviousPage}
+              disabled={!canGoBack}
+              variant="outline"
+              className="flex-1"
+              size="lg"
+            >
+              ← Previous
+            </Button>
+            <Button
+              onClick={goToNextPage}
+              disabled={!canGoForward}
+              variant="outline"
+              className="flex-1"
+              size="lg"
+            >
+              Next →
+            </Button>
+          </div>
         </div>
 
         {/* Debug Panel */}

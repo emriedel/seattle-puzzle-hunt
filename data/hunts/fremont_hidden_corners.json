@@ -4,6 +4,7 @@
   "neighborhood": "Fremont",
   "description": "Explore Fremont's quirky landmarks and hidden gems on this walking adventure. From concrete trolls to Soviet statues, discover the stories behind the neighborhood's most beloved icons.",
   "hunt_intro_text": "Welcome to **Fremont: Hidden Corners**!\n\nYour adventure begins in one of Seattle's most *eccentric* neighborhoods. You'll discover quirky art, hidden stories, and secret messages tucked into everyday corners.\n\nReady? Let's go!",
+  "hunt_success_text": "**Congratulations!** You've completed the Fremont Hidden Corners hunt.\n\nAs the sun catches the skyline, you notice one final message etched into the sundial's base:\n\n{{handwritten:elegant}}Every corner tells a story — you found them all{{/handwritten}}\n\nTake a moment to enjoy the view — you've earned it!",
   "estimated_time_minutes": 90,
   "locations": [
     {
@@ -19,7 +20,6 @@
         "answer": "27",
         "answer_length": 2
       },
-      "puzzle_success_text": "Well done! The troll's secrets are revealed.\n\nAs you turn to leave, you notice a message carved into the bridge support:\n\n{{handwritten:elegant}}The journey continues where history stands displaced{{/handwritten}}",
       "next_location_id": "lenin"
     },
 
@@ -36,7 +36,6 @@
         "answer": "RUSSIA",
         "answer_length": 6
       },
-      "puzzle_success_text": "Correct! This statue traveled far from its homeland.\n\nTucked under the statue's base, you find a small note:\n\n{{handwritten:graffiti}}Stories live on wooden signs{{/handwritten}}",
       "next_location_id": "ophelia"
     },
 
@@ -53,7 +52,6 @@
         "answer": "BOOK",
         "answer_length": 4
       },
-      "puzzle_success_text": "Excellent! The bookshop has shared its secret.\n\nA bookmark falls from a shelf with a message:\n\n{{handwritten}}Where metal meets sky, time tells its story{{/handwritten}}",
       "next_location_id": "gasworks"
     },
 
@@ -70,7 +68,6 @@
         "answer": "033",
         "answer_length": 3
       },
-      "puzzle_success_text": "**Congratulations!** You've completed the Fremont Hidden Corners hunt.\n\nAs the sun catches the skyline, you notice one final message etched into the sundial's base:\n\n{{handwritten:elegant}}Every corner tells a story — you found them all{{/handwritten}}\n\nTake a moment to enjoy the view — you've earned it!",
       "next_location_id": null
     }
   ]

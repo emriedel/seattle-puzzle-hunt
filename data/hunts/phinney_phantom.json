@@ -4,6 +4,7 @@
   "neighborhood": "Phinney Ridge",
   "description": "Strange clues have begun appearing around Phinney Ridge, and the Neighborhood Investigations Bureau needs fresh eyes. Follow the Phantom's trail, uncover the secrets hidden in plain sight, and find out what message they're trying to send.",
   "hunt_intro_text": "Strange things have been happening in **Phinney Ridge**.\n\nFor weeks, residents have been finding mysterious puzzles scattered throughout the neighborhood. No one knows who's leaving them or why.\n\nThis morning, you found an envelope slipped under your door. Inside was a single piece of paper with a message:\n\n{{handwritten:scrawl}}If you're clever enough to solve my riddles, start at the zoo gates. The first clue awaits where wild things dream.{{/handwritten}}\n\nIntrigued, you're ready to investigate. Who is this mysterious puzzle-maker? What do they want?\n\nOnly one way to find out — *follow the clues*.",
+  "hunt_success_text": "Thanks for testing! The full Phinney Ridge hunt is coming soon with exciting puzzles and hidden gems to discover.",
   "estimated_time_minutes": 60,
   "locations": [
     {
@@ -19,7 +20,6 @@
         "answer": "000",
         "answer_length": 3
       },
-      "puzzle_success_text": "Thanks for testing! The full Phinney Ridge hunt is coming soon with exciting puzzles and hidden gems to discover.",
       "next_location_id": null
     }
   ]

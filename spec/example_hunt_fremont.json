@@ -3,6 +3,7 @@
   "title": "Fremont: Hidden Corners",
   "neighborhood": "Fremont",
   "description": "Explore Fremont's quirky landmarks and hidden gems on this walking adventure. From concrete trolls to Soviet statues, discover the stories behind the neighborhood's most beloved icons.",
+  "hunt_success_text": "Congratulations! You've completed the Fremont Hidden Corners hunt. Take a moment to enjoy the view — you've earned it!",
   "estimated_time_minutes": 90,
   "global_location_radius_meters": 40,
   "locations": [
@@ -21,7 +22,6 @@
         "answer": "27",
         "answer_length": 2
       },
-      "puzzle_success_text": "Well done! The troll's secrets are revealed. Now follow the next clue to continue your journey through Fremont's hidden corners.",
       "next_riddle": "A legendary traveler from another era stands where the crossroads meet — find the controversial bronze with a raised arm.",
       "next_location_id": "lenin"
     },
@@ -41,7 +41,6 @@
         "answer": "RUSSIA",
         "answer_length": 6
       },
-      "puzzle_success_text": "Correct! This statue traveled far from its homeland. Your next destination awaits — a place where stories are bought and sold.",
       "next_riddle": "Books stacked to the ceiling, a hanging wooden sign and the faint watch of a window cat will guide you.",
       "next_location_id": "ophelia"
     },
@@ -61,7 +60,6 @@
         "answer": "BOOK",
         "answer_length": 4
       },
-      "puzzle_success_text": "Excellent! The bookshop has shared its secret. Your final destination is one of Seattle's most iconic parks — head toward the water.",
       "next_riddle": "Head toward the skyline and the water — a park made from industrial bones keeps time with the sun.",
       "next_location_id": "gasworks"
     },
@@ -81,7 +79,6 @@
         "answer": "033",
         "answer_length": 3
       },
-      "puzzle_success_text": "Congratulations! You've completed the Fremont Hidden Corners hunt. Take a moment to enjoy the view — you've earned it!",
       "next_riddle": "",
       "next_location_id": null
     }

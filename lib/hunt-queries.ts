@@ -49,6 +49,7 @@ export const getCachedHunt = unstable_cache(
         neighborhood: true,
         description: true,
         huntIntroText: true,
+        huntSuccessText: true,
         estimatedTimeMinutes: true,
         globalLocationRadiusMeters: true,
         locations: {
@@ -64,7 +65,6 @@ export const getCachedHunt = unstable_cache(
             searchLocationButtonText: true,
             puzzleType: true,
             puzzleAnswerLength: true,
-            puzzleSuccessText: true,
             nextLocationId: true,
             // Explicitly exclude puzzleAnswer for security
           },

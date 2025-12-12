@@ -20,7 +20,6 @@ interface LocationData {
   location_found_text: string;
   search_location_button_text?: string;
   puzzle: PuzzleData;
-  puzzle_success_text: string;
   next_location_id: string | null;
 }
 
@@ -30,6 +29,7 @@ interface HuntData {
   neighborhood: string;
   description?: string;
   hunt_intro_text?: string;
+  hunt_success_text?: string;
   estimated_time_minutes: number;
   global_location_radius_meters?: number;
   locations: LocationData[];
@@ -46,6 +46,7 @@ async function seedHunt(huntData: HuntData) {
       neighborhood: huntData.neighborhood,
       description: huntData.description,
       huntIntroText: huntData.hunt_intro_text,
+      huntSuccessText: huntData.hunt_success_text,
       estimatedTimeMinutes: huntData.estimated_time_minutes,
       globalLocationRadiusMeters: huntData.global_location_radius_meters ?? 40,
     },
@@ -55,6 +56,7 @@ async function seedHunt(huntData: HuntData) {
       neighborhood: huntData.neighborhood,
       description: huntData.description,
       huntIntroText: huntData.hunt_intro_text,
+      huntSuccessText: huntData.hunt_success_text,
       estimatedTimeMinutes: huntData.estimated_time_minutes,
       globalLocationRadiusMeters: huntData.global_location_radius_meters ?? 40,
     },
@@ -89,7 +91,6 @@ async function seedHunt(huntData: HuntData) {
         puzzleType: location.puzzle.type,
         puzzleAnswer: normalizedAnswer,
         puzzleAnswerLength: location.puzzle.answer_length,
-        puzzleSuccessText: location.puzzle_success_text,
         nextLocationId: location.next_location_id,
       },
       create: {
@@ -106,7 +107,6 @@ async function seedHunt(huntData: HuntData) {
         puzzleType: location.puzzle.type,
         puzzleAnswer: normalizedAnswer,
         puzzleAnswerLength: location.puzzle.answer_length,
-        puzzleSuccessText: location.puzzle_success_text,
         nextLocationId: location.next_location_id,
       },
     });

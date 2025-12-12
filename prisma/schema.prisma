@@ -17,6 +17,7 @@ model Hunt {
   neighborhood                String
   description                 String?    // Brief description of the hunt
   huntIntroText               String?    // Intro text shown before first location
+  huntSuccessText             String?    // Success text shown after completing all locations
   estimatedTimeMinutes        Int
   globalLocationRadiusMeters  Int?       @default(40) // Optional, defaults to 40 meters
   createdAt                   DateTime   @default(now())
@@ -41,7 +42,6 @@ model Location {
   puzzleType                String   // enum: 'number_code' | 'word_code' | etc. (enforced in app)
   puzzleAnswer              String   // canonical stored answer (string, uppercase for word_code)
   puzzleAnswerLength        Int
-  puzzleSuccessText         String   // Flavor text shown when puzzle is solved
   nextLocationId            String?  // nullable for final location
   createdAt                 DateTime @default(now())
   updatedAt                 DateTime @updatedAt
