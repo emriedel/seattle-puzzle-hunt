@@ -16,13 +16,11 @@ interface LocationData {
   id: string;
   name: string;
   order: number;
-  narrativeSnippet: string;
+  locationRiddle: string;
   locationFoundText: string;
   puzzleType: string;
-  puzzlePrompt: string;
   puzzleAnswer: string;
   puzzleSuccessText: string;
-  nextRiddle: string;
 }
 
 interface LocationHistoryViewerProps {
@@ -68,60 +66,45 @@ export function LocationHistoryViewer({
         </DialogHeader>
 
         <div className="space-y-6 mt-4">
-          {/* Narrative/Clue Section */}
-          {location.narrativeSnippet && (
+          {/* Location Riddle */}
+          {location.locationRiddle && (
             <div>
               <h3 className="font-semibold text-sm text-muted-foreground mb-2">
-                INITIAL CLUE
+                LOCATION CLUE
               </h3>
               <div className="bg-muted/30 rounded-lg p-4">
-                <TextPagination text={location.narrativeSnippet} />
+                <TextPagination text={location.locationRiddle} />
               </div>
             </div>
           )}
 
           <Separator />
 
-          {/* Location Found Text */}
+          {/* Location Found Text & Puzzle */}
           {location.locationFoundText && (
             <div>
-              <h3 className="font-semibold text-sm text-muted-foreground mb-2">
-                AT THE LOCATION
-              </h3>
+              <div className="flex items-center justify-between mb-2">
+                <h3 className="font-semibold text-sm text-muted-foreground">
+                  AT THE LOCATION
+                </h3>
+                <Badge variant="secondary">
+                  {getPuzzleTypeLabel(location.puzzleType)}
+                </Badge>
+              </div>
               <div className="bg-muted/30 rounded-lg p-4">
                 <TextPagination text={location.locationFoundText} />
               </div>
+
+              {location.puzzleAnswer && location.puzzleAnswer !== '***' && (
+                <div className="bg-green-500/10 border border-green-500/30 rounded-lg p-3 mt-3">
+                  <p className="text-sm text-muted-foreground mb-1">Answer:</p>
+                  <p className="font-mono text-lg font-semibold text-green-600 dark:text-green-400">
+                    {location.puzzleAnswer}
+                  </p>
+                </div>
+              )}
             </div>
           )}
-
-          <Separator />
-
-          {/* Puzzle Section */}
-          <div>
-            <div className="flex items-center justify-between mb-2">
-              <h3 className="font-semibold text-sm text-muted-foreground">
-                PUZZLE
-              </h3>
-              <Badge variant="secondary">
-                {getPuzzleTypeLabel(location.puzzleType)}
-              </Badge>
-            </div>
-
-            {location.puzzlePrompt && (
-              <div className="bg-muted/30 rounded-lg p-4 mb-3">
-                <TextPagination text={location.puzzlePrompt} />
-              </div>
-            )}
-
-            {location.puzzleAnswer && location.puzzleAnswer !== '***' && (
-              <div className="bg-green-500/10 border border-green-500/30 rounded-lg p-3">
-                <p className="text-sm text-muted-foreground mb-1">Answer:</p>
-                <p className="font-mono text-lg font-semibold text-green-600 dark:text-green-400">
-                  {location.puzzleAnswer}
-                </p>
-              </div>
-            )}
-          </div>
 
           <Separator />
 
@@ -135,21 +118,6 @@ export function LocationHistoryViewer({
                 <TextPagination text={location.puzzleSuccessText} />
               </div>
             </div>
-          )}
-
-          {/* Next Riddle */}
-          {location.nextRiddle && (
-            <>
-              <Separator />
-              <div>
-                <h3 className="font-semibold text-sm text-muted-foreground mb-2">
-                  NEXT CLUE
-                </h3>
-                <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-4">
-                  <TextPagination text={location.nextRiddle} />
-                </div>
-              </div>
-            </>
           )}
         </div>
       </DialogContent>

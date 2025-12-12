@@ -2,9 +2,9 @@
   "id": "phinney_phantom",
   "title": "The Phinney Phantom",
   "neighborhood": "Phinney Ridge",
-  "description": "Strange clues have begun appearing around Phinney Ridge, and the Neighborhood Investigations Bureau needs fresh eyes. Follow the Phantom’s trail, uncover the secrets hidden in plain sight, and find out what message they’re trying to send.",
+  "description": "Strange clues have begun appearing around Phinney Ridge, and the Neighborhood Investigations Bureau needs fresh eyes. Follow the Phantom's trail, uncover the secrets hidden in plain sight, and find out what message they're trying to send.",
+  "hunt_intro_text": "Strange things have been happening in **Phinney Ridge**.\n\nFor weeks, residents have been finding mysterious puzzles scattered throughout the neighborhood. No one knows who's leaving them or why.\n\nThis morning, you found an envelope slipped under your door. Inside was a single piece of paper with a message:\n\n{{handwritten:scrawl}}If you're clever enough to solve my riddles, start at the zoo gates. The first clue awaits where wild things dream.{{/handwritten}}\n\nIntrigued, you're ready to investigate. Who is this mysterious puzzle-maker? What do they want?\n\nOnly one way to find out — *follow the clues*.",
   "estimated_time_minutes": 60,
-  "global_location_radius_meters": 40,
   "locations": [
     {
       "id": "phinney_center",
@@ -12,17 +12,14 @@
       "address": "6532 Phinney Ave N",
       "order": 1,
       "coordinates": { "lat": 47.6774408, "lng": -122.3543155 },
-      "narrative_snippet": "Strange things have been happening in **Phinney Ridge**.\n\nFor weeks, residents have been finding mysterious puzzles scattered throughout the neighborhood. No one knows who's leaving them or why.\n\n---PAGE---\n\nThis morning, you found an envelope slipped under your door. Inside was a single piece of paper with a message:\n\n{{handwritten:scrawl}}If you're clever enough to solve my riddles, start at the zoo gates. The first clue awaits where wild things dream.{{/handwritten}}\n\n---PAGE---\n\nIntrigued, you head to the historic gates of Woodland Park Zoo. Who is this mysterious puzzle-maker? What do they want?\n\nOnly one way to find out — *follow the clues*.",
-      "location_found_text": "Welcome to the Phinney Phantom hunt! This is a placeholder location while we finalize the full hunt experience.",
+      "location_riddle": "Head to the historic gates of Woodland Park Zoo. The first clue awaits where wild things dream.",
+      "location_found_text": "Searching in the bushes around the Phinney Center, you find a lockbox with a note on it. Maybe if you can get it open, there will be another clue inside.\n\n{{handwritten}}You may address me as the Phinney Phantom{{/handwritten}}\n\nThis is a test puzzle. Enter 000 to complete this placeholder hunt.",
       "puzzle": {
         "type": "number_code.cryptex",
-        "prompt": "This is a test puzzle. Enter 000 to complete this placeholder hunt.",
-        "image": null,
         "answer": "000",
         "answer_length": 3
       },
       "puzzle_success_text": "Thanks for testing! The full Phinney Ridge hunt is coming soon with exciting puzzles and hidden gems to discover.",
-      "next_riddle": "",
       "next_location_id": null
     }
   ]

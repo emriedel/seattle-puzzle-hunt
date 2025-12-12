@@ -60,7 +60,9 @@ function renderBlock(block: TextBlock, index: number): React.ReactNode {
           key={index}
           className={`${fontClass} text-2xl p-4 my-4 bg-amber-50/5 border border-amber-500/20 rounded-lg shadow-sm`}
         >
-          {block.content}
+          {block.children && block.children.length > 0
+            ? block.children.map((child, childIndex) => renderBlock(child, childIndex))
+            : block.content}
         </div>
       );
 

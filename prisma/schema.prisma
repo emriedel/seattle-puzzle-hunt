@@ -16,8 +16,9 @@ model Hunt {
   title                       String
   neighborhood                String
   description                 String?    // Brief description of the hunt
+  huntIntroText               String?    // Intro text shown before first location
   estimatedTimeMinutes        Int
-  globalLocationRadiusMeters  Int
+  globalLocationRadiusMeters  Int?       @default(40) // Optional, defaults to 40 meters
   createdAt                   DateTime   @default(now())
   updatedAt                   DateTime   @updatedAt
   locations                   Location[]
@@ -26,26 +27,24 @@ model Hunt {
 }
 
 model Location {
-  id                  String   @id
-  hunt                Hunt     @relation(fields: [huntId], references: [id])
-  huntId              String
-  name                String
-  address             String?  // Optional street address or location description
-  order               Int
-  lat                 Float
-  lng                 Float
-  narrativeSnippet    String   // For first location: starting instructions. For others: unused (clue comes from prev location's nextRiddle)
-  locationFoundText   String   // Flavor text shown when player finds the location (Screen 2)
-  puzzleType          String   // enum: 'number_code' | 'word_code' (enforced in app)
-  puzzlePrompt        String
-  puzzleImage         String?  // optional path/url
-  puzzleAnswer        String   // canonical stored answer (string, uppercase for word_code)
-  puzzleAnswerLength  Int
-  puzzleSuccessText   String   // Flavor text shown when puzzle is solved (Screen 2)
-  nextRiddle          String   // Clue to find the NEXT location (shown in Screen 1 of next location)
-  nextLocationId      String?  // nullable for final location
-  createdAt           DateTime @default(now())
-  updatedAt           DateTime @updatedAt
+  id                        String   @id
+  hunt                      Hunt     @relation(fields: [huntId], references: [id])
+  huntId                    String
+  name                      String
+  address                   String?  // Optional street address or location description
+  order                     Int
+  lat                       Float
+  lng                       Float
+  locationRiddle            String   // Clue to find THIS location
+  locationFoundText         String   // Flavor text shown when player finds the location
+  searchLocationButtonText  String?  // Optional custom button text (defaults to "🔍 Search for Clues")
+  puzzleType                String   // enum: 'number_code' | 'word_code' | etc. (enforced in app)
+  puzzleAnswer              String   // canonical stored answer (string, uppercase for word_code)
+  puzzleAnswerLength        Int
+  puzzleSuccessText         String   // Flavor text shown when puzzle is solved
+  nextLocationId            String?  // nullable for final location
+  createdAt                 DateTime @default(now())
+  updatedAt                 DateTime @updatedAt
 
   @@index([huntId, order])
 }

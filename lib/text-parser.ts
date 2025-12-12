@@ -2,14 +2,13 @@
  * Text Parser for Custom Rich Text Syntax
  *
  * Supported syntax:
- * - {{handwritten}}text{{/handwritten}} - Default handwriting
+ * - {{handwritten}}text{{/handwritten}} - Default handwriting (supports nested formatting)
  * - {{handwritten:style}}text{{/handwritten}} - Styled handwriting (scrawl, elegant, graffiti)
  * - **bold** - Bold text
  * - *italic* - Italic text
  * - {{color:name}}text{{/color}} - Colored text
  * - {{image:/path}} - Inline image
  * - \n - Line breaks
- * - ---PAGE--- - Page break marker
  */
 
 export type TextBlockType =
@@ -36,29 +35,59 @@ export interface Page {
 }
 
 /**
- * Split text into pages based on ---PAGE--- markers
+ * Split text into pages (pagination removed - always returns single page)
+ * ---PAGE--- markers are now ignored and removed from the text
  */
 export function splitIntoPages(text: string): string[] {
-  return text.split('---PAGE---').map(page => page.trim()).filter(page => page.length > 0);
+  // Remove all ---PAGE--- markers and return as single page
+  const cleanedText = text.replace(/---PAGE---/g, '\n\n').trim();
+  return cleanedText.length > 0 ? [cleanedText] : [];
 }
 
 /**
  * Parse a single page of text into structured blocks
  */
-export function parseTextBlocks(text: string): TextBlock[] {
+export function parseTextBlocks(text: string, depth: number = 0): TextBlock[] {
+  const startTime = performance.now();
   const blocks: TextBlock[] = [];
   let currentIndex = 0;
+  const maxDepth = 3; // Prevent infinite recursion
+  const maxIterations = 10000; // Safety limit
+  let iterations = 0;
 
-  while (currentIndex < text.length) {
+  // Prevent infinite recursion in nested handwritten blocks
+  if (depth > maxDepth) {
+    console.warn('[parseTextBlocks] Max recursion depth reached, returning plain text');
+    return [{ type: 'text', content: text }];
+  }
+
+  // Log parsing for large texts
+  if (text.length > 1000 && depth === 0) {
+    console.log(`[parseTextBlocks] Starting parse of ${text.length} chars`);
+  }
+
+  while (currentIndex < text.length && iterations < maxIterations) {
+    iterations++;
+
+    // Warn if a single parse is taking too long
+    if (iterations % 1000 === 0) {
+      const elapsed = performance.now() - startTime;
+      if (elapsed > 100) {
+        console.warn(`[parseTextBlocks] Slow parse: ${elapsed.toFixed(0)}ms after ${iterations} iterations, index ${currentIndex}/${text.length}`);
+      }
+    }
     // Check for handwritten block
     const handwrittenMatch = text.slice(currentIndex).match(/^\{\{handwritten(?::(\w+))?\}\}(.*?)\{\{\/handwritten\}\}/s);
     if (handwrittenMatch) {
       const style = (handwrittenMatch[1] || 'default') as HandwritingStyle;
       const content = handwrittenMatch[2];
+      // Recursively parse the content to support nested formatting
+      const children = parseTextBlocks(content, depth + 1);
       blocks.push({
         type: 'handwritten',
-        content: content.trim(),
+        content: '', // Content is now in children
         style,
+        children,
       });
       currentIndex += handwrittenMatch[0].length;
       continue;
@@ -115,14 +144,30 @@ export function parseTextBlocks(text: string): TextBlock[] {
 
     // Regular text - find next special character or end
     const nextSpecialIndex = findNextSpecial(text, currentIndex);
-    const plainText = text.slice(currentIndex, nextSpecialIndex).trim();
+    const plainText = text.slice(currentIndex, nextSpecialIndex);
     if (plainText.length > 0) {
       blocks.push({
         type: 'text',
         content: plainText,
       });
     }
-    currentIndex = nextSpecialIndex;
+
+    // CRITICAL: Always advance at least 1 character to prevent infinite loops
+    if (nextSpecialIndex === currentIndex) {
+      // We found a special character but couldn't parse it
+      // Treat it as plain text and move forward
+      blocks.push({
+        type: 'text',
+        content: text.charAt(currentIndex),
+      });
+      currentIndex++;
+    } else {
+      currentIndex = nextSpecialIndex;
+    }
+  }
+
+  if (iterations >= maxIterations) {
+    console.error(`[parseTextBlocks] Max iterations reached (${maxIterations}). Possible infinite loop detected. Text length: ${text.length}`);
   }
 
   return blocks;

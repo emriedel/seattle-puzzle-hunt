@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useMemo, useEffect } from 'react'
+import { useState, useRef, useMemo, useEffect, useCallback } from 'react'
 import FormattingToolbar from '@/components/editor/FormattingToolbar'
 import RawTextEditor, { RawTextEditorHandle } from '@/components/editor/RawTextEditor'
 import JsonExport from '@/components/editor/JsonExport'
@@ -37,7 +37,7 @@ export default function EditorPage() {
     )
   }, [debouncedText])
 
-  const handleFormat = (formatType: string, value?: string) => {
+  const handleFormat = useCallback((formatType: string, value?: string) => {
     if (!editorRef.current) return
 
     switch (formatType) {
@@ -60,14 +60,11 @@ export default function EditorPage() {
       case 'image':
         editorRef.current.insertText('{{image:/puzzle-images/your-image.jpg}}')
         break
-      case 'pagebreak':
-        editorRef.current.insertText('\n\n---PAGE---\n\n')
-        break
       case 'paragraph':
         editorRef.current.insertText('\n\n')
         break
     }
-  }
+  }, [])
 
   return (
     <div className="min-h-screen bg-background">
@@ -155,8 +152,8 @@ export default function EditorPage() {
                   <h3 className="font-semibold mb-2">Special</h3>
                   <ul className="space-y-1 text-muted-foreground font-mono text-xs">
                     <li>{`{{image:/puzzle-images/file.jpg}}`}</li>
-                    <li>---PAGE--- (page break)</li>
                     <li>\\n\\n (paragraph break)</li>
+                    <li>Nested formatting in handwritten blocks supported!</li>
                   </ul>
                 </div>
               </div>

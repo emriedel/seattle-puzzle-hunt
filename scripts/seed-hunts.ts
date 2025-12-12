@@ -6,8 +6,6 @@ const prisma = new PrismaClient();
 
 interface PuzzleData {
   type: 'number_code' | 'word_code';
-  prompt: string;
-  image: string | null;
   answer: string;
   answer_length: number;
 }
@@ -18,11 +16,11 @@ interface LocationData {
   address?: string;
   order: number;
   coordinates: { lat: number; lng: number };
-  narrative_snippet: string;
+  location_riddle: string;
   location_found_text: string;
+  search_location_button_text?: string;
   puzzle: PuzzleData;
   puzzle_success_text: string;
-  next_riddle: string;
   next_location_id: string | null;
 }
 
@@ -31,8 +29,9 @@ interface HuntData {
   title: string;
   neighborhood: string;
   description?: string;
+  hunt_intro_text?: string;
   estimated_time_minutes: number;
-  global_location_radius_meters: number;
+  global_location_radius_meters?: number;
   locations: LocationData[];
 }
 
@@ -46,16 +45,18 @@ async function seedHunt(huntData: HuntData) {
       title: huntData.title,
       neighborhood: huntData.neighborhood,
       description: huntData.description,
+      huntIntroText: huntData.hunt_intro_text,
       estimatedTimeMinutes: huntData.estimated_time_minutes,
-      globalLocationRadiusMeters: huntData.global_location_radius_meters,
+      globalLocationRadiusMeters: huntData.global_location_radius_meters ?? 40,
     },
     create: {
       id: huntData.id,
       title: huntData.title,
       neighborhood: huntData.neighborhood,
       description: huntData.description,
+      huntIntroText: huntData.hunt_intro_text,
       estimatedTimeMinutes: huntData.estimated_time_minutes,
-      globalLocationRadiusMeters: huntData.global_location_radius_meters,
+      globalLocationRadiusMeters: huntData.global_location_radius_meters ?? 40,
     },
   });
 
@@ -82,15 +83,13 @@ async function seedHunt(huntData: HuntData) {
         order: location.order,
         lat: location.coordinates.lat,
         lng: location.coordinates.lng,
-        narrativeSnippet: location.narrative_snippet,
+        locationRiddle: location.location_riddle,
         locationFoundText: location.location_found_text,
+        searchLocationButtonText: location.search_location_button_text,
         puzzleType: location.puzzle.type,
-        puzzlePrompt: location.puzzle.prompt,
-        puzzleImage: location.puzzle.image,
         puzzleAnswer: normalizedAnswer,
         puzzleAnswerLength: location.puzzle.answer_length,
         puzzleSuccessText: location.puzzle_success_text,
-        nextRiddle: location.next_riddle,
         nextLocationId: location.next_location_id,
       },
       create: {
@@ -101,15 +100,13 @@ async function seedHunt(huntData: HuntData) {
         order: location.order,
         lat: location.coordinates.lat,
         lng: location.coordinates.lng,
-        narrativeSnippet: location.narrative_snippet,
+        locationRiddle: location.location_riddle,
         locationFoundText: location.location_found_text,
+        searchLocationButtonText: location.search_location_button_text,
         puzzleType: location.puzzle.type,
-        puzzlePrompt: location.puzzle.prompt,
-        puzzleImage: location.puzzle.image,
         puzzleAnswer: normalizedAnswer,
         puzzleAnswerLength: location.puzzle.answer_length,
         puzzleSuccessText: location.puzzle_success_text,
-        nextRiddle: location.next_riddle,
         nextLocationId: location.next_location_id,
       },
     });

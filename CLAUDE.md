@@ -70,10 +70,10 @@ Implement minimal server endpoints (Next.js API or app route handlers):
    - Create PlaySession record (clientId from localStorage uuid)
    - Return `{ sessionId }`
 
-4. `POST /api/session/:sessionId/location-check`  
-   - Body: `{ locationId, lat, lng }`  
+4. `POST /api/session/:sessionId/location-check`
+   - Body: `{ locationId, lat, lng }`
    - Compute haversine distance between provided lat/lng and location coords.
-   - If within hunt.global_location_radius_meters => return `{ inRadius: true }`
+   - If within hunt.global_location_radius_meters (default: 40m) => return `{ inRadius: true }`
    - Else: increment PlaySession.wrongLocationChecks, return `{ inRadius: false }`
 
 5. `POST /api/session/:sessionId/validate-puzzle`  
@@ -178,6 +178,9 @@ Display text as if handwritten on paper or walls - perfect for clues, notes, or 
 
 Handwritten blocks are displayed in a separate styled box with amber-tinted background.
 
+**Note:** Handwritten blocks support nested formatting! You can use colors, bold, and italic inside handwritten text:
+- `{{handwritten}}Find the **{{color:red}}red{{/color}}** door{{/handwritten}}`
+
 #### Inline Formatting
 - `**bold text**` - Bold text
 - `*italic text*` - Italic text
@@ -199,32 +202,25 @@ Images should be placed in the `/public/puzzle-images/` directory and referenced
 - `\n\n` - Double newline creates a paragraph break
 - Single `\n` is ignored (allows line wrapping in JSON without affecting display)
 
-#### Page Breaks
-For longer narrative content, you can split text into multiple pages:
-- `---PAGE---` - Page break marker
-
-When page breaks are present, users navigate with Next/Back buttons and see a page indicator (e.g., "Page 1 of 3").
-
 ### Example JSON Usage
 
 ```json
 {
-  "narrative_snippet": "You arrive at the location and notice something strange.\n\n---PAGE---\n\nOn the wall, scrawled in hasty handwriting:\n\n{{handwritten:scrawl}}Meet me at the old bridge at midnight{{/handwritten}}\n\nWhat could this mean?",
-  "puzzle_prompt": "Find the **four-digit code** written in {{color:red}}red paint{{/color}} on the north wall.",
-  "location_found_text": "You've discovered the hidden alcove!\n\n{{image:/puzzle-images/alcove-clue.jpg}}\n\nLook carefully at the symbols above.",
-  "puzzle_success_text": "Well done! You decoded the message.\n\nThe elegant script reads:\n\n{{handwritten:elegant}}The treasure lies where the river bends{{/handwritten}}",
-  "next_riddle": "Head north to where *ancient stones* mark the crossing point."
+  "hunt_intro_text": "Welcome to the adventure! Your journey begins here...",
+  "location_riddle": "On the wall, scrawled in hasty handwriting:\n\n{{handwritten:scrawl}}Meet me at the old bridge at midnight{{/handwritten}}\n\nWhat could this mean?",
+  "location_found_text": "You've discovered the hidden alcove!\n\n{{image:/puzzle-images/alcove-clue.jpg}}\n\nFind the **four-digit code** written in {{color:red}}red paint{{/color}} on the north wall.",
+  "puzzle_success_text": "Well done! You decoded the message.\n\nThe elegant script reads:\n\n{{handwritten:elegant}}The treasure lies where the river bends{{/handwritten}}"
 }
 ```
 
 ### Best Practices
 
-1. **Page Breaks**: Use for intro narratives (3+ paragraphs). Keep each page focused - 2-4 paragraphs max.
-2. **Handwriting Styles**: Match the story context:
+1. **Handwriting Styles**: Match the story context:
    - `scrawl` - Urgent messages, graffiti, quick notes
    - `elegant` - Formal invitations, old manuscripts, fancy signs
    - `graffiti` - Street art, rebellious messages, modern urban clues
    - `default` - General handwritten notes, casual messages
+2. **Nested Formatting**: Use colors, bold, and italic inside handwritten blocks for emphasis
 3. **Images**: Use sparingly. Best for essential visual clues that can't be described in text.
 4. **Colored Text**: Use for emphasis on specific words/phrases, not entire paragraphs.
 5. **Formatting**: Don't overuse. Clear, simple text is often more effective than heavy formatting.
@@ -234,8 +230,7 @@ When page breaks are present, users navigate with Next/Back buttons and see a pa
 - All text is parsed on render using a custom parser (`lib/text-parser.ts`)
 - Handwriting fonts are loaded via Next.js font optimization
 - Images are rendered using Next.js Image component for optimization
-- Single-page content shows no pagination UI; multi-page shows Next/Back buttons
-- Page state resets when moving to a new location
+- Handwritten blocks support recursive parsing for nested formatting (colors, bold, italic)
 
 ---
 
@@ -254,11 +249,11 @@ All available puzzle input types and their configuration.
 ```json
 {
   "type": "number_code.cryptex",
-  "prompt": "Set the cryptex wheels",
   "answer": "3725",
   "answer_length": 4
 }
 ```
+**Note:** Puzzle instructions should be included in the `location_found_text` field, not in the puzzle object.
 
 #### `number_code.safe` (Safe Dial)
 - **Description:** Rotating dial with direction-based input
@@ -269,7 +264,6 @@ All available puzzle input types and their configuration.
 ```json
 {
   "type": "number_code.safe",
-  "prompt": "Open the safe",
   "answer": "033",
   "answer_length": 3
 }
@@ -286,7 +280,6 @@ All available puzzle input types and their configuration.
 ```json
 {
   "type": "word_code",
-  "prompt": "Spell the word on the sign",
   "answer": "BOOK",
   "answer_length": 4
 }
@@ -395,13 +388,11 @@ All available puzzle input types and their configuration.
 ```json
 {
   "type": "slide_puzzle",
-  "prompt": "Solve the slide puzzle to reveal the location",
-  "image": "/puzzle-images/fremont-troll.jpg",
   "answer": "SOLVED",
   "answer_length": 6
 }
 ```
-**Note:** The image path is required in the `image` field, not `puzzleImage`.
+**Note:** For slide puzzles, the image should be specified in the JSON using the `{{image:/puzzle-images/your-image.jpg}}` syntax within the `location_found_text` field. The puzzle instructions and image display should all be part of the location text.
 
 ### Testing Page
 

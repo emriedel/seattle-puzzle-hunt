@@ -1,10 +1,6 @@
-'use client';
-
-import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
+import React, { useMemo } from 'react';
 import { RichText } from '@/components/RichText';
-import { parseRichText, Page } from '@/lib/text-parser';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { parseRichText } from '@/lib/text-parser';
 
 interface TextPaginationProps {
   text: string;
@@ -12,79 +8,32 @@ interface TextPaginationProps {
 }
 
 /**
- * TextPagination component - handles multi-page text with navigation
+ * TextPagination component - renders parsed rich text
+ * (Pagination feature removed - always renders single page)
  */
 export function TextPagination({ text, className = '' }: TextPaginationProps) {
-  const [currentPageIndex, setCurrentPageIndex] = useState(0);
+  // Memoize parsing to avoid re-parsing on every render
+  const pages = useMemo(() => {
+    const startTime = performance.now();
+    const result = parseRichText(text);
+    const duration = performance.now() - startTime;
 
-  // Parse text into pages
-  const pages = parseRichText(text);
+    // Log slow parses (>50ms) to help debug performance issues
+    if (duration > 50) {
+      console.warn(`[TextPagination] Slow parse: ${duration.toFixed(2)}ms for ${text.length} chars`);
+    }
+
+    return result;
+  }, [text]);
 
   // Safety check: if no pages, return empty div
   if (!pages || pages.length === 0) {
     return <div className={className} />;
   }
 
-  // If only one page, don't show pagination UI
-  if (pages.length === 1) {
-    return (
-      <div className={className}>
-        <RichText blocks={pages[0].blocks} />
-      </div>
-    );
-  }
-
-  // Ensure currentPageIndex is valid
-  const safePageIndex = Math.min(currentPageIndex, pages.length - 1);
-  const currentPage = pages[safePageIndex];
-  const hasPrevious = safePageIndex > 0;
-  const hasNext = safePageIndex < pages.length - 1;
-
-  const goToPrevious = () => {
-    if (hasPrevious) {
-      setCurrentPageIndex(currentPageIndex - 1);
-    }
-  };
-
-  const goToNext = () => {
-    if (hasNext) {
-      setCurrentPageIndex(currentPageIndex + 1);
-    }
-  };
-
   return (
     <div className={className}>
-      {/* Page content */}
-      <div className="min-h-[200px]">
-        <RichText blocks={currentPage.blocks} />
-      </div>
-
-      {/* Navigation */}
-      <div className="flex items-center justify-between mt-6 pt-4 border-t border-border">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={goToPrevious}
-          disabled={!hasPrevious}
-        >
-          <ChevronLeft className="h-4 w-4 mr-1" />
-          Previous
-        </Button>
-
-        <span className="text-sm text-muted-foreground">
-          Page {currentPageIndex + 1} of {pages.length}
-        </span>
-
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={goToNext}
-          disabled={!hasNext}
-        >
-          Next
-          <ChevronRight className="h-4 w-4 ml-1" />
-        </Button>
-      </div>
+      <RichText blocks={pages[0].blocks} />
     </div>
   );
 }

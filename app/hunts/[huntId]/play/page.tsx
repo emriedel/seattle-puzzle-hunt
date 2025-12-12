@@ -27,14 +27,12 @@ interface Location {
   order: number;
   lat: number;
   lng: number;
-  narrativeSnippet: string;
+  locationRiddle: string;
   locationFoundText: string;
+  searchLocationButtonText?: string;
   puzzleType: string;
-  puzzlePrompt: string;
-  puzzleImage: string | null;
   puzzleAnswerLength: number;
   puzzleSuccessText: string;
-  nextRiddle: string;
   nextLocationId: string | null;
 }
 
@@ -42,8 +40,9 @@ interface Hunt {
   id: string;
   title: string;
   neighborhood: string;
+  huntIntroText?: string;
   estimatedTimeMinutes: number;
-  globalLocationRadiusMeters: number;
+  globalLocationRadiusMeters: number | null;
   locations: Location[];
 }
 
@@ -139,7 +138,6 @@ export default function PlayPage() {
   }, [currentLocationIndex, locationState, hunt, sessionId, progressKey]);
 
   const currentLocation = hunt?.locations[currentLocationIndex];
-  const previousLocation = currentLocationIndex > 0 ? hunt?.locations[currentLocationIndex - 1] : null;
 
   // Navigation handlers
   const handleExitHunt = () => {
@@ -203,8 +201,9 @@ export default function PlayPage() {
         setStatusMessage('You\'re here!');
         setLocationState('at_location_unsolved');
       } else {
+        const radius = hunt?.globalLocationRadiusMeters ?? 40;
         setStatusMessage(
-          `You're ${distance}m away. Get within ${hunt?.globalLocationRadiusMeters}m to continue.`
+          `You're ${distance}m away. Get within ${radius}m to continue.`
         );
       }
     } catch (err) {
@@ -306,8 +305,8 @@ export default function PlayPage() {
 
   // Determine what clue to show in Screen 1
   const clueText = currentLocationIndex === 0
-    ? currentLocation.narrativeSnippet  // First location uses its narrativeSnippet
-    : previousLocation?.nextRiddle || '';  // Subsequent locations use previous location's riddle
+    ? hunt.huntIntroText || currentLocation.locationRiddle  // First location shows hunt intro or location riddle
+    : currentLocation.locationRiddle;  // All locations show their own riddle
 
   return (
     <>
@@ -340,13 +339,11 @@ export default function PlayPage() {
           id: viewingLocation.id,
           name: viewingLocation.name,
           order: viewingLocation.order,
-          narrativeSnippet: viewingLocation.narrativeSnippet,
+          locationRiddle: viewingLocation.locationRiddle,
           locationFoundText: viewingLocation.locationFoundText,
           puzzleType: viewingLocation.puzzleType,
-          puzzlePrompt: viewingLocation.puzzlePrompt,
           puzzleAnswer: '***', // Show placeholder in history for security
           puzzleSuccessText: viewingLocation.puzzleSuccessText,
-          nextRiddle: viewingLocation.nextRiddle,
         } : null}
         open={!!viewingLocationId}
         onOpenChange={(open) => !open && setViewingLocationId(null)}
@@ -394,7 +391,7 @@ export default function PlayPage() {
                 className="w-full"
                 size="lg"
               >
-                {isChecking ? 'Checking location...' : '🔍 Search for Clues'}
+                {isChecking ? 'Checking location...' : (currentLocation.searchLocationButtonText || '🔍 Search for Clues')}
               </Button>
             </CardContent>
           </Card>
@@ -409,9 +406,6 @@ export default function PlayPage() {
               </div>
 
               <div className="space-y-4">
-                <h3 className="font-semibold text-lg">Puzzle:</h3>
-                <TextPagination text={currentLocation.puzzlePrompt} className="text-sm text-muted-foreground" />
-
                 {statusMessage && (
                   <div className="p-3 bg-blue-500/10 border border-blue-500/20 rounded-lg text-sm">
                     {statusMessage}
@@ -484,7 +478,7 @@ export default function PlayPage() {
                 {/* Tile word builder puzzle */}
                 {currentLocation.puzzleType === 'tile_word' && (
                   <TileWordBuilderInput
-                    tiles={currentLocation.puzzlePrompt.match(/[A-Z]/g) || []}
+                    tiles={currentLocation.locationFoundText.match(/[A-Z]/g) || []}
                     onSubmit={submitPuzzleAnswer}
                     disabled={isChecking}
                   />
@@ -493,7 +487,7 @@ export default function PlayPage() {
                 {/* Slide puzzle */}
                 {currentLocation.puzzleType === 'slide_puzzle' && (
                   <SlidePuzzleInput
-                    imagePath={currentLocation.puzzleImage || '/puzzle-images/default.jpg'}
+                    imagePath="/puzzle-images/default.jpg"
                     onSubmit={submitPuzzleAnswer}
                     disabled={isChecking}
                   />
@@ -511,13 +505,6 @@ export default function PlayPage() {
                 <p className="font-semibold mb-3">✓ Puzzle Solved!</p>
                 <TextPagination text={currentLocation.puzzleSuccessText} />
               </div>
-
-              {currentLocation.nextRiddle && (
-                <div className="p-4 bg-blue-500/10 border border-blue-500/20 rounded-lg">
-                  <p className="text-sm font-semibold mb-2">Your next clue:</p>
-                  <TextPagination text={currentLocation.nextRiddle} className="text-sm italic text-muted-foreground" />
-                </div>
-              )}
 
               <Button
                 onClick={moveToNextLocation}

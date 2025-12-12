@@ -13,7 +13,6 @@ import {
   Image as ImageIcon,
   Palette,
   PenTool,
-  SeparatorHorizontal,
   Pilcrow
 } from 'lucide-react'
 
@@ -108,15 +107,6 @@ export default function FormattingToolbar({ onFormat }: FormattingToolbarProps) 
         >
           <ImageIcon className="h-4 w-4 mr-1" />
           Image
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => onFormat('pagebreak')}
-          title="Insert page break"
-        >
-          <SeparatorHorizontal className="h-4 w-4 mr-1" />
-          Page Break
         </Button>
         <Button
           variant="outline"

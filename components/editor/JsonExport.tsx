@@ -55,7 +55,10 @@ export default function JsonExport({ text }: JsonExportProps) {
       <div className="text-xs text-muted-foreground space-y-1">
         <p>Usage in hunt JSON:</p>
         <pre className="bg-muted/50 p-2 rounded text-xs overflow-x-auto">
-          <code>{`"narrative_snippet": ${jsonString.substring(0, 50)}...`}</code>
+          <code>{`"location_riddle": ${jsonString.substring(0, 50)}...`}</code>
+        </pre>
+        <pre className="bg-muted/50 p-2 rounded text-xs overflow-x-auto mt-1">
+          <code>{`"location_found_text": ${jsonString.substring(0, 50)}...`}</code>
         </pre>
       </div>
     </div>
