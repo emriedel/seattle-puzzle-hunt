@@ -2,9 +2,9 @@
   "id": "phinney_phantom",
   "title": "The Phinney Phantom",
   "neighborhood": "Phinney Ridge",
-  "description": "Strange clues have begun appearing around Phinney Ridge, and the Neighborhood Investigations Bureau needs fresh eyes. Follow the Phantom's trail, uncover the secrets hidden in plain sight, and find out what message they're trying to send.",
-  "hunt_intro_text": "Strange things have been happening in **Phinney Ridge**.\n\nFor weeks, residents have been finding mysterious puzzles scattered throughout the neighborhood. No one knows who's leaving them or why.\n\nThis morning, you found an envelope slipped under your door. Inside was a single piece of paper with a message:\n\n{{handwritten:scrawl}}If you're clever enough to solve my riddles, start at the zoo gates. The first clue awaits where wild things dream.{{/handwritten}}\n\nIntrigued, you're ready to investigate. Who is this mysterious puzzle-maker? What do they want?\n\nOnly one way to find out — *follow the clues*.",
-  "hunt_success_text": "Thanks for testing! The full Phinney Ridge hunt is coming soon with exciting puzzles and hidden gems to discover.",
+  "description": "A mysterious figure known as the Phinney Phantom has been leaving puzzles around Phinney Ridge. Follow the trail, solve each clue, and uncover what they’re trying to reveal.",
+  "hunt_intro_text": "Welcome to the Neighborhood Investigations Bureau! We look into the small mysteries most people overlook.\n\nLately, someone calling themselves the **Phinney Phantom** has been leaving puzzles in strange places around Phinney Ridge. Each puzzle leads to another location, but our team stalled while following the trail. We need fresh eyes.\n\nThis morning, a note appeared at the Phinney Center that matches the Phantom’s earlier work. It looks like an invitation.\n\n{{handwritten}}\nIf you’re reading this, you’re paying attention. Solve the first puzzle, and I’ll show you where to go next.\n{{/handwritten}}\n\nFollow the Phantom’s trail, solve what they’ve left behind, and see where it leads. Your investigation starts here.",
+  "hunt_success_text": "Thanks for helping to solve the mystery of the Phinney Phantom! Make sure to check out some of the other mysteries around Seattle that need solving.",
   "estimated_time_minutes": 60,
   "locations": [
     {
@@ -13,12 +13,27 @@
       "address": "6532 Phinney Ave N",
       "order": 1,
       "coordinates": { "lat": 47.6774408, "lng": -122.3543155 },
-      "location_riddle": "Head to the historic gates of Woodland Park Zoo. The first clue awaits where wild things dream.",
-      "location_found_text": "Searching in the bushes around the Phinney Center, you find a lockbox with a note on it. Maybe if you can get it open, there will be another clue inside.\n\n{{handwritten}}You may address me as the Phinney Phantom{{/handwritten}}\n\nThis is a test puzzle. Enter 000 to complete this placeholder hunt.",
+      "location_riddle": "You decide to search around the Phinney Center to see if the Phantom left you any other clues.",
+      "location_found_text": "Searching in the bushes, you find a lockbox with a note on it. I guess the only thing left to do is to open it and see what else the Phantom has in store for you.\n\n{{handwritten}}You may **address** me as the Phinney Phantom{{/handwritten}}\n",
       "puzzle": {
         "type": "number_code.cryptex",
-        "answer": "000",
-        "answer_length": 3
+        "answer": "6532",
+        "answer_length": 4
+      },
+      "next_location_id": null
+    },
+    {
+      "id": "sullys",
+      "name": "Sully's Snow Goose Saloon",
+      "address": "6119 Phinney Ave N",
+      "order": 2,
+      "coordinates": { "lat": 47.6737628, "lng": -122.3571311 },
+      "location_riddle": "You decide to search around the Phinney Center to see if the Phantom left you any other clues.",
+      "location_found_text": "Searching in the bushes, you find a lockbox with a note on it. I guess the only thing left to do is to open it and see what else the Phantom has in store.\n\n{{handwritten}}You may **address** me as the Phinney Phantom{{/handwritten}}\n",
+      "puzzle": {
+        "type": "number_code.cryptex",
+        "answer": "6532",
+        "answer_length": 4
       },
       "next_location_id": null
     }
