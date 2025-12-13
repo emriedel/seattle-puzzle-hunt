@@ -10,11 +10,19 @@ interface SafeDialInputProps {
   length: number;
   onSubmit: (answer: string) => void;
   disabled?: boolean;
+  initialValue?: string;
+  readOnly?: boolean;
 }
 
-export default function SafeDialInput({ length, onSubmit, disabled }: SafeDialInputProps) {
-  const [selectedDigits, setSelectedDigits] = useState<string[]>(Array(length).fill(''));
-  const [currentPosition, setCurrentPosition] = useState(0); // Which digit we're selecting (0 to length-1)
+export default function SafeDialInput({ length, onSubmit, disabled, initialValue, readOnly }: SafeDialInputProps) {
+  // Initialize with initialValue if provided
+  const [selectedDigits, setSelectedDigits] = useState<string[]>(() => {
+    if (initialValue) {
+      return initialValue.padStart(length, '0').split('').slice(0, length);
+    }
+    return Array(length).fill('');
+  });
+  const [currentPosition, setCurrentPosition] = useState(() => initialValue ? length : 0); // Which digit we're selecting (0 to length-1)
   const [dialRotation, setDialRotation] = useState(0); // Current rotation angle in degrees
   const [isDragging, setIsDragging] = useState(false);
   const [lastAngle, setLastAngle] = useState(0);
@@ -52,7 +60,7 @@ export default function SafeDialInput({ length, onSubmit, disabled }: SafeDialIn
 
   // Touch handlers
   const handleTouchStart = (e: React.TouchEvent) => {
-    if (disabled || currentPosition >= length) return;
+    if (disabled || readOnly || currentPosition >= length) return;
     setIsDragging(true);
     const angle = getAngleFromCenter(e.touches[0].clientX, e.touches[0].clientY);
     setLastAngle(angle);
@@ -60,7 +68,7 @@ export default function SafeDialInput({ length, onSubmit, disabled }: SafeDialIn
 
   // Mouse handlers
   const handleMouseDown = (e: React.MouseEvent) => {
-    if (disabled || currentPosition >= length) return;
+    if (disabled || readOnly || currentPosition >= length) return;
     e.preventDefault();
     setIsDragging(true);
     const angle = getAngleFromCenter(e.clientX, e.clientY);
@@ -287,29 +295,31 @@ export default function SafeDialInput({ length, onSubmit, disabled }: SafeDialIn
         )}
       </div>
 
-      {/* Control buttons */}
-      <div className="flex gap-3 w-full max-w-xs justify-center">
-        <Button
-          onClick={handleReset}
-          disabled={disabled || currentPosition === 0}
-          variant="outline"
-          className="w-auto px-8"
-        >
-          Reset
-        </Button>
-        <Button
-          onClick={handleSubmit}
-          disabled={disabled || !isComplete}
-          size="lg"
-          variant="secondary"
-          className="w-auto px-12"
-        >
-          {disabled ? 'Checking...' : isComplete ? 'Submit' : `${currentPosition}/${length} Complete`}
-        </Button>
-      </div>
+      {/* Control buttons - hide when readOnly */}
+      {!readOnly && (
+        <div className="flex gap-3 w-full max-w-xs justify-center">
+          <Button
+            onClick={handleReset}
+            disabled={disabled || currentPosition === 0}
+            variant="outline"
+            className="w-auto px-8"
+          >
+            Reset
+          </Button>
+          <Button
+            onClick={handleSubmit}
+            disabled={disabled || !isComplete}
+            size="lg"
+            variant="secondary"
+            className="w-auto px-12"
+          >
+            {disabled ? 'Checking...' : isComplete ? 'Submit' : `${currentPosition}/${length} Complete`}
+          </Button>
+        </div>
+      )}
 
       {/* Instructions */}
-      {!isComplete && (
+      {!isComplete && !readOnly && (
         <div className="text-xs text-center text-muted-foreground max-w-xs">
           Drag the dial {expectedDirection === 'cw' ? 'clockwise' : 'counter-clockwise'} to select digit {currentPosition + 1}.
           Release when your desired number is at the top marker.

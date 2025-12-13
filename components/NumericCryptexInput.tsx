@@ -10,6 +10,8 @@ interface NumericCryptexInputProps {
   length: number;
   onSubmit: (answer: string) => void;
   disabled?: boolean;
+  initialValue?: string;
+  readOnly?: boolean;
 }
 
 interface WheelProps {
@@ -193,18 +195,24 @@ function NumericWheel({ value, onChange, disabled }: WheelProps) {
   );
 }
 
-export default function NumericCryptexInput({ length, onSubmit, disabled }: NumericCryptexInputProps) {
-  // Initialize all wheels to '0'
-  const [digits, setDigits] = useState<string[]>(Array(length).fill('0'));
+export default function NumericCryptexInput({ length, onSubmit, disabled, initialValue, readOnly }: NumericCryptexInputProps) {
+  // Initialize wheels with initialValue if provided, otherwise all '0'
+  const [digits, setDigits] = useState<string[]>(() => {
+    if (initialValue) {
+      return initialValue.padStart(length, '0').split('').slice(0, length);
+    }
+    return Array(length).fill('0');
+  });
 
   const handleWheelChange = (index: number, digit: string) => {
+    if (readOnly) return;
     const newDigits = [...digits];
     newDigits[index] = digit;
     setDigits(newDigits);
   };
 
   const handleSubmit = () => {
-    if (disabled) return;
+    if (disabled || readOnly) return;
     const answer = digits.join('');
     onSubmit(answer);
   };
@@ -218,21 +226,23 @@ export default function NumericCryptexInput({ length, onSubmit, disabled }: Nume
             key={index}
             value={digit}
             onChange={(newDigit) => handleWheelChange(index, newDigit)}
-            disabled={disabled}
+            disabled={disabled || readOnly}
           />
         ))}
       </div>
 
-      {/* Submit button */}
-      <Button
-        onClick={handleSubmit}
-        disabled={disabled}
-        size="lg"
-        variant="secondary"
-        className="w-auto px-12"
-      >
-        {disabled ? 'Checking...' : 'Submit'}
-      </Button>
+      {/* Submit button - hide when readOnly */}
+      {!readOnly && (
+        <Button
+          onClick={handleSubmit}
+          disabled={disabled}
+          size="lg"
+          variant="secondary"
+          className="w-auto px-12"
+        >
+          {disabled ? 'Checking...' : 'Submit'}
+        </Button>
+      )}
     </div>
   );
 }

@@ -58,7 +58,11 @@ function renderBlock(block: TextBlock, index: number): React.ReactNode {
       return (
         <div
           key={index}
-          className={`${fontClass} text-2xl p-4 my-4 bg-amber-50/5 border border-amber-500/20 rounded-lg shadow-sm`}
+          className={`${fontClass} text-2xl text-center text-gray-900 p-6 my-6 mx-auto max-w-sm bg-amber-50 border border-amber-900/20 shadow-lg`}
+          style={{
+            transform: 'rotate(-0.5deg)',
+            boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06), inset 0 1px 0 0 rgba(255, 255, 255, 0.1)',
+          }}
         >
           {block.children && block.children.length > 0
             ? block.children.map((child, childIndex) => renderBlock(child, childIndex))

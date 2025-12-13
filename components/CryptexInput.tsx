@@ -10,6 +10,8 @@ interface CryptexInputProps {
   length: number;
   onSubmit: (answer: string) => void;
   disabled?: boolean;
+  initialValue?: string;
+  readOnly?: boolean;
 }
 
 interface WheelProps {
@@ -193,18 +195,25 @@ function CryptexWheel({ value, onChange, disabled }: WheelProps) {
   );
 }
 
-export default function CryptexInput({ length, onSubmit, disabled }: CryptexInputProps) {
-  // Initialize all wheels to 'A'
-  const [letters, setLetters] = useState<string[]>(Array(length).fill('A'));
+export default function CryptexInput({ length, onSubmit, disabled, initialValue, readOnly }: CryptexInputProps) {
+  // Initialize wheels with initialValue if provided, otherwise all 'A'
+  const [letters, setLetters] = useState<string[]>(() => {
+    if (initialValue) {
+      const upperValue = initialValue.toUpperCase();
+      return upperValue.padEnd(length, 'A').split('').slice(0, length);
+    }
+    return Array(length).fill('A');
+  });
 
   const handleWheelChange = (index: number, letter: string) => {
+    if (readOnly) return;
     const newLetters = [...letters];
     newLetters[index] = letter;
     setLetters(newLetters);
   };
 
   const handleSubmit = () => {
-    if (disabled) return;
+    if (disabled || readOnly) return;
     const answer = letters.join('');
     onSubmit(answer);
   };
@@ -221,21 +230,23 @@ export default function CryptexInput({ length, onSubmit, disabled }: CryptexInpu
             key={index}
             value={letter}
             onChange={(newLetter) => handleWheelChange(index, newLetter)}
-            disabled={disabled}
+            disabled={disabled || readOnly}
           />
         ))}
       </div>
 
-      {/* Submit button */}
-      <Button
-        onClick={handleSubmit}
-        disabled={disabled || !isComplete}
-        size="lg"
-        variant="secondary"
-        className="w-auto px-12"
-      >
-        {disabled ? 'Checking...' : 'Submit'}
-      </Button>
+      {/* Submit button - hide when readOnly */}
+      {!readOnly && (
+        <Button
+          onClick={handleSubmit}
+          disabled={disabled || !isComplete}
+          size="lg"
+          variant="secondary"
+          className="w-auto px-12"
+        >
+          {disabled ? 'Checking...' : 'Submit'}
+        </Button>
+      )}
     </div>
   );
 }

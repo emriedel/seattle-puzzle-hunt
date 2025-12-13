@@ -8,27 +8,34 @@ interface ToggleSwitchInputProps {
   switchCount: number;
   onSubmit: (answer: string) => void;
   disabled?: boolean;
+  initialValue?: string;
+  readOnly?: boolean;
 }
 
 export default function ToggleSwitchInput({
   switchCount,
   onSubmit,
   disabled,
+  initialValue,
+  readOnly,
 }: ToggleSwitchInputProps) {
-  // Initialize with mixed state (alternating pattern) for better UX
-  const [switches, setSwitches] = useState<boolean[]>(
-    Array(switchCount).fill(false).map((_, i) => i % 2 === 0)
-  );
+  // Initialize with initialValue if provided, otherwise mixed state (alternating pattern)
+  const [switches, setSwitches] = useState<boolean[]>(() => {
+    if (initialValue) {
+      return initialValue.split('').map(c => c === '1');
+    }
+    return Array(switchCount).fill(false).map((_, i) => i % 2 === 0);
+  });
 
   const handleToggle = (index: number) => {
-    if (disabled) return;
+    if (disabled || readOnly) return;
     const newSwitches = [...switches];
     newSwitches[index] = !newSwitches[index];
     setSwitches(newSwitches);
   };
 
   const handleSubmit = () => {
-    if (disabled) return;
+    if (disabled || readOnly) return;
     // Convert boolean array to binary string (e.g., [true, false, true] => "101")
     const answer = switches.map(s => s ? '1' : '0').join('');
     onSubmit(answer);
@@ -42,7 +49,7 @@ export default function ToggleSwitchInput({
           <button
             key={index}
             onClick={() => handleToggle(index)}
-            disabled={disabled}
+            disabled={disabled || readOnly}
             className="relative w-16 h-24 bg-gradient-to-br from-slate-200 to-slate-300 dark:from-slate-700 dark:to-slate-800 rounded-lg shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all"
             style={{
               boxShadow: 'inset 0 2px 8px rgba(0,0,0,0.1), 0 4px 12px rgba(0,0,0,0.15)',
@@ -76,16 +83,18 @@ export default function ToggleSwitchInput({
         ))}
       </div>
 
-      {/* Submit button */}
-      <Button
-        onClick={handleSubmit}
-        disabled={disabled}
-        size="lg"
-        variant="secondary"
-        className="w-auto px-12"
-      >
-        {disabled ? 'Checking...' : 'Submit'}
-      </Button>
+      {/* Submit button - hide when readOnly */}
+      {!readOnly && (
+        <Button
+          onClick={handleSubmit}
+          disabled={disabled}
+          size="lg"
+          variant="secondary"
+          className="w-auto px-12"
+        >
+          {disabled ? 'Checking...' : 'Submit'}
+        </Button>
+      )}
     </div>
   );
 }

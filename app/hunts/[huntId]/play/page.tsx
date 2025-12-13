@@ -58,6 +58,7 @@ interface HuntProgress {
   maxPageReached: number;
   solvedLocations: number[]; // Array for JSON serialization
   visitedLocations: number[]; // Array for JSON serialization
+  solvedAnswers: Record<number, string>; // Maps location index to submitted answer
 }
 
 export default function PlayPage() {
@@ -71,6 +72,7 @@ export default function PlayPage() {
   const [maxPageReached, setMaxPageReached] = useState(0);
   const [solvedLocations, setSolvedLocations] = useState<Set<number>>(new Set());
   const [visitedLocations, setVisitedLocations] = useState<Set<number>>(new Set());
+  const [solvedAnswers, setSolvedAnswers] = useState<Record<number, string>>({});
   const [statusMessage, setStatusMessage] = useState('');
   const [isChecking, setIsChecking] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -151,6 +153,7 @@ export default function PlayPage() {
             setMaxPageReached(progress.maxPageReached);
             setSolvedLocations(new Set(progress.solvedLocations));
             setVisitedLocations(new Set(progress.visitedLocations));
+            setSolvedAnswers(progress.solvedAnswers || {});
           } catch {
             // Invalid progress, start fresh
             setCurrentPage(0);
@@ -172,10 +175,11 @@ export default function PlayPage() {
         maxPageReached,
         solvedLocations: Array.from(solvedLocations),
         visitedLocations: Array.from(visitedLocations),
+        solvedAnswers,
       };
       localStorage.setItem(progressKey, JSON.stringify(progress));
     }
-  }, [currentPage, maxPageReached, solvedLocations, visitedLocations, hunt, sessionId, progressKey]);
+  }, [currentPage, maxPageReached, solvedLocations, visitedLocations, solvedAnswers, hunt, sessionId, progressKey]);
 
   // Navigation handlers
   const handleExitHunt = () => {
@@ -308,6 +312,7 @@ export default function PlayPage() {
       if (correct) {
         setStatusMessage('');
         setSolvedLocations(prev => new Set([...prev, locationIndex]));
+        setSolvedAnswers(prev => ({ ...prev, [locationIndex]: answer }));
 
         // Check if this is the last location
         if (locationIndex === hunt.locations.length - 1) {
@@ -422,10 +427,7 @@ export default function PlayPage() {
           {/* Hunt Intro Page */}
           {pageType === 'intro' && (
             <Card>
-              <CardHeader>
-                <CardTitle>Welcome</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-6">
+              <CardContent className="pt-6 space-y-6">
                 <TextPagination text={hunt.huntIntroText || ''} />
 
                 <Button
@@ -476,101 +478,99 @@ export default function PlayPage() {
               <CardContent className="pt-6 space-y-6">
                 <TextPagination text={currentLocation.locationFoundText} />
 
-                {!isLocationSolved && (
-                  <div className="space-y-4">
-                    {statusMessage && (
-                      <div className="p-3 bg-blue-500/10 border border-blue-500/20 rounded-lg text-sm">
-                        {statusMessage}
-                      </div>
-                    )}
+                <div className="space-y-4">
+                  {!isLocationSolved && statusMessage && (
+                    <div className="p-3 bg-blue-500/10 border border-blue-500/20 rounded-lg text-sm">
+                      {statusMessage}
+                    </div>
+                  )}
 
-                    {/* Number-based puzzle inputs */}
-                    {currentLocation.puzzleType.startsWith('number_code') && (() => {
-                      const subType = currentLocation.puzzleType.split('.')[1];
-                      const props = {
-                        length: currentLocation.puzzleAnswerLength,
-                        onSubmit: (answer: string) => submitPuzzleAnswer(answer, locationIndex),
-                        disabled: isChecking,
-                      };
+                  {/* Number-based puzzle inputs */}
+                  {currentLocation.puzzleType.startsWith('number_code') && (() => {
+                    const subType = currentLocation.puzzleType.split('.')[1];
+                    const props = {
+                      length: currentLocation.puzzleAnswerLength,
+                      onSubmit: (answer: string) => submitPuzzleAnswer(answer, locationIndex),
+                      disabled: isChecking,
+                      initialValue: solvedAnswers[locationIndex],
+                      readOnly: isLocationSolved,
+                    };
 
-                      if (subType === 'cryptex') {
-                        return <NumericCryptexInput {...props} />;
-                      } else if (subType === 'safe') {
-                        return <SafeDialInput {...props} />;
-                      } else {
-                        return <NumberCodeInput {...props} />;
-                      }
-                    })()}
+                    if (subType === 'cryptex') {
+                      return <NumericCryptexInput {...props} />;
+                    } else if (subType === 'safe') {
+                      return <SafeDialInput {...props} />;
+                    } else {
+                      return <NumberCodeInput {...props} />;
+                    }
+                  })()}
 
-                    {/* Word-based puzzle input */}
-                    {currentLocation.puzzleType === 'word_code' && (
-                      <CryptexInput
-                        length={currentLocation.puzzleAnswerLength}
-                        onSubmit={(answer) => submitPuzzleAnswer(answer, locationIndex)}
-                        disabled={isChecking}
-                      />
-                    )}
+                  {/* Word-based puzzle input */}
+                  {currentLocation.puzzleType === 'word_code' && (
+                    <CryptexInput
+                      length={currentLocation.puzzleAnswerLength}
+                      onSubmit={(answer) => submitPuzzleAnswer(answer, locationIndex)}
+                      disabled={isChecking}
+                      initialValue={solvedAnswers[locationIndex]}
+                      readOnly={isLocationSolved}
+                    />
+                  )}
 
-                    {/* Toggle switches puzzle */}
-                    {currentLocation.puzzleType === 'toggle_code' && (
-                      <ToggleSwitchInput
-                        switchCount={currentLocation.puzzleAnswerLength}
-                        onSubmit={(answer) => submitPuzzleAnswer(answer, locationIndex)}
-                        disabled={isChecking}
-                      />
-                    )}
+                  {/* Toggle switches puzzle */}
+                  {currentLocation.puzzleType === 'toggle_code' && (
+                    <ToggleSwitchInput
+                      switchCount={currentLocation.puzzleAnswerLength}
+                      onSubmit={(answer) => submitPuzzleAnswer(answer, locationIndex)}
+                      disabled={isChecking}
+                      initialValue={solvedAnswers[locationIndex]}
+                      readOnly={isLocationSolved}
+                    />
+                  )}
 
-                    {/* Directional pad puzzle */}
-                    {currentLocation.puzzleType === 'directional_code' && (
-                      <DirectionalPadInput
-                        maxLength={currentLocation.puzzleAnswerLength}
-                        onSubmit={(answer) => submitPuzzleAnswer(answer, locationIndex)}
-                        disabled={isChecking}
-                      />
-                    )}
+                  {/* Directional pad puzzle */}
+                  {currentLocation.puzzleType === 'directional_code' && (
+                    <DirectionalPadInput
+                      maxLength={currentLocation.puzzleAnswerLength}
+                      onSubmit={(answer) => submitPuzzleAnswer(answer, locationIndex)}
+                      disabled={isChecking}
+                    />
+                  )}
 
-                    {/* Simon pattern puzzle */}
-                    {currentLocation.puzzleType === 'simon_code' && (
-                      <SimonPatternInput
-                        maxLength={currentLocation.puzzleAnswerLength}
-                        onSubmit={(answer) => submitPuzzleAnswer(answer, locationIndex)}
-                        disabled={isChecking}
-                      />
-                    )}
+                  {/* Simon pattern puzzle */}
+                  {currentLocation.puzzleType === 'simon_code' && (
+                    <SimonPatternInput
+                      maxLength={currentLocation.puzzleAnswerLength}
+                      onSubmit={(answer) => submitPuzzleAnswer(answer, locationIndex)}
+                      disabled={isChecking}
+                    />
+                  )}
 
-                    {/* Morse code puzzle */}
-                    {currentLocation.puzzleType === 'morse_code' && (
-                      <MorseCodeInput
-                        onSubmit={(answer) => submitPuzzleAnswer(answer, locationIndex)}
-                        disabled={isChecking}
-                      />
-                    )}
+                  {/* Morse code puzzle */}
+                  {currentLocation.puzzleType === 'morse_code' && (
+                    <MorseCodeInput
+                      onSubmit={(answer) => submitPuzzleAnswer(answer, locationIndex)}
+                      disabled={isChecking}
+                    />
+                  )}
 
-                    {/* Tile word builder puzzle */}
-                    {currentLocation.puzzleType === 'tile_word' && (
-                      <TileWordBuilderInput
-                        tiles={currentLocation.locationFoundText.match(/[A-Z]/g) || []}
-                        onSubmit={(answer) => submitPuzzleAnswer(answer, locationIndex)}
-                        disabled={isChecking}
-                      />
-                    )}
+                  {/* Tile word builder puzzle */}
+                  {currentLocation.puzzleType === 'tile_word' && (
+                    <TileWordBuilderInput
+                      tiles={currentLocation.locationFoundText.match(/[A-Z]/g) || []}
+                      onSubmit={(answer) => submitPuzzleAnswer(answer, locationIndex)}
+                      disabled={isChecking}
+                    />
+                  )}
 
-                    {/* Slide puzzle */}
-                    {currentLocation.puzzleType === 'slide_puzzle' && (
-                      <SlidePuzzleInput
-                        imagePath="/puzzle-images/default.jpg"
-                        onSubmit={(answer) => submitPuzzleAnswer(answer, locationIndex)}
-                        disabled={isChecking}
-                      />
-                    )}
-                  </div>
-                )}
-
-                {isLocationSolved && (
-                  <div className="p-4 bg-green-500/10 border border-green-500/20 rounded-lg">
-                    <p className="font-semibold text-green-700">✓ Puzzle Solved!</p>
-                  </div>
-                )}
+                  {/* Slide puzzle */}
+                  {currentLocation.puzzleType === 'slide_puzzle' && (
+                    <SlidePuzzleInput
+                      imagePath="/puzzle-images/default.jpg"
+                      onSubmit={(answer) => submitPuzzleAnswer(answer, locationIndex)}
+                      disabled={isChecking}
+                    />
+                  )}
+                </div>
               </CardContent>
             </Card>
           )}
@@ -596,25 +596,26 @@ export default function PlayPage() {
           )}
 
           {/* Previous / Next Navigation */}
-          <div className="flex gap-4">
-            <Button
-              onClick={goToPreviousPage}
-              disabled={!canGoBack}
-              variant="outline"
-              className="flex-1"
-              size="lg"
-            >
-              ← Previous
-            </Button>
-            <Button
-              onClick={goToNextPage}
-              disabled={!canGoForward}
-              variant="outline"
-              className="flex-1"
-              size="lg"
-            >
-              Next →
-            </Button>
+          <div className="flex gap-4 justify-between">
+            {canGoBack && (
+              <Button
+                onClick={goToPreviousPage}
+                variant="outline"
+                size="lg"
+              >
+                ← Previous
+              </Button>
+            )}
+            {canGoForward && (
+              <Button
+                onClick={goToNextPage}
+                variant="outline"
+                size="lg"
+                className="ml-auto"
+              >
+                Next →
+              </Button>
+            )}
           </div>
         </div>
 
