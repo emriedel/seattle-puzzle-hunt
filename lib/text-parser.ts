@@ -18,7 +18,8 @@ export type TextBlockType =
   | 'italic'
   | 'colored'
   | 'image'
-  | 'linebreak';
+  | 'linebreak'
+  | 'br';
 
 export type HandwritingStyle = 'default' | 'scrawl' | 'elegant' | 'graffiti';
 
@@ -130,8 +131,12 @@ export function parseTextBlocks(text: string, depth: number = 0): TextBlock[] {
 
     // Check for single line break
     if (text.slice(currentIndex).startsWith('\n')) {
+      blocks.push({
+        type: 'br',
+        content: '',
+      });
       currentIndex += 1;
-      continue; // Skip single newlines
+      continue;
     }
 
     // Parse inline formatting (bold, italic)

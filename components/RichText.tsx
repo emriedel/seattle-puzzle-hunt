@@ -58,10 +58,11 @@ function renderBlock(block: TextBlock, index: number): React.ReactNode {
       return (
         <div
           key={index}
-          className={`${fontClass} text-2xl text-center text-gray-900 p-6 my-6 mx-auto max-w-sm bg-amber-50 border border-amber-900/20 shadow-lg`}
+          className={`${fontClass} text-2xl text-center text-amber-900 p-6 my-6 mx-auto max-w-md border border-[#d4c5a9]`}
           style={{
             transform: 'rotate(-0.5deg)',
-            boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06), inset 0 1px 0 0 rgba(255, 255, 255, 0.1)',
+            background: 'linear-gradient(to bottom, #f9f5e7 0%, #f4ecd8 100%)',
+            boxShadow: '0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.08), inset 0 0 40px rgba(0, 0, 0, 0.02)',
           }}
         >
           {block.children && block.children.length > 0
@@ -86,6 +87,9 @@ function renderBlock(block: TextBlock, index: number): React.ReactNode {
           />
         </div>
       );
+
+    case 'br':
+      return <br key={index} />;
 
     case 'linebreak':
       return <div key={index} className="h-4" />;

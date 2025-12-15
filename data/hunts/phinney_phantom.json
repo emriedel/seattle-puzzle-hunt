@@ -28,7 +28,7 @@
       "address": "6119 Phinney Ave N",
       "order": 2,
       "coordinates": { "lat": 47.6737628, "lng": -122.3571311 },
-      "location_riddle": "You decide to search around the Phinney Center to see if the Phantom left you any other clues.",
+      "location_riddle": "The box contains another note with a simple poem.\n{{handwritten}}So you accepted my challenge,\nUnpacked what I hid.\nLooking for more clues?\nLeave this place and head south.\nYou must take the first letters,\nSpell out your next stop.\n{{/handwritten}}",
       "location_found_text": "Searching in the bushes, you find a lockbox with a note on it. I guess the only thing left to do is to open it and see what else the Phantom has in store.\n\n{{handwritten}}You may **address** me as the Phinney Phantom{{/handwritten}}\n",
       "puzzle": {
         "type": "number_code.cryptex",
