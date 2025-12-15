@@ -407,3 +407,354 @@ Visit `/test/puzzles` to test all puzzle input types with example answers. This 
 - Add hints, multi-language support, and optional user accounts in v2.
 - Test page at `/test/puzzles` demonstrates all puzzle types.
 
+---
+
+## Deployment & Production Management
+
+This section covers deploying and managing the application in production.
+
+### Target Stack
+
+- **Hosting:** Vercel (frontend + serverless API routes)
+- **Database:** Neon Postgres (serverless PostgreSQL)
+- **Environment:** Production & Preview environments
+
+### First-Time Deployment
+
+**Prerequisites:**
+- Vercel account (free tier works)
+- Neon account (free tier works)
+- GitHub repository (or GitLab/Bitbucket)
+
+**Steps:**
+
+1. **Create Neon Database**
+   - Sign up at [neon.tech](https://neon.tech)
+   - Create a new project (choose a region near your users)
+   - Copy the connection string (starts with `postgresql://`)
+   - Format: `postgresql://user:password@ep-xxx-xxx.region.aws.neon.tech/dbname?sslmode=require`
+
+2. **Connect GitHub to Vercel**
+   - Go to [vercel.com](https://vercel.com)
+   - Import your repository
+   - Select the repository
+   - Configure project:
+     - Framework Preset: Next.js
+     - Root Directory: `./`
+     - Build Command: `npm run build` (default)
+     - Output Directory: `.next` (default)
+
+3. **Add Environment Variables**
+   - In Vercel project settings → Environment Variables
+   - Add `DATABASE_URL` with your Neon connection string
+   - Apply to: Production, Preview, and Development
+
+4. **Deploy**
+   - Click "Deploy" - Vercel will build and deploy
+   - Build will succeed but database is empty
+
+5. **Initialize Database Schema**
+   ```bash
+   # Install Vercel CLI (one-time)
+   npm install -g vercel
+
+   # Link to your Vercel project
+   vercel link
+
+   # Pull production environment variables
+   vercel env pull .env.production.local
+
+   # Push database schema
+   DATABASE_URL=$(grep DATABASE_URL .env.production.local | cut -d '=' -f2-) npx prisma db push
+   ```
+
+6. **Seed Hunt Data**
+   ```bash
+   DATABASE_URL=$(grep DATABASE_URL .env.production.local | cut -d '=' -f2-) npm run seed
+   ```
+
+7. **Verify Deployment**
+   - Visit your production URL (e.g., `https://your-project.vercel.app`)
+   - Check `/hunts` to see seeded hunts
+   - Test `/test/puzzles` to verify puzzle components
+
+**Acceptance:** Production site loads, hunts are visible, database queries work.
+
+---
+
+### Development Phase Deployments (Overwrite-Safe)
+
+During development, you can freely reset and re-seed the database. No user data needs to be preserved.
+
+**Workflow for updating hunts:**
+
+1. Edit hunt JSON files in `/data/hunts/`
+2. Test locally:
+   ```bash
+   npm run seed
+   npm run dev
+   ```
+3. Commit and push:
+   ```bash
+   git add data/hunts/
+   git commit -m "Update Fremont hunt puzzle text"
+   git push
+   ```
+4. Re-seed production:
+   ```bash
+   vercel env pull .env.production.local
+   DATABASE_URL=$(grep DATABASE_URL .env.production.local | cut -d '=' -f2-) npm run seed
+   ```
+
+**Note:** The seed script uses `upsert` operations, so it's safe to run multiple times. It will update existing hunts and create new ones.
+
+**If you need to completely reset production DB:**
+
+```bash
+# Pull env vars
+vercel env pull .env.production.local
+
+# Reset schema (WARNING: drops all data)
+DATABASE_URL=$(grep DATABASE_URL .env.production.local | cut -d '=' -f2-) npx prisma db push --force-reset
+
+# Re-seed
+DATABASE_URL=$(grep DATABASE_URL .env.production.local | cut -d '=' -f2-) npm run seed
+```
+
+---
+
+### Production Phase Deployments (Preserve User Data)
+
+Once you launch to real users, you must preserve `PlaySession` and `LogbookEntry` data while updating `Hunt` and `Location` data.
+
+**Migration Strategy:**
+
+1. **Switch to Prisma Migrations**
+
+   Instead of `prisma db push`, use migrations:
+
+   ```bash
+   # Create initial migration (one-time)
+   npx prisma migrate dev --name init
+   ```
+
+   This creates a migration file in `/prisma/migrations/`.
+
+2. **Update Schema and Hunt Data**
+
+   When changing the schema (adding fields, etc.):
+
+   ```bash
+   # Edit prisma/schema.prisma
+   # Create migration
+   npx prisma migrate dev --name add_hunt_difficulty
+
+   # Commit migration files
+   git add prisma/migrations/
+   git commit -m "Add hunt difficulty field"
+   git push
+   ```
+
+   In production:
+
+   ```bash
+   # Pull env
+   vercel env pull .env.production.local
+
+   # Apply migration
+   DATABASE_URL=$(grep DATABASE_URL .env.production.local | cut -d '=' -f2-) npx prisma migrate deploy
+   ```
+
+3. **Update Hunt Content (Without Dropping Data)**
+
+   To update hunt text, puzzles, or locations:
+
+   - Edit hunt JSON files in `/data/hunts/`
+   - Push changes to GitHub
+   - Re-run seed script (it uses upsert, won't delete logbook data):
+     ```bash
+     DATABASE_URL=$(grep DATABASE_URL .env.production.local | cut -d '=' -f2-) npm run seed
+     ```
+
+   **Important:** The seed script only touches `Hunt` and `Location` tables. It never modifies `PlaySession` or `LogbookEntry`.
+
+4. **Testing Migrations**
+
+   Use Neon's branching feature to test migrations safely:
+
+   - Create a branch in Neon dashboard
+   - Copy production data to branch
+   - Run migration on branch
+   - Test thoroughly
+   - Apply to main branch when confident
+
+**Acceptance:** Existing logbook entries and play sessions persist after deploying new hunt content.
+
+---
+
+### Hunt Management Best Practices
+
+**Versioning Hunt Content:**
+
+1. Keep hunt JSONs in version control
+2. Use descriptive commit messages for hunt changes
+3. Test hunt changes locally before deploying
+
+**Common Hunt Update Scenarios:**
+
+| Scenario | Steps | Safe for Production? |
+|----------|-------|---------------------|
+| Fix typo in riddle | Edit JSON → commit → push → re-seed | Yes (upsert won't affect logbook) |
+| Add new hunt | Add JSON file → commit → push → re-seed | Yes (creates new hunt) |
+| Change puzzle answer | Edit JSON → commit → push → re-seed | **No** (invalidates in-progress sessions) |
+| Add new location to hunt | Edit JSON → commit → push → re-seed | **No** (breaks in-progress sessions) |
+| Adjust GPS radius | Edit JSON → commit → push → re-seed | Yes (only affects new sessions) |
+
+**For Breaking Changes (answer/location changes):**
+
+1. Mark old hunt as inactive (add `active: false` field - requires schema update)
+2. Create new version of hunt with new ID (e.g., `fremont_hidden_corners_v2`)
+3. Allow in-progress sessions to finish old version
+4. Promote new version after grace period
+
+---
+
+### Environment Variables Reference
+
+| Variable | Required | Description | Example |
+|----------|----------|-------------|---------|
+| `DATABASE_URL` | Yes | PostgreSQL connection string | `postgresql://user:pass@host/db?sslmode=require` |
+
+**Local Development:**
+```bash
+DATABASE_URL="postgresql://postgres:postgres@localhost:5434/seattle_puzzle_hunt"
+```
+
+**Production (Neon):**
+```bash
+DATABASE_URL="postgresql://user:password@ep-xxx-xxx.us-west-2.aws.neon.tech/neondb?sslmode=require"
+```
+
+---
+
+### Monitoring & Debugging
+
+**Database Access:**
+
+```bash
+# Pull production env vars
+vercel env pull .env.production.local
+
+# Open Prisma Studio connected to production
+DATABASE_URL=$(grep DATABASE_URL .env.production.local | cut -d '=' -f2-) npx prisma studio
+```
+
+**Vercel Logs:**
+
+- Go to Vercel Dashboard → Your Project → Deployments
+- Click on a deployment → View Function Logs
+- Filter by API route to debug issues
+
+**Common Issues:**
+
+1. **Build fails with Prisma error**
+   - Ensure `postinstall` script runs `prisma generate`
+   - Check that `DATABASE_URL` is set in Vercel env vars
+
+2. **Database connection fails**
+   - Verify Neon connection string format
+   - Ensure `?sslmode=require` is appended
+   - Check Neon project is not suspended (free tier sleeps after inactivity)
+
+3. **Seed script fails**
+   - Check hunt JSON syntax with `npm run seed` locally first
+   - Verify Prisma schema matches database
+
+---
+
+### Backup & Recovery
+
+**Neon Backups:**
+
+- Neon automatically backs up your database
+- Free tier: 7 days of point-in-time recovery
+- Paid tier: 30 days
+
+**Manual Backup:**
+
+```bash
+# Dump production database
+vercel env pull .env.production.local
+DATABASE_URL=$(grep DATABASE_URL .env.production.local | cut -d '=' -f2-) \
+  pg_dump -Fc > backup-$(date +%Y%m%d).dump
+
+# Restore from backup
+DATABASE_URL=$(grep DATABASE_URL .env.production.local | cut -d '=' -f2-) \
+  pg_restore -d $DATABASE_URL backup-20250101.dump
+```
+
+**Export Logbook Data:**
+
+```bash
+# Connect to production and export logbook entries as JSON
+DATABASE_URL=$(grep DATABASE_URL .env.production.local | cut -d '=' -f2-) \
+  psql -c "COPY (SELECT * FROM \"LogbookEntry\") TO STDOUT WITH CSV HEADER" > logbook.csv
+```
+
+---
+
+### Cost Expectations
+
+**Vercel (Hobby Plan - Free):**
+- 100 GB-hours compute/month
+- Unlimited deployments
+- Sufficient for 1000s of hunt completions/month
+
+**Neon (Free Tier):**
+- 0.5 GB storage
+- Always-available compute (sleeps after 5 min inactivity)
+- 100 compute hours/month
+- Sufficient for testing and small-scale launch
+
+**Estimated costs for 1000 monthly active users:**
+- Vercel: Free (within hobby limits)
+- Neon: $0-19/month (may need paid tier for active hours)
+
+---
+
+### Deployment Checklist
+
+**Before First Deploy:**
+- [ ] Create Neon database project
+- [ ] Copy connection string
+- [ ] Connect GitHub repo to Vercel
+- [ ] Add `DATABASE_URL` to Vercel env vars
+- [ ] Deploy from Vercel dashboard
+- [ ] Run `prisma db push` against production
+- [ ] Run seed script against production
+- [ ] Test production site
+
+**Before Each Hunt Update (Development):**
+- [ ] Edit hunt JSON locally
+- [ ] Test with `npm run seed && npm run dev`
+- [ ] Commit and push to GitHub
+- [ ] Re-seed production database
+- [ ] Test on production URL
+
+**Before Going Live:**
+- [ ] Review all hunt content for errors
+- [ ] Test all hunts end-to-end on mobile devices
+- [ ] Set up Prisma migrations (`prisma migrate dev --name init`)
+- [ ] Document migration workflow for team
+- [ ] Consider setting up staging environment (Neon branch + Vercel preview)
+- [ ] Monitor Vercel function logs for errors
+
+**After Launch (Ongoing):**
+- [ ] Use migrations for schema changes
+- [ ] Test hunt updates on staging before production
+- [ ] Monitor Neon database usage
+- [ ] Back up logbook data regularly
+- [ ] Review Vercel analytics for performance issues
+
+---
+

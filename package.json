@@ -10,7 +10,13 @@
     "seed": "tsx scripts/seed-hunts.ts",
     "db:start": "docker compose up -d",
     "db:stop": "docker compose down",
-    "db:reset": "docker compose down -v && docker compose up -d && npx prisma db push && npm run seed"
+    "db:reset": "docker compose down -v && docker compose up -d && npx prisma db push && npm run seed",
+    "postinstall": "prisma generate",
+    "db:push": "prisma db push",
+    "db:migrate:dev": "prisma migrate dev",
+    "db:migrate:deploy": "prisma migrate deploy",
+    "deploy:setup": "prisma db push && npm run seed",
+    "deploy:seed": "tsx scripts/seed-hunts.ts"
   },
   "dependencies": {
     "@prisma/client": "^6.1.0",
