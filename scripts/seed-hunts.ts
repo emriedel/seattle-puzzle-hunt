@@ -66,13 +66,14 @@ async function seedHunt(huntData: HuntData) {
   for (const location of huntData.locations) {
     // Normalize answer based on type
     let normalizedAnswer: string;
+    const puzzleType = location.puzzle.type as string;
 
-    if (location.puzzle.type === 'word_code' || location.puzzle.type === 'tile_word') {
+    if (puzzleType === 'word_code' || puzzleType === 'tile_word') {
       if (typeof location.puzzle.answer !== 'string') {
         throw new Error(`Expected string answer for ${location.puzzle.type} at ${location.name}`);
       }
       normalizedAnswer = location.puzzle.answer.toUpperCase();
-    } else if (location.puzzle.type === 'number_code.safe') {
+    } else if (puzzleType === 'number_code.safe') {
       // Safe dial: convert array [6, 12, 18] to string "061218"
       if (Array.isArray(location.puzzle.answer)) {
         normalizedAnswer = location.puzzle.answer.map(n => n.toString().padStart(2, '0')).join('');
@@ -82,13 +83,13 @@ async function seedHunt(huntData: HuntData) {
       } else {
         throw new Error(`Invalid answer format for number_code.safe at ${location.name}`);
       }
-    } else if (location.puzzle.type.startsWith('number_code')) {
+    } else if (puzzleType.startsWith('number_code')) {
       // Zero-pad number codes to answer_length (handles number_code, number_code.cryptex)
       if (typeof location.puzzle.answer !== 'string') {
         throw new Error(`Expected string answer for ${location.puzzle.type} at ${location.name}`);
       }
       normalizedAnswer = location.puzzle.answer.padStart(location.puzzle.answer_length, '0');
-    } else if (location.puzzle.type === 'directional_code' || location.puzzle.type === 'simon_code') {
+    } else if (puzzleType === 'directional_code' || puzzleType === 'simon_code') {
       // Uppercase directional and color sequences
       if (typeof location.puzzle.answer !== 'string') {
         throw new Error(`Expected string answer for ${location.puzzle.type} at ${location.name}`);

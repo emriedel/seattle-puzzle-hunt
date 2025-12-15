@@ -56,7 +56,7 @@ export default function WordCodeInput({ length, onSubmit, disabled = false }: Wo
         {letters.map((letter, index) => (
           <input
             key={index}
-            ref={el => inputRefs.current[index] = el}
+            ref={el => { inputRefs.current[index] = el; }}
             type="text"
             maxLength={1}
             value={letter}

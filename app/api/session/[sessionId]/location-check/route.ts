@@ -64,7 +64,7 @@ export async function POST(
 
     // Calculate distance
     const distance = haversineDistance(lat, lng, location.lat, location.lng);
-    const inRadius = distance <= session.hunt.globalLocationRadiusMeters;
+    const inRadius = distance <= (session.hunt.globalLocationRadiusMeters ?? 40);
 
     // If not in radius, increment wrong location checks
     if (!inRadius) {

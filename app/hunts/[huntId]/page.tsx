@@ -27,7 +27,7 @@ interface Hunt {
   neighborhood: string;
   description: string | null;
   estimatedTimeMinutes: number;
-  globalLocationRadiusMeters: number;
+  globalLocationRadiusMeters: number | null;
   locations: Location[];
 }
 
@@ -121,7 +121,7 @@ export default function HuntDetailPage() {
         router.push(`/hunts/${huntId}/play`);
       } else {
         setLocationStatus(
-          `You're ${distance}m away from the starting point. Please get within ${hunt.globalLocationRadiusMeters}m to start.`
+          `You're ${distance}m away from the starting point. Please get within ${hunt.globalLocationRadiusMeters ?? 40}m to start.`
         );
       }
     } catch (err) {
@@ -224,7 +224,7 @@ export default function HuntDetailPage() {
                 startLat={startingLocation.lat}
                 startLng={startingLocation.lng}
                 startLocationName={startingLocation.name}
-                radius={hunt.globalLocationRadiusMeters}
+                radius={hunt.globalLocationRadiusMeters ?? 40}
               />
 
               {locationStatus && (

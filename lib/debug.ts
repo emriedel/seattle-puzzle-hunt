@@ -71,7 +71,7 @@ export async function getUserLocation(): Promise<GeolocationPosition> {
           speed: null,
         },
         timestamp: Date.now(),
-      };
+      } as GeolocationPosition;
     }
   }
 
