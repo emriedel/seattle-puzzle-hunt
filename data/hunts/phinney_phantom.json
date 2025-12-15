@@ -3,7 +3,7 @@
   "title": "The Phinney Phantom",
   "neighborhood": "Phinney Ridge",
   "description": "A mysterious figure known as the Phinney Phantom has been leaving puzzles around Phinney Ridge. Follow the trail, solve each clue, and uncover what they’re trying to reveal.",
-  "hunt_intro_text": "Welcome to the Neighborhood Investigations Bureau! We look into the small mysteries most people overlook.\n\nLately, someone calling themselves the **Phinney Phantom** has been leaving puzzles in strange places around Phinney Ridge. Each puzzle leads to another location, but our team stalled while following the trail. We need fresh eyes.\n\nThis morning, a note appeared at the Phinney Center that matches the Phantom’s earlier work. It looks like an invitation.\n\n{{handwritten}}\nIf you’re reading this, you’re paying attention. Solve the first puzzle, and I’ll show you where to go next.\n{{/handwritten}}\n\nFollow the Phantom’s trail, solve what they’ve left behind, and see where it leads. Your investigation starts here.",
+  "hunt_intro_text": "Welcome to the Neighborhood Investigations Bureau! We look into the small mysteries most people overlook.\n\nLately, someone calling themselves the **Phinney Phantom** has been leaving puzzles in strange places around Phinney Ridge. Each puzzle leads to another location, but our team stalled while following the trail. We need fresh eyes.\n\nThis morning, a note appeared at the Phinney Center that matches the Phantom’s earlier work. It looks like an invitation.\n\n{{handwritten}}If you’re reading this, you’re paying attention. Solve the first puzzle, and I’ll show you where to go next.\n{{/handwritten}}\n\nFollow the Phantom’s trail, solve what they’ve left behind, and see where it leads. Your investigation starts here.",
   "hunt_success_text": "Thanks for helping to solve the mystery of the Phinney Phantom! Make sure to check out some of the other mysteries around Seattle that need solving.",
   "estimated_time_minutes": 60,
   "locations": [
@@ -29,7 +29,7 @@
       "order": 2,
       "coordinates": { "lat": 47.6737628, "lng": -122.3571311 },
       "location_riddle": "The box contains another note with a simple poem.\n{{handwritten}}So you accepted my challenge,\nUnpacked what I hid.\nLooking for more clues?\nLeave this place and head south.\nYou must take the first letters,\nSpell out your next stop.\n{{/handwritten}}",
-      "location_found_text": "You step into Sully’s Snow Goose Saloon. The bartender slides a small safe across the counter and nods toward it.\n\n“We found this outside last night,” he says. “Maybe you can make some sense of it.”\n\nAttached is another note.\n{{handwritten}}So you accepted my challenge,\nUnpacked what I hid.\nLooking for more clues?\nLeave this place and head south.\nYou must take the first letters,\nSpell out your next stop.\n{{/handwritten}}",
+      "location_found_text": "You step into Sully’s Snow Goose Saloon. The bartender slides a small safe across the counter and nods toward it.\n\n“We found this outside last night,” he says. “Maybe you can make some sense of it.”\n\nAttached is another note.\n{{handwritten}}The street to the south,\nThen half the street to the north.\nThe numbers flanking the door\nAre the third and the fourth.\n{{/handwritten}}",
       "puzzle": {
         "type": "number_code.safe",
         "answer": [61, 31, 12, 12],
