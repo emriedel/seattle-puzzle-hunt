@@ -62,10 +62,10 @@
       "order": 4,
       "coordinates": { "lat": 47.6456, "lng": -122.3344 },
       "location_riddle": "Head toward the skyline and the water — a park made from *industrial bones* keeps time with the {{color:yellow}}sun{{/color}}.",
-      "location_found_text": "You've reached the final stop!\n\nGas Works Park transforms industrial history into public space. Climb the hill to find the sundial — a perfect ending point with sweeping views of the city.\n\nAt the sundial, note the **three highest** engraved hour numbers. Add them together and enter the result (3 digits, zero-pad if needed).",
+      "location_found_text": "You've reached the final stop!\n\nGas Works Park transforms industrial history into public space. Climb the hill to find the sundial — a perfect ending point with sweeping views of the city.\n\nAt the sundial, you notice three numbers etched around the base: the hours that mark the **beginning**, **middle**, and **end** of the day. Enter these three numbers in order (hint: think 6am, noon, and 6pm in 24-hour time).",
       "puzzle": {
         "type": "number_code.safe",
-        "answer": "033",
+        "answer": [6, 12, 18],
         "answer_length": 3
       },
       "next_location_id": null

@@ -1,47 +1,53 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { RotateCw, RotateCcw } from 'lucide-react';
 import { Button } from './ui/button';
 
-const DIGITS = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+// 100 numbers from 0 to 99
+const NUMBERS = Array.from({ length: 100 }, (_, i) => i);
+const DEGREES_PER_NUMBER = 3.6; // 360 / 100
 
 interface SafeDialInputProps {
   length: number;
-  onSubmit: (answer: string) => void;
+  onSubmit: (answer: number[]) => void;
   disabled?: boolean;
-  initialValue?: string;
+  initialValue?: number[];
   readOnly?: boolean;
 }
 
 export default function SafeDialInput({ length, onSubmit, disabled, initialValue, readOnly }: SafeDialInputProps) {
   // Initialize with initialValue if provided
-  const [selectedDigits, setSelectedDigits] = useState<string[]>(() => {
-    if (initialValue) {
-      return initialValue.padStart(length, '0').split('').slice(0, length);
+  const [selectedNumbers, setSelectedNumbers] = useState<(number | null)[]>(() => {
+    if (initialValue && Array.isArray(initialValue)) {
+      return [...initialValue, ...Array(Math.max(0, length - initialValue.length)).fill(null)].slice(0, length);
     }
-    return Array(length).fill('');
+    return Array(length).fill(null);
   });
-  const [currentPosition, setCurrentPosition] = useState(() => initialValue ? length : 0); // Which digit we're selecting (0 to length-1)
-  const [dialRotation, setDialRotation] = useState(0); // Current rotation angle in degrees
+  const [currentPosition, setCurrentPosition] = useState(() => initialValue ? length : 0);
+  const [dialRotation, setDialRotation] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   const [lastAngle, setLastAngle] = useState(0);
-  const [rotationDirection, setRotationDirection] = useState<'cw' | 'ccw' | null>(null);
 
   const dialRef = useRef<HTMLDivElement>(null);
 
-  // Expected direction alternates: clockwise for 0, 2, 4... and counter-clockwise for 1, 3, 5...
-  const expectedDirection = currentPosition % 2 === 0 ? 'cw' : 'ccw';
-
-  // Get the digit currently at the top (0 degrees) based on rotation
-  const getCurrentDigit = (rotation: number) => {
-    // Normalize rotation to 0-360
+  // Get the number currently at the top (0 degrees) based on rotation
+  const getCurrentNumber = (rotation: number) => {
     const normalizedRotation = ((rotation % 360) + 360) % 360;
-    // Each digit is 36 degrees apart (360 / 10)
-    // When we rotate clockwise (positive), higher digits move away and lower digits come to top
-    // So we need to invert: 360 - rotation
-    const digitIndex = Math.round((360 - normalizedRotation) / 36) % 10;
-    return DIGITS[digitIndex];
+    const numberIndex = Math.round((360 - normalizedRotation) / DEGREES_PER_NUMBER) % 100;
+    return NUMBERS[numberIndex];
+  };
+
+  // Snap rotation to nearest number
+  const snapToNearestNumber = (rotation: number) => {
+    const currentNum = getCurrentNumber(rotation);
+    const canonicalRotation = (360 - (currentNum * DEGREES_PER_NUMBER)) % 360;
+
+    // Find the closest equivalent rotation to the current rotation
+    // (accounting for multiple full rotations)
+    const rotations = Math.round((rotation - canonicalRotation) / 360);
+    const targetRotation = canonicalRotation + (rotations * 360);
+
+    return targetRotation;
   };
 
   // Calculate angle from center to a point
@@ -52,8 +58,6 @@ export default function SafeDialInput({ length, onSubmit, disabled, initialValue
     const centerY = rect.top + rect.height / 2;
     const dx = clientX - centerX;
     const dy = clientY - centerY;
-    // atan2 returns angle in radians, convert to degrees
-    // Adjust so 0 degrees is at top
     let angle = Math.atan2(dx, -dy) * (180 / Math.PI);
     return angle;
   };
@@ -83,13 +87,6 @@ export default function SafeDialInput({ length, onSubmit, disabled, initialValue
       if (disabled) return;
       const currentAngle = getAngleFromCenter(e.touches[0].clientX, e.touches[0].clientY);
       const deltaAngle = currentAngle - lastAngle;
-
-      // Detect direction
-      if (Math.abs(deltaAngle) > 0.5) {
-        setRotationDirection(deltaAngle > 0 ? 'cw' : 'ccw');
-      }
-
-      // Update rotation
       setDialRotation(prev => prev + deltaAngle);
       setLastAngle(currentAngle);
     };
@@ -98,16 +95,15 @@ export default function SafeDialInput({ length, onSubmit, disabled, initialValue
       if (currentPosition >= length) return;
       setIsDragging(false);
 
-      // Select the current digit if we rotated in the correct direction
-      if (rotationDirection === expectedDirection) {
-        const digit = getCurrentDigit(dialRotation);
-        const newDigits = [...selectedDigits];
-        newDigits[currentPosition] = digit;
-        setSelectedDigits(newDigits);
-        setCurrentPosition(prev => prev + 1);
-      }
+      // Snap to nearest number and select it
+      const snappedRotation = snapToNearestNumber(dialRotation);
+      setDialRotation(snappedRotation);
+      const selectedNum = getCurrentNumber(snappedRotation);
 
-      setRotationDirection(null);
+      const newNumbers = [...selectedNumbers];
+      newNumbers[currentPosition] = selectedNum;
+      setSelectedNumbers(newNumbers);
+      setCurrentPosition(prev => prev + 1);
     };
 
     document.addEventListener('touchmove', handleTouchMove);
@@ -119,7 +115,7 @@ export default function SafeDialInput({ length, onSubmit, disabled, initialValue
       document.removeEventListener('touchend', handleTouchEnd);
       document.removeEventListener('touchcancel', handleTouchEnd);
     };
-  }, [isDragging, disabled, lastAngle, rotationDirection, expectedDirection, dialRotation, currentPosition, length, selectedDigits]);
+  }, [isDragging, disabled, lastAngle, dialRotation, currentPosition, length, selectedNumbers]);
 
   // Document-level mouse move handler
   useEffect(() => {
@@ -129,12 +125,6 @@ export default function SafeDialInput({ length, onSubmit, disabled, initialValue
       if (disabled) return;
       const currentAngle = getAngleFromCenter(e.clientX, e.clientY);
       const deltaAngle = currentAngle - lastAngle;
-
-      // Detect direction
-      if (Math.abs(deltaAngle) > 0.5) {
-        setRotationDirection(deltaAngle > 0 ? 'cw' : 'ccw');
-      }
-
       setDialRotation(prev => prev + deltaAngle);
       setLastAngle(currentAngle);
     };
@@ -143,16 +133,15 @@ export default function SafeDialInput({ length, onSubmit, disabled, initialValue
       if (currentPosition >= length) return;
       setIsDragging(false);
 
-      // Select the current digit if we rotated in the correct direction
-      if (rotationDirection === expectedDirection) {
-        const digit = getCurrentDigit(dialRotation);
-        const newDigits = [...selectedDigits];
-        newDigits[currentPosition] = digit;
-        setSelectedDigits(newDigits);
-        setCurrentPosition(prev => prev + 1);
-      }
+      // Snap to nearest number and select it
+      const snappedRotation = snapToNearestNumber(dialRotation);
+      setDialRotation(snappedRotation);
+      const selectedNum = getCurrentNumber(snappedRotation);
 
-      setRotationDirection(null);
+      const newNumbers = [...selectedNumbers];
+      newNumbers[currentPosition] = selectedNum;
+      setSelectedNumbers(newNumbers);
+      setCurrentPosition(prev => prev + 1);
     };
 
     document.addEventListener('mousemove', handleMouseMove);
@@ -162,66 +151,53 @@ export default function SafeDialInput({ length, onSubmit, disabled, initialValue
       document.removeEventListener('mousemove', handleMouseMove);
       document.removeEventListener('mouseup', handleMouseUp);
     };
-  }, [isDragging, disabled, lastAngle, rotationDirection, expectedDirection, dialRotation, currentPosition, length, selectedDigits]);
-
-  // Scroll wheel handler
-  const handleWheel = (e: React.WheelEvent) => {
-    if (disabled || currentPosition >= length) return;
-    e.preventDefault();
-
-    const delta = e.deltaY > 0 ? 36 : -36; // Rotate by one digit
-    setDialRotation(prev => prev + delta);
-    setRotationDirection(e.deltaY > 0 ? 'cw' : 'ccw');
-  };
+  }, [isDragging, disabled, lastAngle, dialRotation, currentPosition, length, selectedNumbers]);
 
   const handleSubmit = () => {
     if (disabled || currentPosition < length) return;
-    const answer = selectedDigits.join('');
+    const answer = selectedNumbers.filter((n): n is number => n !== null);
     onSubmit(answer);
   };
 
   const handleReset = () => {
     if (disabled) return;
-    setSelectedDigits(Array(length).fill(''));
+    setSelectedNumbers(Array(length).fill(null));
     setCurrentPosition(0);
     setDialRotation(0);
-    setRotationDirection(null);
   };
 
-  const currentDigit = getCurrentDigit(dialRotation);
+  const currentNumber = getCurrentNumber(dialRotation);
   const isComplete = currentPosition >= length;
 
   return (
     <div className="flex flex-col items-center gap-6 py-4">
-      {/* Selected digits display */}
+      {/* Selected numbers display */}
       <div className="flex gap-2">
-        {selectedDigits.map((digit, index) => (
+        {selectedNumbers.map((num, index) => (
           <div
             key={index}
-            className={`w-12 h-14 flex items-center justify-center rounded-lg border-2 font-bold text-2xl font-mono ${
+            className={`w-14 h-14 flex items-center justify-center rounded-lg border-2 font-bold text-2xl font-mono ${
               index === currentPosition
                 ? 'border-primary bg-primary/10'
-                : digit
+                : num !== null
                 ? 'border-green-500 bg-green-500/10 text-foreground'
                 : 'border-muted bg-muted/10 text-muted-foreground'
             }`}
           >
-            {digit || '–'}
+            {num !== null ? num.toString().padStart(2, '0') : '––'}
           </div>
         ))}
       </div>
 
       {/* Safe dial */}
       <div className="relative">
-        {/* Dial container */}
         <div
           ref={dialRef}
-          className={`relative w-64 h-64 rounded-full bg-gradient-to-br from-slate-200 to-slate-300 dark:from-slate-700 dark:to-slate-800 shadow-2xl ${
+          className={`relative w-72 h-72 rounded-full bg-gradient-to-br from-slate-200 to-slate-300 dark:from-slate-700 dark:to-slate-800 shadow-2xl ${
             disabled || isComplete ? 'cursor-not-allowed opacity-50' : 'cursor-grab active:cursor-grabbing'
           }`}
           onTouchStart={handleTouchStart}
           onMouseDown={handleMouseDown}
-          onWheel={handleWheel}
           style={{
             boxShadow: 'inset 0 4px 12px rgba(0,0,0,0.2), 0 8px 24px rgba(0,0,0,0.2)',
             userSelect: 'none',
@@ -229,13 +205,13 @@ export default function SafeDialInput({ length, onSubmit, disabled, initialValue
           }}
         >
           {/* Center circle */}
-          <div className="absolute inset-8 rounded-full bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900 shadow-inner flex items-center justify-center">
-            <div className="text-4xl font-bold font-mono text-foreground">
-              {currentDigit}
+          <div className="absolute inset-10 rounded-full bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900 shadow-inner flex items-center justify-center">
+            <div className="text-5xl font-bold font-mono text-foreground">
+              {currentNumber.toString().padStart(2, '0')}
             </div>
           </div>
 
-          {/* Rotating digits around perimeter */}
+          {/* Rotating tick marks and numbers */}
           <div
             className="absolute inset-0 transition-transform"
             style={{
@@ -243,59 +219,61 @@ export default function SafeDialInput({ length, onSubmit, disabled, initialValue
               transition: isDragging ? 'none' : 'transform 0.3s ease-out',
             }}
           >
-            {DIGITS.map((digit, index) => {
-              const angle = (index * 36) - 90; // Start at top (0 at -90deg which is top)
+            {NUMBERS.map((num) => {
+              const angle = (num * DEGREES_PER_NUMBER) - 90;
               const radian = (angle * Math.PI) / 180;
-              const radius = 110; // Distance from center
+              const radius = 130;
               const x = Math.cos(radian) * radius;
               const y = Math.sin(radian) * radius;
 
+              // Show number label every 10
+              const showLabel = num % 10 === 0;
+              // Three sizes of tick marks
+              const isMajorTick = num % 10 === 0; // 0, 10, 20, etc.
+              const isMidTick = num % 5 === 0 && num % 10 !== 0; // 5, 15, 25, etc.
+
               return (
-                <div
-                  key={digit}
-                  className="absolute text-xl font-bold font-mono text-foreground/70"
-                  style={{
-                    left: '50%',
-                    top: '50%',
-                    transform: `translate(calc(-50% + ${x}px), calc(-50% + ${y}px)) rotate(${-dialRotation}deg)`,
-                  }}
-                >
-                  {digit}
+                <div key={num}>
+                  {/* Tick mark */}
+                  <div
+                    className={`absolute ${
+                      isMajorTick
+                        ? 'w-0.5 h-4 bg-foreground/60'
+                        : isMidTick
+                        ? 'w-0.5 h-3 bg-foreground/50'
+                        : 'w-0.5 h-2 bg-foreground/30'
+                    }`}
+                    style={{
+                      left: '50%',
+                      top: '50%',
+                      transform: `translate(calc(-50% + ${x}px), calc(-50% + ${y}px)) rotate(${num * DEGREES_PER_NUMBER}deg)`,
+                      transformOrigin: 'center',
+                    }}
+                  />
+                  {/* Number label (only for multiples of 10) */}
+                  {showLabel && (
+                    <div
+                      className="absolute text-lg font-bold font-mono text-foreground/80"
+                      style={{
+                        left: '50%',
+                        top: '50%',
+                        transform: `translate(calc(-50% + ${x * 0.75}px), calc(-50% + ${y * 0.75}px)) rotate(${-dialRotation}deg)`,
+                      }}
+                    >
+                      {num}
+                    </div>
+                  )}
                 </div>
               );
             })}
           </div>
 
-          {/* Top marker (shows which digit is selected) */}
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1 w-4 h-4 bg-primary rotate-45 shadow-lg"></div>
+          {/* Top marker (shows which number is selected) */}
+          <div className="absolute top-2 left-1/2 -translate-x-1/2 w-1 h-6 bg-primary shadow-lg"></div>
         </div>
-
-        {/* Expected direction indicator - always visible when not complete */}
-        {!isComplete && !rotationDirection && (
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none text-primary/30">
-            {expectedDirection === 'cw' ? (
-              <RotateCw className="w-20 h-20" />
-            ) : (
-              <RotateCcw className="w-20 h-20" />
-            )}
-          </div>
-        )}
-
-        {/* Direction feedback indicator - shows when actively rotating */}
-        {rotationDirection && !isComplete && (
-          <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none ${
-            rotationDirection === expectedDirection ? 'text-green-500' : 'text-red-500'
-          }`}>
-            {rotationDirection === 'cw' ? (
-              <RotateCw className="w-20 h-20 opacity-60" />
-            ) : (
-              <RotateCcw className="w-20 h-20 opacity-60" />
-            )}
-          </div>
-        )}
       </div>
 
-      {/* Control buttons - hide when readOnly */}
+      {/* Control buttons */}
       {!readOnly && (
         <div className="flex gap-3 w-full max-w-xs justify-center">
           <Button
@@ -315,14 +293,6 @@ export default function SafeDialInput({ length, onSubmit, disabled, initialValue
           >
             {disabled ? 'Checking...' : isComplete ? 'Submit' : `${currentPosition}/${length} Complete`}
           </Button>
-        </div>
-      )}
-
-      {/* Instructions */}
-      {!isComplete && !readOnly && (
-        <div className="text-xs text-center text-muted-foreground max-w-xs">
-          Drag the dial {expectedDirection === 'cw' ? 'clockwise' : 'counter-clockwise'} to select digit {currentPosition + 1}.
-          Release when your desired number is at the top marker.
         </div>
       )}
     </div>

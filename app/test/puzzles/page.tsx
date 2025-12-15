@@ -25,8 +25,20 @@ interface PuzzleTest {
 export default function PuzzleTestPage() {
   const [results, setResults] = useState<Record<string, 'correct' | 'incorrect' | null>>({});
 
-  const handleTest = (puzzleType: string, answer: string, expected: string) => {
-    const isCorrect = answer.toUpperCase() === expected.toUpperCase();
+  const handleTest = (puzzleType: string, answer: string | number[], expected: string | number[]) => {
+    let isCorrect: boolean;
+
+    if (Array.isArray(answer) && Array.isArray(expected)) {
+      // Array comparison (for safe dial)
+      isCorrect = answer.length === expected.length &&
+        answer.every((val, idx) => val === expected[idx]);
+    } else if (typeof answer === 'string' && typeof expected === 'string') {
+      // String comparison (for most puzzles)
+      isCorrect = answer.toUpperCase() === expected.toUpperCase();
+    } else {
+      isCorrect = false;
+    }
+
     setResults({ ...results, [puzzleType]: isCorrect ? 'correct' : 'incorrect' });
   };
 
@@ -45,11 +57,11 @@ export default function PuzzleTestPage() {
     {
       name: 'Safe Dial',
       type: 'number_code.safe',
-      answer: '033',
+      answer: '[15, 30, 45]',
       component: (
         <SafeDialInput
           length={3}
-          onSubmit={(ans) => handleTest('number_code.safe', ans, '033')}
+          onSubmit={(ans) => handleTest('number_code.safe', ans, [15, 30, 45])}
         />
       ),
     },

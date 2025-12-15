@@ -256,18 +256,20 @@ All available puzzle input types and their configuration.
 **Note:** Puzzle instructions should be included in the `location_found_text` field, not in the puzzle object.
 
 #### `number_code.safe` (Safe Dial)
-- **Description:** Rotating dial with direction-based input
-- **Answer Format:** Zero-padded number string
-- **Interactions:** Rotate clockwise/counter-clockwise alternately
+- **Description:** Realistic safe dial with double-digit numbers (00-99)
+- **Answer Format:** Array of numbers (e.g., [62, 31, 12, 12])
+- **Interactions:** Drag to rotate dial, auto-snaps to nearest number when released
+- **Visual Design:** Shows every 10th number (0, 10, 20...90) with tick marks for individual numbers
 - **Use Cases:** Safe combinations, mechanical puzzle locks
 - **Example JSON:**
 ```json
 {
   "type": "number_code.safe",
-  "answer": "033",
+  "answer": [15, 30, 45],
   "answer_length": 3
 }
 ```
+**Note:** The dial supports double-digit numbers (00-99). Each entry in the answer array represents one dial turn. The `answer_length` indicates how many numbers the user must enter.
 
 ### Word-Based Puzzles
 

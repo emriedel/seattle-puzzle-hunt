@@ -6,7 +6,7 @@ const prisma = new PrismaClient();
 
 interface PuzzleData {
   type: 'number_code' | 'word_code';
-  answer: string;
+  answer: string | number[];
   answer_length: number;
 }
 
@@ -65,17 +65,41 @@ async function seedHunt(huntData: HuntData) {
   // Upsert locations
   for (const location of huntData.locations) {
     // Normalize answer based on type
-    let normalizedAnswer = location.puzzle.answer;
+    let normalizedAnswer: string;
+
     if (location.puzzle.type === 'word_code' || location.puzzle.type === 'tile_word') {
+      if (typeof location.puzzle.answer !== 'string') {
+        throw new Error(`Expected string answer for ${location.puzzle.type} at ${location.name}`);
+      }
       normalizedAnswer = location.puzzle.answer.toUpperCase();
+    } else if (location.puzzle.type === 'number_code.safe') {
+      // Safe dial: convert array [6, 12, 18] to string "061218"
+      if (Array.isArray(location.puzzle.answer)) {
+        normalizedAnswer = location.puzzle.answer.map(n => n.toString().padStart(2, '0')).join('');
+      } else if (typeof location.puzzle.answer === 'string') {
+        // Fallback for old string format
+        normalizedAnswer = location.puzzle.answer.padStart(location.puzzle.answer_length * 2, '0');
+      } else {
+        throw new Error(`Invalid answer format for number_code.safe at ${location.name}`);
+      }
     } else if (location.puzzle.type.startsWith('number_code')) {
-      // Zero-pad number codes to answer_length (handles number_code, number_code.cryptex, number_code.safe)
+      // Zero-pad number codes to answer_length (handles number_code, number_code.cryptex)
+      if (typeof location.puzzle.answer !== 'string') {
+        throw new Error(`Expected string answer for ${location.puzzle.type} at ${location.name}`);
+      }
       normalizedAnswer = location.puzzle.answer.padStart(location.puzzle.answer_length, '0');
     } else if (location.puzzle.type === 'directional_code' || location.puzzle.type === 'simon_code') {
       // Uppercase directional and color sequences
+      if (typeof location.puzzle.answer !== 'string') {
+        throw new Error(`Expected string answer for ${location.puzzle.type} at ${location.name}`);
+      }
       normalizedAnswer = location.puzzle.answer.toUpperCase();
+    } else {
+      // Other types (slider_code, toggle_code, morse_code) use answer as-is
+      normalizedAnswer = typeof location.puzzle.answer === 'string'
+        ? location.puzzle.answer
+        : location.puzzle.answer.toString();
     }
-    // Other types (slider_code, toggle_code, morse_code) use answer as-is
 
     await prisma.location.upsert({
       where: { id: location.id },

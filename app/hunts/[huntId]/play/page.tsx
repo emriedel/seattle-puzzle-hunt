@@ -288,7 +288,7 @@ export default function PlayPage() {
     }
   };
 
-  const submitPuzzleAnswer = async (answer: string, locationIndex: number) => {
+  const submitPuzzleAnswer = async (answer: string | number[], locationIndex: number) => {
     if (!sessionId || !hunt) return;
     const location = hunt.locations[locationIndex];
     if (!location) return;
@@ -312,7 +312,11 @@ export default function PlayPage() {
       if (correct) {
         setStatusMessage('');
         setSolvedLocations(prev => new Set([...prev, locationIndex]));
-        setSolvedAnswers(prev => ({ ...prev, [locationIndex]: answer }));
+        // Store answer for display - convert arrays to display format
+        const displayAnswer = Array.isArray(answer)
+          ? answer.map(n => n.toString().padStart(2, '0')).join('')
+          : answer;
+        setSolvedAnswers(prev => ({ ...prev, [locationIndex]: displayAnswer }));
 
         // Check if this is the last location
         if (locationIndex === hunt.locations.length - 1) {
@@ -488,6 +492,26 @@ export default function PlayPage() {
                   {/* Number-based puzzle inputs */}
                   {currentLocation.puzzleType.startsWith('number_code') && (() => {
                     const subType = currentLocation.puzzleType.split('.')[1];
+
+                    if (subType === 'safe') {
+                      // Safe dial uses number array
+                      const stringAnswer = solvedAnswers[locationIndex];
+                      const arrayAnswer = stringAnswer
+                        ? stringAnswer.match(/.{1,2}/g)?.map(s => parseInt(s, 10))
+                        : undefined;
+
+                      return (
+                        <SafeDialInput
+                          length={currentLocation.puzzleAnswerLength}
+                          onSubmit={(answer: number[]) => submitPuzzleAnswer(answer, locationIndex)}
+                          disabled={isChecking}
+                          initialValue={arrayAnswer}
+                          readOnly={isLocationSolved}
+                        />
+                      );
+                    }
+
+                    // Other number code types use string
                     const props = {
                       length: currentLocation.puzzleAnswerLength,
                       onSubmit: (answer: string) => submitPuzzleAnswer(answer, locationIndex),
@@ -498,8 +522,6 @@ export default function PlayPage() {
 
                     if (subType === 'cryptex') {
                       return <NumericCryptexInput {...props} />;
-                    } else if (subType === 'safe') {
-                      return <SafeDialInput {...props} />;
                     } else {
                       return <NumberCodeInput {...props} />;
                     }
