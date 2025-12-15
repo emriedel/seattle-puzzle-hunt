@@ -20,7 +20,7 @@
         "answer": "6532",
         "answer_length": 4
       },
-      "next_location_id": null
+      "next_location_id": "sullys"
     },
     {
       "id": "sullys",
@@ -29,10 +29,10 @@
       "order": 2,
       "coordinates": { "lat": 47.6737628, "lng": -122.3571311 },
       "location_riddle": "The box contains another note with a simple poem.\n{{handwritten}}So you accepted my challenge,\nUnpacked what I hid.\nLooking for more clues?\nLeave this place and head south.\nYou must take the first letters,\nSpell out your next stop.\n{{/handwritten}}",
-      "location_found_text": "Searching in the bushes, you find a lockbox with a note on it. I guess the only thing left to do is to open it and see what else the Phantom has in store.\n\n{{handwritten}}You may **address** me as the Phinney Phantom{{/handwritten}}\n",
+      "location_found_text": "You step into Sully’s Snow Goose Saloon. The bartender slides a small safe across the counter and nods toward it.\n\n“We found this outside last night,” he says. “Maybe you can make some sense of it.”\n\nAttached is another note.\n{{handwritten}}So you accepted my challenge,\nUnpacked what I hid.\nLooking for more clues?\nLeave this place and head south.\nYou must take the first letters,\nSpell out your next stop.\n{{/handwritten}}",
       "puzzle": {
-        "type": "number_code.cryptex",
-        "answer": "6532",
+        "type": "number_code.safe",
+        "answer": [61, 31, 12, 12],
         "answer_length": 4
       },
       "next_location_id": null
