@@ -52,7 +52,7 @@ export default function DebugPanel({ locations = [] }: DebugPanelProps) {
         onClick={() => setIsOpen(true)}
         variant="secondary"
         size="sm"
-        className="fixed bottom-4 right-4 shadow-lg z-50 font-mono"
+        className="fixed bottom-4 right-4 shadow-lg z-[9999] font-mono"
       >
         🐛 Debug
       </Button>
@@ -60,7 +60,7 @@ export default function DebugPanel({ locations = [] }: DebugPanelProps) {
   }
 
   return (
-    <Card className="fixed bottom-4 right-4 shadow-xl max-w-sm z-50 border-purple-500/50">
+    <Card className="fixed bottom-4 right-4 shadow-xl max-w-sm z-[9999] border-purple-500/50">
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <CardTitle className="text-sm flex items-center gap-2">
