@@ -190,7 +190,10 @@ export default function SlidePuzzleInput({
   return (
     <Card className="w-full max-w-md mx-auto p-6 space-y-4">
       {/* Puzzle Grid */}
-      <div className="relative w-full aspect-square bg-gray-300 p-1 rounded-lg">
+      <div
+        className="relative w-full aspect-square bg-gray-300 p-1 rounded-lg"
+        style={{ touchAction: 'manipulation' }}
+      >
         {/* Render only the 8 actual tiles (not the empty space) */}
         {tiles
           .map((tileValue, index) => ({ tileValue, index }))

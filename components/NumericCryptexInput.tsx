@@ -67,6 +67,7 @@ function NumericWheel({ value, onChange, disabled }: WheelProps) {
 
   const handleTouchMove = (e: React.TouchEvent) => {
     if (!isDragging || disabled) return;
+    e.preventDefault(); // Prevent page scrolling while dragging
     const currentY = e.touches[0].clientY;
     const deltaY = startY - currentY;
     const sensitivity = 30; // pixels per digit
@@ -148,6 +149,7 @@ function NumericWheel({ value, onChange, disabled }: WheelProps) {
           boxShadow: 'inset 0 2px 8px rgba(0,0,0,0.1), 0 4px 12px rgba(0,0,0,0.15)',
           userSelect: 'none',
           WebkitUserSelect: 'none',
+          touchAction: 'none',
         }}
       >
         {/* Digit stack - showing 5 digits total */}
