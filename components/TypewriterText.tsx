@@ -82,11 +82,13 @@ export function TypewriterText({ text, speed = 3, className, skipAnimation = fal
   // Capture initial skipAnimation value for this text
   const shouldSkipRef = useRef(skipAnimation);
   const prevTextRef = useRef(text);
+  const onCompleteCalledRef = useRef(false);
 
   // Update ref when text changes
   if (prevTextRef.current !== text) {
     shouldSkipRef.current = skipAnimation;
     prevTextRef.current = text;
+    onCompleteCalledRef.current = false; // Reset when text changes
   }
 
   const [visibleChars, setVisibleChars] = useState(shouldSkipRef.current ? totalChars : 0);
@@ -105,8 +107,9 @@ export function TypewriterText({ text, speed = 3, className, skipAnimation = fal
 
   useEffect(() => {
     if (shouldSkipRef.current) {
-      // If skipping, call onComplete immediately
-      if (onComplete && !isComplete) {
+      // If skipping, call onComplete immediately (only once per text)
+      if (onComplete && !onCompleteCalledRef.current) {
+        onCompleteCalledRef.current = true;
         onComplete();
       }
       return;
@@ -120,7 +123,8 @@ export function TypewriterText({ text, speed = 3, className, skipAnimation = fal
       return () => clearTimeout(timeout);
     } else if (visibleChars >= totalChars && !isComplete) {
       setIsComplete(true);
-      if (onComplete) {
+      if (onComplete && !onCompleteCalledRef.current) {
+        onCompleteCalledRef.current = true;
         onComplete();
       }
     }
