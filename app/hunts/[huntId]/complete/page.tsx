@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
@@ -19,6 +20,7 @@ interface LogbookEntry {
   id: string;
   name: string | null;
   message: string | null;
+  photoUrl: string | null;
   createdAt: string;
 }
 
@@ -33,6 +35,9 @@ export default function CompletePage() {
   const [logbookEntries, setLogbookEntries] = useState<LogbookEntry[]>([]);
   const [name, setName] = useState('');
   const [message, setMessage] = useState('');
+  const [selectedPhoto, setSelectedPhoto] = useState<File | null>(null);
+  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+  const [uploadingPhoto, setUploadingPhoto] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
@@ -67,13 +72,68 @@ export default function CompletePage() {
     }
   };
 
+  const handlePhotoSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      alert('Photo is too large. Maximum size is 5MB.');
+      return;
+    }
+
+    // Validate file type
+    if (!['image/jpeg', 'image/jpg', 'image/png', 'image/webp'].includes(file.type)) {
+      alert('Invalid file type. Please select a JPG, PNG, or WebP image.');
+      return;
+    }
+
+    setSelectedPhoto(file);
+
+    // Create preview
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setPhotoPreview(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const removePhoto = () => {
+    setSelectedPhoto(null);
+    setPhotoPreview(null);
+  };
+
   const submitLogbookEntry = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name && !message) return;
+    if (!name && !message && !selectedPhoto) return;
 
     setSubmitting(true);
 
     try {
+      let photoUrl: string | null = null;
+
+      // Upload photo first if selected
+      if (selectedPhoto) {
+        setUploadingPhoto(true);
+        const formData = new FormData();
+        formData.append('photo', selectedPhoto);
+
+        const uploadRes = await fetch('/api/logbook/upload-photo', {
+          method: 'POST',
+          body: formData,
+        });
+
+        if (uploadRes.ok) {
+          const uploadData = await uploadRes.json();
+          photoUrl = uploadData.url;
+        } else {
+          console.error('Failed to upload photo');
+          // Continue with submission even if photo upload fails
+        }
+        setUploadingPhoto(false);
+      }
+
+      // Submit logbook entry
       const res = await fetch('/api/logbook', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -82,6 +142,7 @@ export default function CompletePage() {
           sessionId,
           name: name || null,
           message: message || null,
+          photoUrl: photoUrl || null,
         }),
       });
 
@@ -89,12 +150,15 @@ export default function CompletePage() {
         setSubmitted(true);
         setName('');
         setMessage('');
+        setSelectedPhoto(null);
+        setPhotoPreview(null);
         await loadLogbook();
       }
     } catch (err) {
       console.error('Failed to submit logbook entry:', err);
     } finally {
       setSubmitting(false);
+      setUploadingPhoto(false);
     }
   };
 
@@ -198,12 +262,63 @@ export default function CompletePage() {
                     placeholder="Share your experience..."
                   />
                 </div>
+                <div>
+                  <label className="block text-sm font-medium mb-2">
+                    📸 Photo (optional)
+                  </label>
+                  <p className="text-sm text-muted-foreground mb-3">
+                    Share a selfie of your group!
+                  </p>
+                  {photoPreview ? (
+                    <div className="space-y-2">
+                      <div className="relative w-full aspect-video rounded-lg overflow-hidden border border-border">
+                        <Image
+                          src={photoPreview}
+                          alt="Photo preview"
+                          fill
+                          className="object-cover"
+                        />
+                      </div>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={removePhoto}
+                        className="w-full"
+                      >
+                        Remove Photo
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="relative">
+                      <input
+                        type="file"
+                        accept="image/jpeg,image/jpg,image/png,image/webp"
+                        onChange={handlePhotoSelect}
+                        className="hidden"
+                        id="photo-upload"
+                      />
+                      <label
+                        htmlFor="photo-upload"
+                        className="flex items-center justify-center w-full px-4 py-3 border-2 border-dashed border-border rounded-lg cursor-pointer hover:border-primary hover:bg-muted/50 transition-colors"
+                      >
+                        <div className="text-center">
+                          <div className="text-2xl mb-1">📷</div>
+                          <div className="text-sm font-medium">Choose Photo</div>
+                          <div className="text-xs text-muted-foreground">
+                            JPG, PNG, or WebP (max 5MB)
+                          </div>
+                        </div>
+                      </label>
+                    </div>
+                  )}
+                </div>
                 <Button
                   type="submit"
-                  disabled={submitting || (!name && !message)}
+                  disabled={submitting || uploadingPhoto || (!name && !message && !selectedPhoto)}
                   className="w-full"
                 >
-                  {submitting ? 'Submitting...' : 'Sign Logbook'}
+                  {uploadingPhoto ? 'Uploading photo...' : submitting ? 'Submitting...' : 'Sign Logbook'}
                 </Button>
               </form>
             )}
@@ -232,7 +347,17 @@ export default function CompletePage() {
                       </span>
                     </div>
                     {entry.message && (
-                      <p className="text-sm">{entry.message}</p>
+                      <p className="text-sm mb-2">{entry.message}</p>
+                    )}
+                    {entry.photoUrl && (
+                      <div className="relative w-full aspect-video rounded-lg overflow-hidden border border-border mt-2">
+                        <Image
+                          src={entry.photoUrl}
+                          alt={`Photo from ${entry.name || 'Anonymous'}`}
+                          fill
+                          className="object-cover"
+                        />
+                      </div>
                     )}
                   </div>
                 ))}

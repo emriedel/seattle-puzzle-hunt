@@ -42,3 +42,7 @@ next-env.d.ts
 
 # prisma
 /prisma/migrations
+
+# local uploads (development only - production uses Vercel Blob)
+/public/uploads/
+!public/uploads/.gitkeep

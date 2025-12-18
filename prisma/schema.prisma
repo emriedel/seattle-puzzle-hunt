@@ -70,6 +70,7 @@ model LogbookEntry {
   sessionId String?
   name      String?
   message   String?
+  photoUrl  String?  // Optional photo URL from Vercel Blob storage
   createdAt DateTime @default(now())
 }
 

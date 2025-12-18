@@ -3,7 +3,7 @@ import { prisma } from '@/lib/prisma';
 
 export async function POST(request: Request) {
   try {
-    const { huntId, sessionId, name, message } = await request.json();
+    const { huntId, sessionId, name, message, photoUrl } = await request.json();
 
     if (!huntId) {
       return NextResponse.json(
@@ -18,6 +18,7 @@ export async function POST(request: Request) {
         sessionId: sessionId || null,
         name: name || null,
         message: message || null,
+        photoUrl: photoUrl || null,
       },
     });
 
@@ -51,6 +52,7 @@ export async function GET(request: Request) {
         id: true,
         name: true,
         message: true,
+        photoUrl: true,
         createdAt: true,
       },
     });
