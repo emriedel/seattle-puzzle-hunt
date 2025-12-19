@@ -69,7 +69,7 @@
       "location_found_text": "You stop outside **Greenwood Hardware**, the windows packed full of merchandise and posters, as usual.\n\nAs you look around, you spot a small metal box tucked near the sidewalk, its face covered in sliding tiles. There’s no note this time, but you can guess that this is another puzzle from the Phantom.",
       "puzzle": {
         "type": "slide_puzzle",
-        "image": "/puzzle-images/greenwoodhardware.png",
+        "image": "/puzzle-images/phinney-phantom/greenwoodhardware.png",
         "answer": "SOLVED",
         "answer_length": 6
       },
@@ -100,9 +100,9 @@
       "puzzle": {
         "type": "tile_image",
         "images": [
-          "/puzzle-images/seattle-1889-fire.jpg",
-          "/puzzle-images/seattle-1962-worlds-fair.jpg",
-          "/puzzle-images/seattle-1851-landing.jpg"
+          "/puzzle-images/phinney-phantom/kens2.png",
+          "/puzzle-images/phinney-phantom/kens3.png",
+          "/puzzle-images/phinney-phantom/kens1.png"
         ],
         "answer": "3,1,2",
         "answer_length": 3

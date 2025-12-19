@@ -16,6 +16,7 @@ interface PuzzleData {
   answer_length: number;
   colors?: ColorConfig[]; // Optional colors array for color_code puzzles
   images?: string[]; // Optional images array for tile_image puzzles
+  image?: string; // Optional image path for slide_puzzle
 }
 
 interface LocationData {
@@ -130,6 +131,8 @@ async function seedHunt(huntData: HuntData) {
       puzzleConfig = { colors: location.puzzle.colors };
     } else if (puzzleType === 'tile_image' && location.puzzle.images) {
       puzzleConfig = { images: location.puzzle.images };
+    } else if (puzzleType === 'slide_puzzle' && location.puzzle.image) {
+      puzzleConfig = { image: location.puzzle.image };
     }
 
     await prisma.location.create({

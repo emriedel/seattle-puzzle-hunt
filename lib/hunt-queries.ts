@@ -64,6 +64,7 @@ export const getCachedHunt = unstable_cache(
             locationFoundText: true,
             searchLocationButtonText: true,
             puzzleType: true,
+            puzzleConfig: true,
             puzzleAnswerLength: true,
             nextLocationId: true,
             // Explicitly exclude puzzleAnswer for security
