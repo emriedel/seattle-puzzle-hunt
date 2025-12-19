@@ -66,7 +66,7 @@
       "order": 4,
       "coordinates": { "lat": 47.68089352450108, "lng": -122.35563543957042 },
       "location_riddle": "As you enter the final color, the panel responds with a soft click. One of its seams opens just enough for a folded note to slip free.\n\nYou take it and read:\n{{handwritten}}Where tools line the walls,\nAnd home fixes begin.\nKeys, paint, and screws\nWait patiently within.\n{{/handwritten}}\n\nIt sounds like the Phantom wants you to pay a visit to another place in the neighborhood.",
-      "location_found_text": "The **Heart of Phinney Park** is quiet, tucked just north of the Phinney Center you visited earlier. A tall, silent tower rises above the trees, watching over a handful of outdoor chess tables.\n\nAs you look around, you spot a small control panel tucked beneath a bench. Four colored buttons sit in a row, waiting.\n\nA folded note rests beside it:\n{{handwritten}}Search around for four colors,\nEnter them just as I will:\nThe siren,\nThe tower,\nB6,\nThen the mill.\n{{/handwritten}}\n",
+      "location_found_text": "You stop outside **Greenwood Hardware**, the windows packed full of merchandise and posters, as usual.\n\nAs you look around, you spot a small metal box tucked near the sidewalk, its face covered in sliding tiles. There’s no note this time, but you can guess that this is another puzzle from the Phantom.",
       "puzzle": {
         "type": "slide_puzzle",
         "image": "/puzzle-images/greenwoodhardware.png",
