@@ -70,7 +70,15 @@ async function seedHunt(huntData: HuntData) {
     },
   });
 
-  // Upsert locations
+  // Delete all existing locations for this hunt to ensure clean sync
+  const deleteResult = await prisma.location.deleteMany({
+    where: { huntId: huntData.id },
+  });
+  if (deleteResult.count > 0) {
+    console.log(`  🗑️  Deleted ${deleteResult.count} old location(s)`);
+  }
+
+  // Create locations from JSON
   for (const location of huntData.locations) {
     // Normalize answer based on type
     let normalizedAnswer: string;
@@ -124,24 +132,8 @@ async function seedHunt(huntData: HuntData) {
       puzzleConfig = { images: location.puzzle.images };
     }
 
-    await prisma.location.upsert({
-      where: { id: location.id },
-      update: {
-        name: location.name,
-        address: location.address,
-        order: location.order,
-        lat: location.coordinates.lat,
-        lng: location.coordinates.lng,
-        locationRiddle: location.location_riddle,
-        locationFoundText: location.location_found_text,
-        searchLocationButtonText: location.search_location_button_text,
-        puzzleType: location.puzzle.type,
-        puzzleConfig: puzzleConfig,
-        puzzleAnswer: normalizedAnswer,
-        puzzleAnswerLength: location.puzzle.answer_length,
-        nextLocationId: location.next_location_id,
-      },
-      create: {
+    await prisma.location.create({
+      data: {
         id: location.id,
         huntId: huntData.id,
         name: location.name,

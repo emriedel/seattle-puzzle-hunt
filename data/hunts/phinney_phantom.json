@@ -81,8 +81,8 @@
       "address": "7405 Greenwood Ave N",
       "order": 5,
       "coordinates": { "lat": 47.68277370991226, "lng": -122.35548774572331 },
-      "location_riddle": "You start by searching around the **Phinney Center** for the puzzle the Phantom mentioned.",
-      "location_found_text": "In the bushes nearby, you find a small lockbox with a note attached. It looks like a clue to the combination.\n\n{{handwritten}}You may *address* me as the Phinney Phantom.\nI’ll start you off with something plain:\nThe lock opens with the numbers\nThat mark your place upon this lane.\n{{/handwritten}}",
+      "location_riddle": "As the last tile clicks into place, the box gives a soft metallic snap.\n\nThe front panel drops open just enough to reveal a familiar scrap of paper inside.\n\n{{handwritten}}Head north up the street,\nYou will pass along the way:\na house of engines, a hall of steins,\nA place where beans are ground each day.\n\nNear a bar named for a road,\nWindows framed in red and blue,\nA cozy home of stories waits,\nOutside will be your next clue.\n{{/handwritten}}",
+      "location_found_text": "The code is 0000",
       "puzzle": {
         "type": "number_code.cryptex",
         "answer": "0000",
@@ -95,8 +95,8 @@
       "address": "6532 Phinney Ave N",
       "order": 6,
       "coordinates": { "lat": 47.68165132083815, "lng": -122.35549510591811 },
-      "location_riddle": "You start by searching around the **Phinney Center** for the puzzle the Phantom mentioned.",
-      "location_found_text": "In the bushes nearby, you find a small lockbox with a note attached. It looks like a clue to the combination.\n\n{{handwritten}}You may *address* me as the Phinney Phantom.\nI’ll start you off with something plain:\nThe lock opens with the numbers\nThat mark your place upon this lane.\n{{/handwritten}}",
+      "location_riddle": "Head to Ken's Market",
+      "location_found_text": "The answer is 3-1-2",
       "puzzle": {
         "type": "tile_image",
         "images": [
