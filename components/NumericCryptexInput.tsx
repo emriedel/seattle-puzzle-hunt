@@ -70,7 +70,7 @@ function NumericWheel({ value, onChange, disabled }: WheelProps) {
     e.preventDefault(); // Prevent page scrolling while dragging
     const currentY = e.touches[0].clientY;
     const deltaY = startY - currentY;
-    const sensitivity = 30; // pixels per digit
+    const sensitivity = 40; // pixels per digit
     const steps = Math.round(deltaY / sensitivity);
 
     if (Math.abs(steps) > 0) {
@@ -98,7 +98,7 @@ function NumericWheel({ value, onChange, disabled }: WheelProps) {
     if (!isDragging || disabled) return;
     const currentY = e.clientY;
     const deltaY = startY - currentY;
-    const sensitivity = 30;
+    const sensitivity = 40;
     const steps = Math.round(deltaY / sensitivity);
 
     if (Math.abs(steps) > 0) {

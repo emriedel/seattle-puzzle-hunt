@@ -17,7 +17,6 @@ import SlidePuzzleInput from '@/components/SlidePuzzleInput';
 import { TextPagination } from '@/components/TextPagination';
 import { TypewriterText } from '@/components/TypewriterText';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Header } from '@/components/Header';
 import { NavigationMenu } from '@/components/NavigationMenu';
 import { LocationHistoryViewer } from '@/components/LocationHistoryViewer';
@@ -81,6 +80,7 @@ export default function PlayPage() {
   const [error, setError] = useState<string | null>(null);
   const [restartKey, setRestartKey] = useState(0); // Force re-mount on restart
   const [isTextComplete, setIsTextComplete] = useState(false); // Track if typewriter animation is done
+  const [lastSearchLocation, setLastSearchLocation] = useState<{lat: number, lng: number, locationIndex: number} | null>(null); // Track last search location
 
   // Navigation state
   const [menuOpen, setMenuOpen] = useState(false);
@@ -207,6 +207,7 @@ export default function PlayPage() {
     setVisitedLocations(new Set());
     setVisitedPages(new Set()); // Reset visited pages to empty
     setSolvedAnswers({}); // Clear solved answers
+    setLastSearchLocation(null); // Clear last search location
     setRestartKey(prev => prev + 1); // Force re-mount of all components
     setStatusMessage('');
     window.scrollTo(0, 0);
@@ -220,6 +221,7 @@ export default function PlayPage() {
     if (currentPage > 0) {
       setCurrentPage(currentPage - 1);
       setStatusMessage('');
+      setLastSearchLocation(null); // Clear search location when navigating
       window.scrollTo(0, 0);
     }
   };
@@ -228,6 +230,7 @@ export default function PlayPage() {
     if (currentPage < maxPageReached) {
       setCurrentPage(currentPage + 1);
       setStatusMessage('');
+      setLastSearchLocation(null); // Clear search location when navigating
       window.scrollTo(0, 0);
     }
   };
@@ -239,6 +242,7 @@ export default function PlayPage() {
       setMaxPageReached(nextPage);
     }
     setStatusMessage('');
+    setLastSearchLocation(null); // Clear search location when advancing
     window.scrollTo(0, 0);
   };
 
@@ -268,6 +272,9 @@ export default function PlayPage() {
       const position = await getUserLocation();
       const { latitude, longitude } = position.coords;
 
+      // Store the location where the user searched
+      setLastSearchLocation({ lat: latitude, lng: longitude, locationIndex });
+
       setStatusMessage('Checking if you\'re at the location...');
 
       const res = await fetch(`/api/session/${sessionId}/location-check`, {
@@ -288,9 +295,8 @@ export default function PlayPage() {
         setVisitedLocations(prev => new Set([...prev, locationIndex]));
         advanceToNextPage(); // Auto-advance to puzzle page
       } else {
-        const radius = hunt?.globalLocationRadiusMeters ?? 40;
         setStatusMessage(
-          `You're ${distance}m away. Get within ${radius}m to continue.`
+          "This doesn't seem to be the right spot. Double-check the clue and try again somewhere else."
         );
       }
     } catch (err) {
@@ -400,6 +406,7 @@ export default function PlayPage() {
   const isLocationSolved = solvedLocations.has(locationIndex);
   const canGoBack = currentPage > 0;
   const canGoForward = currentPage < maxPageReached;
+  const hasSearchedHere = lastSearchLocation?.locationIndex === locationIndex;
 
   return (
     <>
@@ -446,76 +453,69 @@ export default function PlayPage() {
         <div key={restartKey} className="max-w-2xl mx-auto space-y-6">
           {/* Hunt Intro Page */}
           {pageType === 'intro' && (
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-center">{hunt.title}</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <TypewriterText
-                  text={hunt.huntIntroText || ''}
-                  skipAnimation={visitedPages.has(currentPage)}
-                  onComplete={() => setIsTextComplete(true)}
-                />
+            <div className="space-y-6">
+              <h1 className="text-2xl font-bold text-center">{hunt.title}</h1>
+              <TypewriterText
+                text={hunt.huntIntroText || ''}
+                skipAnimation={visitedPages.has(currentPage)}
+                onComplete={() => setIsTextComplete(true)}
+              />
 
-                {isTextComplete && (
-                  <Button
-                    onClick={advanceToNextPage}
-                    className="w-full animate-in fade-in duration-500"
-                    size="lg"
-                  >
-                    Continue
-                  </Button>
-                )}
-              </CardContent>
-            </Card>
+              {isTextComplete && (
+                <Button
+                  onClick={advanceToNextPage}
+                  className="w-full animate-in fade-in duration-500"
+                  size="lg"
+                >
+                  Continue
+                </Button>
+              )}
+            </div>
           )}
 
           {/* Location Riddle Page */}
           {pageType === 'riddle' && currentLocation && (
-            <Card>
-              <CardContent className="pt-6 space-y-6">
-                <TypewriterText
-                  text={currentLocation.locationRiddle}
-                  skipAnimation={visitedPages.has(currentPage)}
-                  onComplete={() => setIsTextComplete(true)}
-                />
+            <div className="space-y-6">
+              <TypewriterText
+                text={currentLocation.locationRiddle}
+                skipAnimation={visitedPages.has(currentPage)}
+                onComplete={() => setIsTextComplete(true)}
+              />
 
-                {isTextComplete && (
-                  <>
-                    {statusMessage && (
-                      <div className="p-3 bg-blue-500/10 border border-blue-500/20 rounded-lg text-sm animate-in fade-in duration-500">
-                        {statusMessage}
-                      </div>
-                    )}
+              {isTextComplete && (
+                <>
+                  {statusMessage && (
+                    <div className="p-3 bg-blue-500/10 border border-blue-500/20 rounded-lg text-sm animate-in fade-in duration-500">
+                      {statusMessage}
+                    </div>
+                  )}
 
-                    {!isLocationVisited && (
-                      <Button
-                        onClick={() => checkLocation(locationIndex)}
-                        disabled={isChecking}
-                        className="w-full animate-in fade-in duration-500"
-                        size="lg"
-                      >
-                        {isChecking ? 'Checking location...' : (currentLocation.searchLocationButtonText || '🔍 Search for Clues')}
-                      </Button>
-                    )}
-                  </>
-                )}
-              </CardContent>
-            </Card>
+                  {!isLocationVisited && (
+                    <Button
+                      onClick={() => checkLocation(locationIndex)}
+                      disabled={isChecking || hasSearchedHere}
+                      className="w-full animate-in fade-in duration-500"
+                      size="lg"
+                    >
+                      {isChecking ? 'Checking location...' : hasSearchedHere ? 'Try somewhere else first' : (currentLocation.searchLocationButtonText || '🔍 Search here')}
+                    </Button>
+                  )}
+                </>
+              )}
+            </div>
           )}
 
           {/* Location Puzzle Page */}
           {pageType === 'puzzle' && currentLocation && (
-            <Card>
-              <CardContent className="pt-6 space-y-6">
-                <TypewriterText
-                  text={currentLocation.locationFoundText}
-                  skipAnimation={visitedPages.has(currentPage)}
-                  onComplete={() => setIsTextComplete(true)}
-                />
+            <div className="space-y-6">
+              <TypewriterText
+                text={currentLocation.locationFoundText}
+                skipAnimation={visitedPages.has(currentPage)}
+                onComplete={() => setIsTextComplete(true)}
+              />
 
-                {isTextComplete && (
-                  <div className="space-y-4 animate-in fade-in duration-500">
+              {isTextComplete && (
+                <div className="space-y-4 animate-in fade-in duration-500">
                   {!isLocationSolved && statusMessage && (
                     <div className="p-3 bg-blue-500/10 border border-blue-500/20 rounded-lg text-sm">
                       {statusMessage}
@@ -640,35 +640,30 @@ export default function PlayPage() {
                     />
                   )}
                 </div>
-                )}
-              </CardContent>
-            </Card>
+              )}
+            </div>
           )}
 
           {/* Hunt Success Page */}
           {pageType === 'success' && (
-            <Card>
-              <CardHeader>
-                <CardTitle>Hunt Complete!</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <TypewriterText
-                  text={hunt.huntSuccessText || 'Congratulations! You completed the hunt!'}
-                  skipAnimation={visitedPages.has(currentPage)}
-                  onComplete={() => setIsTextComplete(true)}
-                />
+            <div className="space-y-6">
+              <h2 className="text-2xl font-bold text-center">Hunt Complete!</h2>
+              <TypewriterText
+                text={hunt.huntSuccessText || 'Congratulations! You completed the hunt!'}
+                skipAnimation={visitedPages.has(currentPage)}
+                onComplete={() => setIsTextComplete(true)}
+              />
 
-                {isTextComplete && (
-                  <Button
-                    onClick={completeHunt}
-                    className="w-full animate-in fade-in duration-500"
-                    size="lg"
-                  >
-                    Complete Hunt 🎉
-                  </Button>
-                )}
-              </CardContent>
-            </Card>
+              {isTextComplete && (
+                <Button
+                  onClick={completeHunt}
+                  className="w-full animate-in fade-in duration-500"
+                  size="lg"
+                >
+                  Complete Hunt 🎉
+                </Button>
+              )}
+            </div>
           )}
 
           {/* Previous / Next Navigation */}
