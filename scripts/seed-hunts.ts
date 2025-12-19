@@ -164,6 +164,40 @@ async function seedHunt(huntData: HuntData) {
   }
 }
 
+async function revalidateCache() {
+  const revalidationSecret = process.env.REVALIDATION_SECRET;
+
+  // Skip revalidation if no secret is set (development without server running)
+  if (!revalidationSecret) {
+    console.log('\n⚠️  REVALIDATION_SECRET not set - skipping cache invalidation');
+    return;
+  }
+
+  // Determine the base URL
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+
+  try {
+    console.log('\n🔄 Invalidating hunt cache...');
+    const response = await fetch(`${baseUrl}/api/revalidate`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ secret: revalidationSecret }),
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      console.log(`✅ Cache invalidated successfully at ${data.timestamp}`);
+    } else {
+      const error = await response.text();
+      console.warn(`⚠️  Failed to invalidate cache: ${error}`);
+    }
+  } catch (error) {
+    console.warn('⚠️  Could not reach revalidation endpoint (server may not be running)');
+  }
+}
+
 async function main() {
   try {
     // Read all JSON files from data/hunts directory
@@ -180,6 +214,9 @@ async function main() {
     }
 
     console.log('\n✅ Seeding completed successfully!');
+
+    // Invalidate cache after seeding
+    await revalidateCache();
   } catch (error) {
     console.error('Error seeding database:', error);
     process.exit(1);

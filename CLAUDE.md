@@ -537,6 +537,8 @@ This section covers deploying and managing the application in production.
 3. **Add Environment Variables**
    - In Vercel project settings → Environment Variables
    - Add `DATABASE_URL` with your Neon connection string
+   - Add `REVALIDATION_SECRET` with a secure random string (e.g., generate with `openssl rand -hex 32`)
+   - Add `NEXT_PUBLIC_BASE_URL` with your production URL (e.g., `https://your-app.vercel.app`)
    - Apply to: Production, Preview, and Development
 
 4. **Deploy**
@@ -668,6 +670,8 @@ Once you launch to real users, you must preserve `PlaySession` and `LogbookEntry
 
    **Important:** The seed script only touches `Hunt` and `Location` tables. It never modifies `PlaySession` or `LogbookEntry`.
 
+   **Cache Invalidation:** The seed script automatically invalidates the Next.js cache after seeding if `REVALIDATION_SECRET` is set. This ensures users see updated hunt data immediately.
+
 4. **Testing Migrations**
 
    Use Neon's branching feature to test migrations safely:
@@ -714,15 +718,59 @@ Once you launch to real users, you must preserve `PlaySession` and `LogbookEntry
 | Variable | Required | Description | Example |
 |----------|----------|-------------|---------|
 | `DATABASE_URL` | Yes | PostgreSQL connection string | `postgresql://user:pass@host/db?sslmode=require` |
+| `REVALIDATION_SECRET` | Recommended | Secret token for cache invalidation API | `your-secret-token-here` |
+| `NEXT_PUBLIC_BASE_URL` | Production only | Base URL for production deployment | `https://your-app.vercel.app` |
 
 **Local Development:**
 ```bash
 DATABASE_URL="postgresql://postgres:postgres@localhost:5434/seattle_puzzle_hunt"
+REVALIDATION_SECRET="dev-secret-change-in-production"
 ```
 
 **Production (Neon):**
 ```bash
 DATABASE_URL="postgresql://user:password@ep-xxx-xxx.us-west-2.aws.neon.tech/neondb?sslmode=require"
+REVALIDATION_SECRET="your-secure-production-secret"
+NEXT_PUBLIC_BASE_URL="https://your-app.vercel.app"
+```
+
+---
+
+### Cache Invalidation
+
+Hunt data is cached using Next.js's `unstable_cache` with a 1-hour revalidation time to improve performance. After updating hunt content, the cache must be invalidated.
+
+**Automatic Invalidation:**
+
+The seed script automatically triggers cache invalidation if `REVALIDATION_SECRET` is set:
+
+```bash
+# Local (with dev server running)
+npm run seed
+
+# Production
+DATABASE_URL=$(grep DATABASE_URL .env.production.local | cut -d '=' -f2-) \
+REVALIDATION_SECRET=$(grep REVALIDATION_SECRET .env.production.local | cut -d '=' -f2-) \
+NEXT_PUBLIC_BASE_URL=$(grep NEXT_PUBLIC_BASE_URL .env.production.local | cut -d '=' -f2-) \
+npm run seed
+```
+
+**Manual Invalidation:**
+
+You can also manually trigger cache invalidation via API:
+
+```bash
+curl -X POST https://your-app.vercel.app/api/revalidate \
+  -H "Content-Type: application/json" \
+  -d '{"secret":"your-revalidation-secret"}'
+```
+
+**Local Development:**
+
+During development, you can also clear the cache by restarting the dev server or deleting `.next`:
+
+```bash
+rm -rf .next && npm run dev
 ```
 
 ---
