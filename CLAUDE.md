@@ -456,11 +456,12 @@ All available puzzle input types and their configuration.
 ```json
 {
   "type": "slide_puzzle",
+  "image": "/puzzle-images/your-image.jpg",
   "answer": "SOLVED",
   "answer_length": 6
 }
 ```
-**Note:** For slide puzzles, the image should be specified in the JSON using the `{{image:/puzzle-images/your-image.jpg}}` syntax within the `location_found_text` field. The puzzle instructions and image display should all be part of the location text.
+**Note:** The `image` property specifies which image to use for the puzzle. Puzzle instructions should be included in the `location_found_text` field.
 
 ### Testing Page
 

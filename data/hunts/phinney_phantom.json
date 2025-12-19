@@ -3,7 +3,7 @@
   "title": "The Phinney Phantom",
   "neighborhood": "Phinney Ridge",
   "description": "A mysterious figure known as the Phinney Phantom has been leaving puzzles around Phinney Ridge. Follow the trail, solve each clue, and uncover what they’re trying to reveal.",
-  "hunt_intro_text": "Welcome to the **Neighborhood Investigations Bureau**. We look into the small mysteries most people overlook.\n\nLately, someone calling themselves the **Phinney Phantom** has been leaving strange clues in familiar places around Phinney Ridge. Each one leads to another location and puzzle, but our team stalled while following the trail. We need fresh eyes.\n\nThis morning, a new note appeared at the Phinney Center that matches the Phantom’s earlier work. It looks like an invitation.\n\n{{handwritten}}I need someone more clever,\nSomeone who won’t be vexed.\nFind and solve the first puzzle,\nAnd I’ll show you where to go next.\n— PP\n{{/handwritten}}\n\nThis is your case now. Follow the Phantom’s trail, solve what they’ve left behind, and see where it leads.",
+  "hunt_intro_text": "Welcome to the **Neighborhood Investigations Bureau**. We look into the small mysteries most people overlook.\n\nLately, someone calling themselves the **Phinney Phantom** has been leaving strange clues in familiar places around Phinney Ridge. Each one leads to another location and puzzle, but our team stalled while following the trail. We need fresh eyes.\n\nThis morning, a new note appeared at the Phinney Center that matches the Phantom’s earlier work. It looks like an invitation.\n\n{{handwritten}}I need someone more clever,\nSomeone who won’t be vexed.\nFind and solve the first puzzle,\nI’ll show you where to go next.\n— PP\n{{/handwritten}}\n\nThis is your case now. Follow the Phantom’s trail, solve what they’ve left behind, and see where it leads.",
   "hunt_success_text": "Thanks for helping to solve the mystery of the Phinney Phantom! Make sure to check out some of the other mysteries around Seattle that need solving.",
   "estimated_time_minutes": 60,
   "locations": [
@@ -14,7 +14,7 @@
       "order": 1,
       "coordinates": { "lat": 47.6774408, "lng": -122.3543155 },
       "location_riddle": "You start by searching around the **Phinney Center** for the puzzle the Phantom mentioned.",
-      "location_found_text": "In the bushes nearby, you find a small lockbox with a note attached. It looks like a clue to the combination.\n\n{{handwritten}}You may address me as the Phinney Phantom.\nI’ll start you off with something plain:\nThe lock opens with the numbers\nThat mark your place upon this lane.\n{{/handwritten}}",
+      "location_found_text": "In the bushes nearby, you find a small lockbox with a note attached. It looks like a clue to the combination.\n\n{{handwritten}}You may *address* me as the Phinney Phantom.\nI’ll start you off with something plain:\nThe lock opens with the numbers\nThat mark your place upon this lane.\n{{/handwritten}}",
       "puzzle": {
         "type": "number_code.cryptex",
         "answer": "6532",
@@ -43,6 +43,29 @@
       "address": "6532 Phinney Ave N",
       "order": 3,
       "coordinates": { "lat": 47.6775676, "lng": -122.3542515 },
+      "location_riddle": "You notice the two 12s on the ground outside Sully’s and enter the combination into the safe: 61-31-12-12. The handle turns and the safe clicks open.\n\nInside is yet another note:\n{{handwritten}}Head north for five blocks,\nNear where you found your first clue.\nA silent tower watches over\nThree tables of checkered blue.\n{{/handwritten}}\n\nWherever this “silent tower” is, it sounds like your next stop to search for more clues.",
+      "location_found_text": "The **Heart of Phinney Park** is quiet, tucked just north of the Phinney Center you visited earlier. A tall, silent tower rises above the trees, watching over a handful of outdoor chess tables.\n\nAs you look around, you spot a small control panel tucked beneath a bench. Four colored buttons sit in a row, waiting.\n\nA folded note rests beside it:\n{{handwritten}}Search around for four colors,\nEnter them just as I will:\nThe siren,\nThe tower,\nB6,\nThen the mill.\n{{/handwritten}}\n",
+      "puzzle": {
+        "type": "color_code",
+        "colors": [
+          {"code": "R", "color": "Red", "label": "Red"},
+          {"code": "O", "color": "Orange", "label": "Orange"},
+          {"code": "Y", "color": "Yellow", "label": "Yellow"},
+          {"code": "G", "color": "Green", "label": "Green"},
+          {"code": "B", "color": "Blue", "label": "Blue"},
+          {"code": "P", "color": "Purple", "label": "Purple"}
+        ],
+        "answer": "YGBR",
+        "answer_length": 4
+      },
+      "next_location_id": null
+    },
+    {
+      "id": "greenwoodhardware",
+      "name": "Greenwood Hardware",
+      "address": "7201 Phinney Ave N",
+      "order": 4,
+      "coordinates": { "lat": 47.6809467, "lng": -122.3558717 },
       "location_riddle": "You notice the two 12s on the ground outside Sully’s and enter the combination into the safe: 61-31-12-12. The handle turns and the safe clicks open.\n\nInside is yet another note:\n{{handwritten}}Head north for five blocks,\nNear where you found your first clue.\nA silent tower watches over\nThree tables of checkered blue.\n{{/handwritten}}\n\nWherever this “silent tower” is, it sounds like your next stop to search for more clues.",
       "location_found_text": "The **Heart of Phinney Park** is quiet, tucked just north of the Phinney Center you visited earlier. A tall, silent tower rises above the trees, watching over a handful of outdoor chess tables.\n\nAs you look around, you spot a small control panel tucked beneath a bench. Four colored buttons sit in a row, waiting.\n\nA folded note rests beside it:\n{{handwritten}}Search around for four colors,\nEnter them just as I will:\nThe siren,\nThe tower,\nB6,\nThen the mill.\n{{/handwritten}}\n",
       "puzzle": {

@@ -634,7 +634,7 @@ export default function PlayPage() {
                   {/* Slide puzzle */}
                   {currentLocation.puzzleType === 'slide_puzzle' && (
                     <SlidePuzzleInput
-                      imagePath="/puzzle-images/default.jpg"
+                      imagePath={currentLocation.puzzleConfig?.image || "/puzzle-images/default.jpg"}
                       onSubmit={(answer) => submitPuzzleAnswer(answer, locationIndex)}
                       disabled={isChecking}
                     />
