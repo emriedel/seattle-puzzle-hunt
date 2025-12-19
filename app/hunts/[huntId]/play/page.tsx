@@ -10,7 +10,7 @@ import SafeDialInput from '@/components/SafeDialInput';
 import CryptexInput from '@/components/CryptexInput';
 import ToggleSwitchInput from '@/components/ToggleSwitchInput';
 import DirectionalPadInput from '@/components/DirectionalPadInput';
-import SimonPatternInput from '@/components/SimonPatternInput';
+import ColorCodeInput, { ColorConfig } from '@/components/ColorCodeInput';
 import MorseCodeInput from '@/components/MorseCodeInput';
 import TileWordBuilderInput from '@/components/TileWordBuilderInput';
 import SlidePuzzleInput from '@/components/SlidePuzzleInput';
@@ -32,6 +32,7 @@ interface Location {
   locationFoundText: string;
   searchLocationButtonText?: string;
   puzzleType: string;
+  puzzleConfig?: any; // Optional JSON config for puzzle customization
   puzzleAnswerLength: number;
   nextLocationId: string | null;
 }
@@ -590,14 +591,28 @@ export default function PlayPage() {
                     />
                   )}
 
-                  {/* Simon pattern puzzle */}
-                  {currentLocation.puzzleType === 'simon_code' && (
-                    <SimonPatternInput
-                      maxLength={currentLocation.puzzleAnswerLength}
-                      onSubmit={(answer) => submitPuzzleAnswer(answer, locationIndex)}
-                      disabled={isChecking}
-                    />
-                  )}
+                  {/* Color code puzzle (formerly simon_code) */}
+                  {(currentLocation.puzzleType === 'color_code' || currentLocation.puzzleType === 'simon_code') && (() => {
+                    // Default color configuration (for backward compatibility)
+                    const defaultColors: ColorConfig[] = [
+                      { code: 'R', color: 'Red', label: 'Red' },
+                      { code: 'G', color: 'Green', label: 'Green' },
+                      { code: 'B', color: 'Blue', label: 'Blue' },
+                      { code: 'Y', color: 'Yellow', label: 'Yellow' },
+                    ];
+
+                    // Use custom colors from puzzleConfig if available, otherwise use defaults
+                    const colors = currentLocation.puzzleConfig?.colors || defaultColors;
+
+                    return (
+                      <ColorCodeInput
+                        colors={colors}
+                        maxLength={currentLocation.puzzleAnswerLength}
+                        onSubmit={(answer) => submitPuzzleAnswer(answer, locationIndex)}
+                        disabled={isChecking}
+                      />
+                    );
+                  })()}
 
                   {/* Morse code puzzle */}
                   {currentLocation.puzzleType === 'morse_code' && (

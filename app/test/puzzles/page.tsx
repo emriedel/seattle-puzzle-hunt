@@ -9,7 +9,7 @@ import SafeDialInput from '@/components/SafeDialInput';
 import CryptexInput from '@/components/CryptexInput';
 import ToggleSwitchInput from '@/components/ToggleSwitchInput';
 import DirectionalPadInput from '@/components/DirectionalPadInput';
-import SimonPatternInput from '@/components/SimonPatternInput';
+import ColorCodeInput, { ColorConfig } from '@/components/ColorCodeInput';
 import MorseCodeInput from '@/components/MorseCodeInput';
 import TileWordBuilderInput from '@/components/TileWordBuilderInput';
 import SlidePuzzleInput from '@/components/SlidePuzzleInput';
@@ -99,15 +99,24 @@ export default function PuzzleTestPage() {
       ),
     },
     {
-      name: 'Simon Pattern',
-      type: 'simon_code',
+      name: 'Color Code',
+      type: 'color_code',
       answer: 'RGYB',
-      component: (
-        <SimonPatternInput
-          maxLength={4}
-          onSubmit={(ans) => handleTest('simon_code', ans, 'RGYB')}
-        />
-      ),
+      component: (() => {
+        const defaultColors: ColorConfig[] = [
+          { code: 'R', color: 'Red', label: 'Red' },
+          { code: 'G', color: 'Green', label: 'Green' },
+          { code: 'B', color: 'Blue', label: 'Blue' },
+          { code: 'Y', color: 'Yellow', label: 'Yellow' },
+        ];
+        return (
+          <ColorCodeInput
+            colors={defaultColors}
+            maxLength={4}
+            onSubmit={(ans) => handleTest('color_code', ans, 'RGYB')}
+          />
+        );
+      })(),
     },
     {
       name: 'Morse Code',

@@ -4,10 +4,17 @@ import * as path from 'path';
 
 const prisma = new PrismaClient();
 
+interface ColorConfig {
+  code: string;
+  color: string;
+  label: string;
+}
+
 interface PuzzleData {
-  type: 'number_code' | 'word_code';
+  type: string;
   answer: string | number[];
   answer_length: number;
+  colors?: ColorConfig[]; // Optional colors array for color_code puzzles
 }
 
 interface LocationData {
@@ -89,17 +96,23 @@ async function seedHunt(huntData: HuntData) {
         throw new Error(`Expected string answer for ${location.puzzle.type} at ${location.name}`);
       }
       normalizedAnswer = location.puzzle.answer.padStart(location.puzzle.answer_length, '0');
-    } else if (puzzleType === 'directional_code' || puzzleType === 'simon_code') {
+    } else if (puzzleType === 'directional_code' || puzzleType === 'simon_code' || puzzleType === 'color_code') {
       // Uppercase directional and color sequences
       if (typeof location.puzzle.answer !== 'string') {
         throw new Error(`Expected string answer for ${location.puzzle.type} at ${location.name}`);
       }
       normalizedAnswer = location.puzzle.answer.toUpperCase();
     } else {
-      // Other types (slider_code, toggle_code, morse_code) use answer as-is
+      // Other types (slider_code, toggle_code, morse_code, slide_puzzle) use answer as-is
       normalizedAnswer = typeof location.puzzle.answer === 'string'
         ? location.puzzle.answer
         : location.puzzle.answer.toString();
+    }
+
+    // Extract puzzleConfig (for puzzles that need additional configuration)
+    let puzzleConfig: any = null;
+    if (puzzleType === 'color_code' && location.puzzle.colors) {
+      puzzleConfig = { colors: location.puzzle.colors };
     }
 
     await prisma.location.upsert({
@@ -114,6 +127,7 @@ async function seedHunt(huntData: HuntData) {
         locationFoundText: location.location_found_text,
         searchLocationButtonText: location.search_location_button_text,
         puzzleType: location.puzzle.type,
+        puzzleConfig: puzzleConfig,
         puzzleAnswer: normalizedAnswer,
         puzzleAnswerLength: location.puzzle.answer_length,
         nextLocationId: location.next_location_id,
@@ -130,6 +144,7 @@ async function seedHunt(huntData: HuntData) {
         locationFoundText: location.location_found_text,
         searchLocationButtonText: location.search_location_button_text,
         puzzleType: location.puzzle.type,
+        puzzleConfig: puzzleConfig,
         puzzleAnswer: normalizedAnswer,
         puzzleAnswerLength: location.puzzle.answer_length,
         nextLocationId: location.next_location_id,

@@ -320,16 +320,82 @@ All available puzzle input types and their configuration.
 }
 ```
 
-#### `simon_code` (Simon Pattern)
-- **Description:** 4 colored buttons (Red, Green, Blue, Yellow)
-- **Answer Format:** Color initials (e.g., "RGYB")
+#### `color_code` (Color Code)
+- **Description:** Colored buttons in a dynamic grid with customizable colors
+- **Grid Layout:**
+  - 2-4 colors: 2 columns
+  - 5-9 colors: 3 columns
+  - 10+ colors: 4 columns
+- **Answer Format:** Custom codes defined in puzzle (e.g., "RWOP", "1234", "RGBCMY")
 - **Interactions:** Tap colored buttons in sequence
-- **Use Cases:** Color patterns, glowing symbols, Simon-style memory
+- **Use Cases:** Color patterns, painted symbols, colored markers, custom color sequences
+- **Color Options:**
+  - **Predefined Colors:** Red, Blue, Green, Yellow, Orange, Purple, Pink, White, Black, Brown
+  - **Custom Hex Colors:** Any hex color code (e.g., "#ff6b6b")
+  - **Custom Codes:** Single character codes (e.g., "R", "1", "A")
+- **Example JSON (Predefined Colors):**
+```json
+{
+  "id": "location-traffic-light",
+  "name": "Traffic Light",
+  "order": 1,
+  "coordinates": { "lat": 47.6543, "lng": -122.3321 },
+  "location_riddle": "Find the colorful signals...",
+  "location_found_text": "Tap the colors in sequence.",
+  "puzzle": {
+    "type": "color_code",
+    "colors": [
+      {"code": "R", "color": "Red", "label": "Red"},
+      {"code": "Y", "color": "Yellow", "label": "Yellow"},
+      {"code": "G", "color": "Green", "label": "Green"},
+      {"code": "W", "color": "White", "label": "White"}
+    ],
+    "answer": "RYGW",
+    "answer_length": 4
+  },
+  "next_location_id": "next"
+}
+```
+- **Example JSON (6 Colors - 3 Column Grid):**
+```json
+"puzzle": {
+  "type": "color_code",
+  "colors": [
+    {"code": "R", "color": "Red", "label": "Red"},
+    {"code": "O", "color": "Orange", "label": "Orange"},
+    {"code": "Y", "color": "Yellow", "label": "Yellow"},
+    {"code": "G", "color": "Green", "label": "Green"},
+    {"code": "B", "color": "Blue", "label": "Blue"},
+    {"code": "P", "color": "Purple", "label": "Purple"}
+  ],
+  "answer": "ROYGBP",
+  "answer_length": 6
+}
+```
+- **Example JSON (Custom Hex Colors):**
+```json
+"puzzle": {
+  "type": "color_code",
+  "colors": [
+    {"code": "1", "color": "#ff6b6b", "label": "Coral Red"},
+    {"code": "2", "color": "#4ecdc4", "label": "Turquoise"},
+    {"code": "3", "color": "#ffe66d", "label": "Yellow"},
+    {"code": "4", "color": "#a8e6cf", "label": "Mint Green"}
+  ],
+  "answer": "1234",
+  "answer_length": 4
+}
+```
+- **Note:** You can use 2-12+ colors. If `colors` is not provided, defaults to Red, Green, Blue, Yellow with codes R, G, B, Y
+
+#### `simon_code` (Legacy - use `color_code` instead)
+- **Description:** 4 colored buttons (Red, Green, Blue, Yellow) - legacy puzzle type
+- **Answer Format:** Color initials (e.g., "RGYB")
+- **Status:** Deprecated - use `color_code` for new hunts
 - **Example JSON:**
 ```json
 {
   "type": "simon_code",
-  "prompt": "Tap the colors in the correct order",
   "answer": "RGYB",
   "answer_length": 4
 }

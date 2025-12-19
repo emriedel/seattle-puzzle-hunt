@@ -40,6 +40,7 @@ model Location {
   locationFoundText         String   // Flavor text shown when player finds the location
   searchLocationButtonText  String?  // Optional custom button text (defaults to "🔍 Search for Clues")
   puzzleType                String   // enum: 'number_code' | 'word_code' | etc. (enforced in app)
+  puzzleConfig              Json?    // Optional puzzle configuration (e.g., colors for color_code)
   puzzleAnswer              String   // canonical stored answer (string, uppercase for word_code)
   puzzleAnswerLength        Int
   nextLocationId            String?  // nullable for final location

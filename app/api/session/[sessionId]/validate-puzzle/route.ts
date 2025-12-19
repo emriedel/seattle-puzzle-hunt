@@ -35,9 +35,13 @@ function normalizeAnswer(answer: string | number[], puzzleType: string, answerLe
     if (typeof answer !== 'string') return '';
     return answer.replace(/[^UDLRudlr]/g, '').toUpperCase();
   } else if (puzzleType === 'simon_code') {
-    // Color sequence - strip non-RGBY characters, uppercase
+    // Legacy color sequence - strip non-RGBY characters, uppercase
     if (typeof answer !== 'string') return '';
     return answer.replace(/[^RGBYrgby]/g, '').toUpperCase();
+  } else if (puzzleType === 'color_code') {
+    // Custom color sequence - accept answer as-is (codes are defined in puzzleConfig)
+    if (typeof answer !== 'string') return '';
+    return answer.trim();
   } else if (puzzleType === 'morse_code') {
     // Morse code - strip anything that's not dot or dash
     if (typeof answer !== 'string') return '';
