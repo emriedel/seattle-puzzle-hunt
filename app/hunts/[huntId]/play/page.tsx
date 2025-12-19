@@ -13,6 +13,7 @@ import DirectionalPadInput from '@/components/DirectionalPadInput';
 import ColorCodeInput, { ColorConfig } from '@/components/ColorCodeInput';
 import MorseCodeInput from '@/components/MorseCodeInput';
 import TileWordBuilderInput from '@/components/TileWordBuilderInput';
+import TileImageBuilderInput from '@/components/TileImageBuilderInput';
 import SlidePuzzleInput from '@/components/SlidePuzzleInput';
 import { TextPagination } from '@/components/TextPagination';
 import { TypewriterText } from '@/components/TypewriterText';
@@ -626,6 +627,16 @@ export default function PlayPage() {
                   {currentLocation.puzzleType === 'tile_word' && (
                     <TileWordBuilderInput
                       tiles={currentLocation.locationFoundText.match(/[A-Z]/g) || []}
+                      onSubmit={(answer) => submitPuzzleAnswer(answer, locationIndex)}
+                      disabled={isChecking}
+                    />
+                  )}
+
+                  {/* Tile image builder puzzle */}
+                  {currentLocation.puzzleType === 'tile_image' && (
+                    <TileImageBuilderInput
+                      images={currentLocation.puzzleConfig?.images || []}
+                      slotCount={currentLocation.puzzleAnswerLength}
                       onSubmit={(answer) => submitPuzzleAnswer(answer, locationIndex)}
                       disabled={isChecking}
                     />

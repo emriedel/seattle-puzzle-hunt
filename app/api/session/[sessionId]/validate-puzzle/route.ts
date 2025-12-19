@@ -50,6 +50,10 @@ function normalizeAnswer(answer: string | number[], puzzleType: string, answerLe
     // Tile word - strip non-alpha, uppercase (like word_code)
     if (typeof answer !== 'string') return '';
     return answer.replace(/[^a-zA-Z]/g, '').toUpperCase();
+  } else if (puzzleType === 'tile_image') {
+    // Tile image - strip non-digits and non-commas, trim whitespace
+    if (typeof answer !== 'string') return '';
+    return answer.replace(/[^0-9,]/g, '').trim();
   } else if (puzzleType === 'slide_puzzle') {
     // Slide puzzle - auto-validates when solved, answer should be 'SOLVED'
     if (typeof answer !== 'string') return '';

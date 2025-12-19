@@ -15,6 +15,7 @@ interface PuzzleData {
   answer: string | number[];
   answer_length: number;
   colors?: ColorConfig[]; // Optional colors array for color_code puzzles
+  images?: string[]; // Optional images array for tile_image puzzles
 }
 
 interface LocationData {
@@ -102,6 +103,12 @@ async function seedHunt(huntData: HuntData) {
         throw new Error(`Expected string answer for ${location.puzzle.type} at ${location.name}`);
       }
       normalizedAnswer = location.puzzle.answer.toUpperCase();
+    } else if (puzzleType === 'tile_image') {
+      // Tile image: store answer as-is (e.g., "1,2,3,4")
+      if (typeof location.puzzle.answer !== 'string') {
+        throw new Error(`Expected string answer for ${location.puzzle.type} at ${location.name}`);
+      }
+      normalizedAnswer = location.puzzle.answer;
     } else {
       // Other types (slider_code, toggle_code, morse_code, slide_puzzle) use answer as-is
       normalizedAnswer = typeof location.puzzle.answer === 'string'
@@ -113,6 +120,8 @@ async function seedHunt(huntData: HuntData) {
     let puzzleConfig: any = null;
     if (puzzleType === 'color_code' && location.puzzle.colors) {
       puzzleConfig = { colors: location.puzzle.colors };
+    } else if (puzzleType === 'tile_image' && location.puzzle.images) {
+      puzzleConfig = { images: location.puzzle.images };
     }
 
     await prisma.location.upsert({

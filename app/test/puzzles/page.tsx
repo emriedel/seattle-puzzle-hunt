@@ -12,6 +12,7 @@ import DirectionalPadInput from '@/components/DirectionalPadInput';
 import ColorCodeInput, { ColorConfig } from '@/components/ColorCodeInput';
 import MorseCodeInput from '@/components/MorseCodeInput';
 import TileWordBuilderInput from '@/components/TileWordBuilderInput';
+import TileImageBuilderInput from '@/components/TileImageBuilderInput';
 import SlidePuzzleInput from '@/components/SlidePuzzleInput';
 
 interface PuzzleTest {
@@ -136,6 +137,21 @@ export default function PuzzleTestPage() {
         <TileWordBuilderInput
           tiles={['B', 'O', 'O', 'K']}
           onSubmit={(ans) => handleTest('tile_word', ans, 'BOOK')}
+        />
+      ),
+    },
+    {
+      name: 'Tile Image Builder',
+      type: 'tile_image',
+      answer: '2,1,3',
+      component: (
+        <TileImageBuilderInput
+          images={[
+            '/puzzle-images/step1.svg',
+            '/puzzle-images/step2.svg',
+            '/puzzle-images/step3.svg',
+          ]}
+          onSubmit={(ans) => handleTest('tile_image', ans, '2,1,3')}
         />
       ),
     },

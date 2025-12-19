@@ -303,6 +303,29 @@ All available puzzle input types and their configuration.
 ```
 **Note:** Tiles can be specified in the prompt or puzzle configuration.
 
+#### `tile_image` (Image Tile Builder)
+- **Description:** Drag-and-drop image tiles into correct order
+- **Answer Format:** One-based indices (e.g., "2,1,3")
+- **Interactions:** HTML5 drag-and-drop
+- **Use Cases:** Sequence puzzles, ordering steps, chronological events
+- **Example JSON:**
+```json
+{
+  "type": "tile_image",
+  "puzzle": {
+    "type": "tile_image",
+    "images": [
+      "/puzzle-images/step1.svg",
+      "/puzzle-images/step2.svg",
+      "/puzzle-images/step3.svg"
+    ],
+    "answer": "2,1,3",
+    "answer_length": 3
+  }
+}
+```
+**Note:** Images should be placed in `/public/puzzle-images/`. The answer represents the correct order using one-based indices (1 = first image, 2 = second image, etc.). Puzzle instructions should be included in the `location_found_text` field.
+
 ### Sequence Puzzles
 
 #### `directional_code` (Directional Pad)

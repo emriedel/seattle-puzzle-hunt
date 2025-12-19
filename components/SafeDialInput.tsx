@@ -225,8 +225,9 @@ export default function SafeDialInput({ length, onSubmit, disabled, initialValue
               const angle = (num * DEGREES_PER_NUMBER) - 90;
               const radian = (angle * Math.PI) / 180;
               const radius = 130;
-              const x = Math.cos(radian) * radius;
-              const y = Math.sin(radian) * radius;
+              // Round to 2 decimal places to prevent hydration mismatches
+              const x = Math.round(Math.cos(radian) * radius * 100) / 100;
+              const y = Math.round(Math.sin(radian) * radius * 100) / 100;
 
               // Show number label every 10
               const showLabel = num % 10 === 0;
