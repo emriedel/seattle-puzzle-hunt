@@ -81,7 +81,6 @@ export default function PlayPage() {
   const [error, setError] = useState<string | null>(null);
   const [restartKey, setRestartKey] = useState(0); // Force re-mount on restart
   const [isTextComplete, setIsTextComplete] = useState(false); // Track if typewriter animation is done
-  const [lastSearchLocation, setLastSearchLocation] = useState<{lat: number, lng: number, locationIndex: number} | null>(null); // Track last search location
 
   // Navigation state
   const [menuOpen, setMenuOpen] = useState(false);
@@ -208,7 +207,6 @@ export default function PlayPage() {
     setVisitedLocations(new Set());
     setVisitedPages(new Set()); // Reset visited pages to empty
     setSolvedAnswers({}); // Clear solved answers
-    setLastSearchLocation(null); // Clear last search location
     setRestartKey(prev => prev + 1); // Force re-mount of all components
     setStatusMessage('');
     window.scrollTo(0, 0);
@@ -222,7 +220,6 @@ export default function PlayPage() {
     if (currentPage > 0) {
       setCurrentPage(currentPage - 1);
       setStatusMessage('');
-      setLastSearchLocation(null); // Clear search location when navigating
       window.scrollTo(0, 0);
     }
   };
@@ -231,7 +228,6 @@ export default function PlayPage() {
     if (currentPage < maxPageReached) {
       setCurrentPage(currentPage + 1);
       setStatusMessage('');
-      setLastSearchLocation(null); // Clear search location when navigating
       window.scrollTo(0, 0);
     }
   };
@@ -243,7 +239,6 @@ export default function PlayPage() {
       setMaxPageReached(nextPage);
     }
     setStatusMessage('');
-    setLastSearchLocation(null); // Clear search location when advancing
     window.scrollTo(0, 0);
   };
 
@@ -272,9 +267,6 @@ export default function PlayPage() {
     try {
       const position = await getUserLocation();
       const { latitude, longitude } = position.coords;
-
-      // Store the location where the user searched
-      setLastSearchLocation({ lat: latitude, lng: longitude, locationIndex });
 
       setStatusMessage('Checking if you\'re at the location...');
 
@@ -407,7 +399,6 @@ export default function PlayPage() {
   const isLocationSolved = solvedLocations.has(locationIndex);
   const canGoBack = currentPage > 0;
   const canGoForward = currentPage < maxPageReached;
-  const hasSearchedHere = lastSearchLocation?.locationIndex === locationIndex;
 
   return (
     <>
@@ -492,14 +483,22 @@ export default function PlayPage() {
                   )}
 
                   {!isLocationVisited && (
-                    <Button
-                      onClick={() => checkLocation(locationIndex)}
-                      disabled={isChecking || hasSearchedHere}
-                      className="w-full animate-in fade-in duration-500"
-                      size="lg"
-                    >
-                      {isChecking ? 'Checking location...' : hasSearchedHere ? 'Try somewhere else first' : (currentLocation.searchLocationButtonText || '🔍 Search here')}
-                    </Button>
+                    <>
+                      <hr className="border-t border-gray-300 dark:border-gray-700 my-6" />
+                      <div className="space-y-2">
+                        <Button
+                          onClick={() => checkLocation(locationIndex)}
+                          disabled={isChecking}
+                          className="w-full animate-in fade-in duration-500"
+                          size="lg"
+                        >
+                          {isChecking ? 'Checking location...' : (currentLocation.searchLocationButtonText || '🔍 Search here')}
+                        </Button>
+                        <p className="text-sm text-gray-600 dark:text-gray-400 text-center">
+                          Head to the next location before searching
+                        </p>
+                      </div>
+                    </>
                   )}
                 </>
               )}
