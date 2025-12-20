@@ -82,10 +82,10 @@
       "order": 5,
       "coordinates": { "lat": 47.68277370991226, "lng": -122.35548774572331 },
       "location_riddle": "As the last tile clicks into place, the box gives a soft metallic snap.\n\nThe front panel drops open just enough to reveal a familiar scrap of paper inside.\n\n{{handwritten}}Head north up the street,\nYou will pass along the way:\na house of engines, a hall of steins,\nA place where beans are ground each day.\n\nNear a bar named for a road,\nWindows framed in red and blue,\nA cozy home of stories waits,\nOutside will be your next clue.\n{{/handwritten}}",
-      "location_found_text": "The code is 0000",
+      "location_found_text": "You arrive outside **Phinney Books**, its front windows packed tight with the book display of the month.\n\nJust off to the side, near the entrance, you spot a small lettered cryptex resting where it doesn’t quite belong. A note is tied to it:\n{{handwritten}}Peer in through the windows,\nOr poke your head in the door.\nOn the north wall there’s a sign,\nA word of golden letters four.\n{{/handwritten}}",
       "puzzle": {
-        "type": "number_code.cryptex",
-        "answer": "0000",
+        "type": "word_code",
+        "answer": "TRUE",
         "answer_length": 4
       },
       "next_location_id": "kens_market"
@@ -95,8 +95,8 @@
       "address": "6532 Phinney Ave N",
       "order": 6,
       "coordinates": { "lat": 47.68165132083815, "lng": -122.35549510591811 },
-      "location_riddle": "Head to Ken's Market",
-      "location_found_text": "The answer is 3-1-2",
+      "location_riddle": "The cryptex clicks and comes apart in your hands. Inside is a small strip of paper, rolled tight.\n{{handwritten}}One more stop to go,\nHead back the way you came.\nYou’ve already passed it —\nGroceries sold in a man’s name.{{/handwritten}}\n\nSounds like the Phantom is sending you back down the street for one final clue.",
+      "location_found_text": "You head down the street to **Ken’s Market**, just as the note suggested.\n\nAlong the side of the building, you notice a small frame set near the wall. Inside are three picture tiles, out of order. It doesn’t take much guessing to figure out who left this behind, or what you need to do.",
       "puzzle": {
         "type": "tile_image",
         "images": [
@@ -110,5 +110,5 @@
       "next_location_id": null
     }
   ],
-  "hunt_success_text": "Thanks for helping to solve the mystery of the Phinney Phantom! Make sure to check out some of the other mysteries around Seattle that need solving."
+  "hunt_success_text": "As the last tile slides into place, the frame gives a soft click.\n\nThe backing loosens and drops away, revealing a final folded note tucked inside.\n\n{{handwritten}}You scoured the Ridge,\nYou followed my trail.\nNow it’s time for me\nTo lift up my veil.\n\nI’m just one of you—\nA neighbor, a friend.\nSomeone who doesn’t want\nThe charm of this place to end\n\nI left you these stops\nSo they wouldn’t be lost,\nThese spots need to be remembered\nNo matter the cost.\n\nSo look a little closer,\nThese locations weren’t random.\nThey’re what makes this place special.\nSincerely, **The Phinney Phantom**\n{{/handwritten}}\n\nBack at the Phinney Center, you check in with the Neighborhood Investigations Bureau. There’s no Phantom to arrest, but the trail makes sense now.\n\nCase closed."
 }
