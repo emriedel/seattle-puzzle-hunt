@@ -6,6 +6,7 @@ import { Textarea } from '@/components/ui/textarea'
 interface RawTextEditorProps {
   value: string
   onChange: (value: string) => void
+  onFocus?: (element: HTMLTextAreaElement) => void
 }
 
 export interface RawTextEditorHandle {
@@ -13,7 +14,7 @@ export interface RawTextEditorHandle {
 }
 
 const RawTextEditor = forwardRef<RawTextEditorHandle, RawTextEditorProps>(
-  ({ value, onChange }, ref) => {
+  ({ value, onChange, onFocus }, ref) => {
     const textareaRef = useRef<HTMLTextAreaElement>(null)
 
     useImperativeHandle(ref, () => ({
@@ -66,6 +67,7 @@ const RawTextEditor = forwardRef<RawTextEditorHandle, RawTextEditorProps>(
           ref={textareaRef}
           value={value}
           onChange={(e) => onChange(e.target.value)}
+          onFocus={(e) => onFocus?.(e.target)}
           className="min-h-[300px] font-mono text-sm"
           placeholder="Type your text here or use the toolbar to add formatting..."
           spellCheck={false}
