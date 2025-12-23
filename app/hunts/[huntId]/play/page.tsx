@@ -449,7 +449,7 @@ export default function PlayPage() {
               <h1 className="text-2xl font-bold text-center">{hunt.title}</h1>
               <TypewriterText
                 text={hunt.huntIntroText || ''}
-                skipAnimation={visitedPages.has(currentPage)}
+                skipAnimation={isTextComplete}
                 onComplete={() => setIsTextComplete(true)}
               />
 
@@ -470,7 +470,7 @@ export default function PlayPage() {
             <div className="space-y-6">
               <TypewriterText
                 text={currentLocation.locationRiddle}
-                skipAnimation={visitedPages.has(currentPage)}
+                skipAnimation={isTextComplete}
                 onComplete={() => setIsTextComplete(true)}
               />
 
@@ -510,7 +510,7 @@ export default function PlayPage() {
             <div className="space-y-6">
               <TypewriterText
                 text={currentLocation.locationFoundText}
-                skipAnimation={visitedPages.has(currentPage)}
+                skipAnimation={isTextComplete}
                 onComplete={() => setIsTextComplete(true)}
               />
 
@@ -660,7 +660,7 @@ export default function PlayPage() {
               <h2 className="text-2xl font-bold text-center">Hunt Complete!</h2>
               <TypewriterText
                 text={hunt.huntSuccessText || 'Congratulations! You completed the hunt!'}
-                skipAnimation={visitedPages.has(currentPage)}
+                skipAnimation={isTextComplete}
                 onComplete={() => setIsTextComplete(true)}
               />
 

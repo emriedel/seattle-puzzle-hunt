@@ -203,7 +203,7 @@ export default function SafeDialInput({ length, onSubmit, disabled, initialValue
             boxShadow: 'inset 0 4px 12px rgba(0,0,0,0.2), 0 8px 24px rgba(0,0,0,0.2)',
             userSelect: 'none',
             WebkitUserSelect: 'none',
-            touchAction: 'none',
+            touchAction: (disabled || isComplete || readOnly) ? 'auto' : 'none',
           }}
         >
           {/* Center circle */}

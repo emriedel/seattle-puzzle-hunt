@@ -115,7 +115,10 @@ export default function TileImageBuilderInput({
   const isComplete = slots.every(slot => slot !== null);
 
   return (
-    <div className="flex flex-col items-center gap-6 py-4 w-full max-w-2xl">
+    <div
+      className="flex flex-col items-center gap-6 py-4 w-full max-w-2xl"
+      style={{ touchAction: 'none' }}
+    >
       {/* Answer slots */}
       <div className="w-full">
         <div className="flex gap-3 justify-center flex-wrap">

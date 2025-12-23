@@ -13,7 +13,7 @@
       "order": 1,
       "coordinates": { "lat": 47.677198897226894, "lng": -122.3541654089936 },
       "location_riddle": "You start by searching around the **Phinney Center** for the puzzle the Phantom mentioned.",
-      "location_found_text": "In the bushes nearby, you find a small lockbox with a note attached. It looks like a clue to the combination.\n\n{{handwritten}}You may *address* me as the Phinney Phantom.\nI’ll start you off with something plain:\nThe lock opens with the numbers\nThat mark your place upon this lane.\n{{/handwritten}}",
+      "location_found_text": "In the bushes nearby, you find a small lockbox with a note attached. It looks like a clue to the combination.\n\n{{handwritten}}**Address** me as the Phinney Phantom.\nI’ll start you off with something plain:\nThe lock opens with the numbers\nThat mark your place upon this lane.\n{{/handwritten}}",
       "puzzle": {
         "type": "number_code.cryptex",
         "answer": "6532",
