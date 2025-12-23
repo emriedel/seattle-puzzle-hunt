@@ -81,6 +81,7 @@ export default function PlayPage() {
   const [error, setError] = useState<string | null>(null);
   const [restartKey, setRestartKey] = useState(0); // Force re-mount on restart
   const [isTextComplete, setIsTextComplete] = useState(false); // Track if typewriter animation is done
+  const [shouldSkipAnimation, setShouldSkipAnimation] = useState(false); // Track if we should skip animation on this page
 
   // Navigation state
   const [menuOpen, setMenuOpen] = useState(false);
@@ -189,7 +190,9 @@ export default function PlayPage() {
   // Track visited pages for animation control
   useEffect(() => {
     // Check if already visited BEFORE adding to set
-    setIsTextComplete(visitedPages.has(currentPage));
+    const hasVisited = visitedPages.has(currentPage);
+    setShouldSkipAnimation(hasVisited);
+    setIsTextComplete(hasVisited);
     // Then add current page to visited set
     setVisitedPages(prev => new Set(prev).add(currentPage));
   }, [currentPage]); // Only depend on currentPage, not visitedPages
@@ -449,7 +452,7 @@ export default function PlayPage() {
               <h1 className="text-2xl font-bold text-center">{hunt.title}</h1>
               <TypewriterText
                 text={hunt.huntIntroText || ''}
-                skipAnimation={isTextComplete}
+                skipAnimation={shouldSkipAnimation}
                 onComplete={() => setIsTextComplete(true)}
               />
 
@@ -470,7 +473,7 @@ export default function PlayPage() {
             <div className="space-y-6">
               <TypewriterText
                 text={currentLocation.locationRiddle}
-                skipAnimation={isTextComplete}
+                skipAnimation={shouldSkipAnimation}
                 onComplete={() => setIsTextComplete(true)}
               />
 
@@ -510,7 +513,7 @@ export default function PlayPage() {
             <div className="space-y-6">
               <TypewriterText
                 text={currentLocation.locationFoundText}
-                skipAnimation={isTextComplete}
+                skipAnimation={shouldSkipAnimation}
                 onComplete={() => setIsTextComplete(true)}
               />
 
@@ -660,7 +663,7 @@ export default function PlayPage() {
               <h2 className="text-2xl font-bold text-center">Hunt Complete!</h2>
               <TypewriterText
                 text={hunt.huntSuccessText || 'Congratulations! You completed the hunt!'}
-                skipAnimation={isTextComplete}
+                skipAnimation={shouldSkipAnimation}
                 onComplete={() => setIsTextComplete(true)}
               />
 
