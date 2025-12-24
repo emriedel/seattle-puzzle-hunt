@@ -15,7 +15,7 @@ interface SlidePuzzleInputProps {
 type TilePosition = number[];
 
 const SOLVED_STATE = [0, 1, 2, 3, 4, 5, 6, 7, 8];
-const SCRAMBLE_MOVES = 50; // Increased from 25
+const SCRAMBLE_MOVES = 30;
 
 export default function SlidePuzzleInput({
   imagePath,
@@ -123,17 +123,24 @@ export default function SlidePuzzleInput({
     const fromRow = Math.floor(clickedIndex / 3);
     const toRow = Math.floor(emptyIndex / 3);
     const direction = toRow > fromRow ? 'DOWN' : toRow < fromRow ? 'UP' : fromRow === toRow && (emptyIndex % 3) > (clickedIndex % 3) ? 'RIGHT' : 'LEFT';
-    console.log(`Moving tile ${clickedTileValue + 1} ${direction}: from index ${clickedIndex} to ${emptyIndex}, hasStarted: ${hasStarted}`);
+    console.log(`Moving tile ${clickedTileValue + 1} ${direction}: from index ${clickedIndex} to ${emptyIndex}`);
 
-    setMovingTile(clickedTileValue);
-
-    // Swap clicked tile with empty space
+    // Prepare the new tile positions
     const newTiles = [...tiles];
     [newTiles[emptyIndex], newTiles[clickedIndex]] =
       [newTiles[clickedIndex], newTiles[emptyIndex]];
 
-    setTiles(newTiles);
-    setEmptyIndex(clickedIndex);
+    // Set moving tile for higher z-index
+    setMovingTile(clickedTileValue);
+
+    // Use double requestAnimationFrame to ensure browser paints current state
+    // before applying new positions (forces reflow)
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        setTiles(newTiles);
+        setEmptyIndex(clickedIndex);
+      });
+    });
 
     // Clear moving tile after animation completes
     setTimeout(() => {
@@ -174,9 +181,7 @@ export default function SlidePuzzleInput({
       height: `calc(${tilePercent}% - ${gapPercent}%)`,
       left: `calc(${currentCol * tilePercent}% + ${currentCol * gapPercent / 3}%)`,
       top: `calc(${currentRow * tilePercent}% + ${currentRow * gapPercent / 3}%)`,
-      transition: hasStarted ? 'left 0.3s ease-in-out, top 0.3s ease-in-out' : 'none',
       zIndex: isMoving ? 10 : 1,
-      willChange: 'left, top',
     };
   };
 
@@ -203,7 +208,10 @@ export default function SlidePuzzleInput({
                   rounded overflow-hidden bg-white
                   ${isClickable ? 'cursor-pointer hover:brightness-110 shadow-md hover:shadow-lg' : 'cursor-default'}
                 `}
-                style={getTileStyle(tileValue, index)}
+                style={{
+                  ...getTileStyle(tileValue, index),
+                  transition: hasStarted ? 'left 0.3s ease-in-out, top 0.3s ease-in-out' : 'none',
+                }}
                 aria-label={`Tile ${tileValue + 1}`}
               >
               </button>
