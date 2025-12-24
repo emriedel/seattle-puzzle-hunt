@@ -121,7 +121,7 @@ export default function DirectionalPadInput({
       </div>
 
       {/* Control buttons */}
-      <div className="flex gap-3 w-full">
+      <div className="flex gap-3 w-full max-w-xs">
         <Button
           onClick={removeLastDirection}
           disabled={disabled || sequence.length === 0}

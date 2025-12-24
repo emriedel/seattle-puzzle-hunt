@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   Sheet,
@@ -8,6 +9,16 @@ import {
   SheetTitle,
   SheetDescription,
 } from "@/components/ui/sheet";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -66,6 +77,7 @@ export function NavigationMenu({
   onViewLocation,
 }: NavigationMenuProps) {
   const router = useRouter();
+  const [showRestartConfirm, setShowRestartConfirm] = useState(false);
 
   const handleNavigate = (href: string) => {
     router.push(href);
@@ -75,6 +87,14 @@ export function NavigationMenu({
   const handleViewLocation = (locationId: string) => {
     if (onViewLocation) {
       onViewLocation(locationId);
+    }
+  };
+
+  const handleConfirmRestart = () => {
+    localStorage.removeItem('current-session-id');
+    setShowRestartConfirm(false);
+    if (currentHunt) {
+      handleNavigate(`/hunts/${currentHunt.id}`);
     }
   };
 
@@ -109,10 +129,7 @@ export function NavigationMenu({
                   variant="outline"
                   size="sm"
                   className="w-full"
-                  onClick={() => {
-                    localStorage.removeItem('current-session-id');
-                    handleNavigate(`/hunts/${currentHunt.id}`);
-                  }}
+                  onClick={() => setShowRestartConfirm(true)}
                 >
                   <RotateCcw className="w-4 h-4 mr-2" />
                   Restart
@@ -161,6 +178,22 @@ export function NavigationMenu({
         </SheetContent>
       </Sheet>
 
+      <AlertDialog open={showRestartConfirm} onOpenChange={setShowRestartConfirm}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Restart Hunt?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will reset all your progress on this hunt. You'll start from the beginning and all solved puzzles will be cleared. This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleConfirmRestart}>
+              Restart Hunt
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 }

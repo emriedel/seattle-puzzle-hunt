@@ -37,6 +37,7 @@ interface HuntData {
   title: string;
   neighborhood: string;
   description?: string;
+  image_url?: string;
   hunt_intro_text?: string;
   hunt_success_text?: string;
   estimated_time_minutes: number;
@@ -54,6 +55,7 @@ async function seedHunt(huntData: HuntData) {
       title: huntData.title,
       neighborhood: huntData.neighborhood,
       description: huntData.description,
+      imageUrl: huntData.image_url,
       huntIntroText: huntData.hunt_intro_text,
       huntSuccessText: huntData.hunt_success_text,
       estimatedTimeMinutes: huntData.estimated_time_minutes,
@@ -64,6 +66,7 @@ async function seedHunt(huntData: HuntData) {
       title: huntData.title,
       neighborhood: huntData.neighborhood,
       description: huntData.description,
+      imageUrl: huntData.image_url,
       huntIntroText: huntData.hunt_intro_text,
       huntSuccessText: huntData.hunt_success_text,
       estimatedTimeMinutes: huntData.estimated_time_minutes,

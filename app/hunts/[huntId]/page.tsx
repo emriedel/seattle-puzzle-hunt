@@ -160,10 +160,6 @@ export default function HuntDetailPage() {
   return (
     <>
       <Header
-        title={hunt.title}
-        showBackButton={true}
-        backHref="/hunts"
-        backLabel="All Hunts"
         onMenuClick={() => setMenuOpen(true)}
       />
 
@@ -180,13 +176,11 @@ export default function HuntDetailPage() {
       <div className="min-h-screen pb-8">
         <div className="max-w-3xl mx-auto">
           {/* Hunt info */}
-          <div className="p-4 md:p-6">
-            {hunt.description && (
-              <p className="text-muted-foreground text-lg mb-4">{hunt.description}</p>
-            )}
+          <div className="p-4 md:p-6 text-center">
+            <h1 className="text-3xl md:text-4xl font-bold mb-3">{hunt.title}</h1>
 
             {/* Quick stats */}
-            <div className="flex flex-wrap gap-4 text-sm">
+            <div className="flex flex-wrap justify-center gap-4 text-sm mb-6">
               <div className="flex items-center gap-1.5 text-muted-foreground">
                 <MapPin className="w-4 h-4" />
                 <span>{hunt.locations.length} {hunt.locations.length === 1 ? 'stop' : 'stops'}</span>
@@ -196,6 +190,10 @@ export default function HuntDetailPage() {
                 <span>~{hunt.estimatedTimeMinutes} min</span>
               </div>
             </div>
+
+            {hunt.description && (
+              <p className="text-muted-foreground text-lg">{hunt.description}</p>
+            )}
           </div>
 
         {/* Map section */}
@@ -237,11 +235,11 @@ export default function HuntDetailPage() {
         </div>
 
         {/* Start button */}
-        <div className="px-4 md:px-6">
+        <div className="px-4 md:px-6 flex justify-center">
           <Button
             onClick={handleStartHunt}
             disabled={checkingLocation}
-            className="w-full"
+            className="w-full max-w-xs"
             size="lg"
           >
             {checkingLocation ? 'Checking location...' : 'Start Hunt'}

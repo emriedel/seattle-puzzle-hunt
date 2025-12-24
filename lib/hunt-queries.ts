@@ -14,6 +14,7 @@ export const getCachedHunts = unstable_cache(
         neighborhood: true,
         description: true,
         estimatedTimeMinutes: true,
+        imageUrl: true,
         locations: {
           select: {
             id: true,
@@ -52,6 +53,7 @@ export const getCachedHunt = unstable_cache(
         huntSuccessText: true,
         estimatedTimeMinutes: true,
         globalLocationRadiusMeters: true,
+        imageUrl: true,
         locations: {
           select: {
             id: true,

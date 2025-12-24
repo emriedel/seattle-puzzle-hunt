@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { MapPin, Clock, Navigation } from 'lucide-react';
 
@@ -16,6 +17,7 @@ interface Hunt {
   description: string | null;
   estimatedTimeMinutes: number;
   locations: Location[];
+  imageUrl?: string | null;
 }
 
 interface HuntCardProps {
@@ -61,12 +63,24 @@ export function HuntCard({ hunt }: HuntCardProps) {
     <Link href={`/hunts/${hunt.id}`}>
       <Card className="hover:shadow-lg transition-all cursor-pointer overflow-hidden">
         <div className="flex">
-          {/* Colored placeholder box */}
-          <div className={`${colorClass} w-24 md:w-32 flex-shrink-0 flex items-center justify-center`}>
-            <span className="text-white text-3xl md:text-4xl font-bold">
-              {initials}
-            </span>
-          </div>
+          {/* Hunt image or colored placeholder */}
+          {hunt.imageUrl ? (
+            <div className="relative w-24 md:w-32 h-full flex-shrink-0 bg-muted">
+              <Image
+                src={hunt.imageUrl}
+                alt={hunt.title}
+                fill
+                className="object-cover"
+                sizes="(max-width: 768px) 96px, 128px"
+              />
+            </div>
+          ) : (
+            <div className={`${colorClass} w-24 md:w-32 flex-shrink-0 flex items-center justify-center`}>
+              <span className="text-white text-3xl md:text-4xl font-bold">
+                {initials}
+              </span>
+            </div>
+          )}
 
           {/* Content */}
           <div className="flex-1">

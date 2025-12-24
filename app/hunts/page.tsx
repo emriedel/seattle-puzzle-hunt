@@ -48,10 +48,6 @@ export default function HuntsPage() {
   return (
     <>
       <Header
-        title="Available Hunts"
-        showBackButton={true}
-        backHref="/"
-        backLabel="Home"
         onMenuClick={() => setMenuOpen(true)}
       />
 
@@ -67,6 +63,8 @@ export default function HuntsPage() {
 
       <div className="min-h-screen p-4 md:p-8">
         <div className="max-w-2xl mx-auto">
+          <h1 className="text-3xl md:text-4xl font-bold mb-6 md:mb-8">Available Hunts</h1>
+
           {hunts.length === 0 ? (
             <Card>
               <CardContent className="pt-6">
@@ -76,11 +74,17 @@ export default function HuntsPage() {
               </CardContent>
             </Card>
           ) : (
-            <div className="space-y-4">
-              {hunts.map((hunt) => (
-                <HuntCard key={hunt.id} hunt={hunt} />
-              ))}
-            </div>
+            <>
+              <div className="space-y-6">
+                {hunts.map((hunt) => (
+                  <HuntCard key={hunt.id} hunt={hunt} />
+                ))}
+              </div>
+
+              <div className="mt-12 text-center">
+                <p className="text-lg text-muted-foreground italic">More coming soon!</p>
+              </div>
+            </>
           )}
         </div>
       </div>

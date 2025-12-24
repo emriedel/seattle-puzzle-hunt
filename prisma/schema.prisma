@@ -16,6 +16,7 @@ model Hunt {
   title                       String
   neighborhood                String
   description                 String?    // Brief description of the hunt
+  imageUrl                    String?    // Optional hunt image/icon URL
   huntIntroText               String?    // Intro text shown before first location
   huntSuccessText             String?    // Success text shown after completing all locations
   estimatedTimeMinutes        Int

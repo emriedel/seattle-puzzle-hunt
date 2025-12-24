@@ -457,13 +457,15 @@ export default function PlayPage() {
               />
 
               {isTextComplete && (
-                <Button
-                  onClick={advanceToNextPage}
-                  className="w-full animate-in fade-in duration-500"
-                  size="lg"
-                >
-                  Continue
-                </Button>
+                <div className="flex justify-center">
+                  <Button
+                    onClick={advanceToNextPage}
+                    className="w-full max-w-xs animate-in fade-in duration-500"
+                    size="lg"
+                  >
+                    Continue
+                  </Button>
+                </div>
               )}
             </div>
           )}
@@ -488,18 +490,20 @@ export default function PlayPage() {
                   {!isLocationVisited && (
                     <>
                       <hr className="border-t border-gray-300 dark:border-gray-700 my-6" />
-                      <div className="space-y-2">
-                        <Button
-                          onClick={() => checkLocation(locationIndex)}
-                          disabled={isChecking}
-                          className="w-full animate-in fade-in duration-500"
-                          size="lg"
-                        >
-                          {isChecking ? 'Checking location...' : (currentLocation.searchLocationButtonText || '🔍 Search here')}
-                        </Button>
-                        <p className="text-sm text-gray-600 dark:text-gray-400 text-center">
+                      <div className="space-y-4 my-6">
+                        <p className="text-sm text-muted-foreground text-center">
                           Head to the next location before searching
                         </p>
+                        <div className="flex justify-center">
+                          <Button
+                            onClick={() => checkLocation(locationIndex)}
+                            disabled={isChecking}
+                            className="w-full max-w-xs animate-in fade-in duration-500"
+                            size="lg"
+                          >
+                            {isChecking ? 'Checking location...' : (currentLocation.searchLocationButtonText || '🔍 Search here')}
+                          </Button>
+                        </div>
                       </div>
                     </>
                   )}
@@ -668,13 +672,15 @@ export default function PlayPage() {
               />
 
               {isTextComplete && (
-                <Button
-                  onClick={completeHunt}
-                  className="w-full animate-in fade-in duration-500"
-                  size="lg"
-                >
-                  Complete Hunt 🎉
-                </Button>
+                <div className="flex justify-center">
+                  <Button
+                    onClick={completeHunt}
+                    className="w-full max-w-xs animate-in fade-in duration-500"
+                    size="lg"
+                  >
+                    Complete Hunt 🎉
+                  </Button>
+                </div>
               )}
             </div>
           )}
