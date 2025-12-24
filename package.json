@@ -8,6 +8,8 @@
     "start": "next start",
     "lint": "next lint",
     "seed": "tsx scripts/seed-hunts.ts",
+    "seed:local": "./scripts/seed-local.sh",
+    "seed:prod": "./scripts/seed-prod.sh",
     "db:start": "docker compose up -d",
     "db:stop": "docker compose down",
     "db:reset": "docker compose down -v && docker compose up -d && npx prisma db push && npm run seed",
