@@ -21,16 +21,29 @@ export default function DebugPanel({ locations = [] }: DebugPanelProps) {
   const [debugEnabled, setDebugEnabled] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [currentDebugLoc, setCurrentDebugLoc] = useState<{ lat: number; lng: number } | null>(null);
+  const [shouldShow, setShouldShow] = useState(false);
 
   useEffect(() => {
-    setDebugEnabled(isDebugMode());
+    const debugMode = isDebugMode();
+    setDebugEnabled(debugMode);
     setCurrentDebugLoc(getDebugLocation());
+
+    // Show debug panel if:
+    // 1. In development mode, OR
+    // 2. Debug mode is explicitly enabled
+    const isDevelopment = process.env.NODE_ENV === 'development';
+    setShouldShow(isDevelopment || debugMode);
   }, []);
 
   const toggleDebug = () => {
     const newState = !debugEnabled;
     setDebugEnabled(newState);
     setDebugMode(newState);
+
+    // Update shouldShow when debug mode changes
+    const isDevelopment = process.env.NODE_ENV === 'development';
+    setShouldShow(isDevelopment || newState);
+
     if (!newState) {
       setCurrentDebugLoc(null);
     }
@@ -45,6 +58,11 @@ export default function DebugPanel({ locations = [] }: DebugPanelProps) {
     setDebugLocation(null);
     setCurrentDebugLoc(null);
   };
+
+  // Don't render the debug panel at all if it shouldn't be shown
+  if (!shouldShow) {
+    return null;
+  }
 
   if (!isOpen) {
     return (
