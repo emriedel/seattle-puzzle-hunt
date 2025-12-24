@@ -34,7 +34,7 @@
         "lat": 47.67376668072121,
         "lng": -122.35456706342063
       },
-      "location_riddle": "You enter the address of the Phinney Center into the lock, and it springs open! Inside is another piece of paper. You unfold it and read:\n\n{{handwritten}}So you accepted my challenge,\nUnpacked what I hid.\nLooking for more clues?\nLeave here and go south.\nTake the first letters,\nSpell out your next stop.\n{{/handwritten}}\n\nWhatever the Phantom is pointing to, it’s not here. You’ll need to head to the next location to continue the investigation.",
+      "location_riddle": "You enter the address of the Phinney Center into the lock, and it springs open! Inside is another piece of paper. You unfold it and read:\n\n{{handwritten}}So you accepted my challenge,\nUnpacked what I hid.\nLooking for more clues?\nLeave here and go south.\nYou take the first letters,\nSpell out your next stop.\n{{/handwritten}}\n\nWhatever the Phantom is pointing to, it’s not here. You’ll need to head to the next location to continue the investigation.",
       "location_found_text": "You head down the street and step into **Sully’s Snow Goose Saloon** to see what the Phantom has left for you here. The bartender notices you looking around, slides a small safe across the counter, and nods toward it.\n\n“We found this outside last night,” he says. “Maybe you can make some sense of it.”\n\nAttached is another note.\n\n{{handwritten}}The street to the south,\nThen half the street to the north.\nThe numbers flanking the door\nAre the third and the fourth.\n{{/handwritten}}",
       "puzzle": {
         "type": "number_code.safe",

@@ -24,6 +24,11 @@ interface LogbookEntry {
   createdAt: string;
 }
 
+interface Hunt {
+  id: string;
+  title: string;
+}
+
 export default function CompletePage() {
   const params = useParams();
   const searchParams = useSearchParams();
@@ -31,6 +36,7 @@ export default function CompletePage() {
   const huntId = params.huntId as string;
   const sessionId = searchParams.get('session');
 
+  const [hunt, setHunt] = useState<Hunt | null>(null);
   const [session, setSession] = useState<PlaySession | null>(null);
   const [logbookEntries, setLogbookEntries] = useState<LogbookEntry[]>([]);
   const [name, setName] = useState('');
@@ -44,6 +50,18 @@ export default function CompletePage() {
   useEffect(() => {
     if (!sessionId) return;
 
+    async function loadHunt() {
+      try {
+        const res = await fetch(`/api/hunts/${huntId}`);
+        if (res.ok) {
+          const data = await res.json();
+          setHunt(data);
+        }
+      } catch (err) {
+        console.error('Failed to load hunt:', err);
+      }
+    }
+
     async function loadSession() {
       try {
         const res = await fetch(`/api/session/${sessionId}`);
@@ -56,6 +74,7 @@ export default function CompletePage() {
       }
     }
 
+    loadHunt();
     loadSession();
     loadLogbook();
   }, [sessionId, huntId]);
@@ -105,7 +124,7 @@ export default function CompletePage() {
 
   const submitLogbookEntry = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name && !message && !selectedPhoto) return;
+    if (!name) return;
 
     setSubmitting(true);
 
@@ -191,36 +210,35 @@ export default function CompletePage() {
     <div className="min-h-screen p-4 md:p-8">
       <div className="max-w-2xl mx-auto">
         {/* Completion Header */}
-        <div className="text-center mb-8">
+        <div className="text-center mb-8 pt-8">
           <div className="text-6xl mb-4">🎉</div>
           <h1 className="text-3xl font-bold mb-2">Hunt Complete!</h1>
-          <p className="text-muted-foreground">Congratulations on finishing the hunt</p>
+          <p className="text-muted-foreground">
+            Congratulations on finishing {hunt?.title || 'the hunt'}!
+          </p>
         </div>
 
         {/* Stats Card */}
         <Card className="mb-6">
-          <CardHeader>
-            <CardTitle>Your Stats</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-3 gap-4 text-center">
-              <div>
-                <div className="text-2xl font-bold text-blue-500">
+          <CardContent className="pt-6">
+            <div className="space-y-4">
+              <div className="flex items-center justify-between py-3 border-b border-border">
+                <span className="text-sm font-medium text-muted-foreground">Total Time</span>
+                <span className="text-xl font-bold text-blue-500">
                   {formatTime(session.totalTimeSeconds)}
-                </div>
-                <div className="text-sm text-muted-foreground">Time</div>
+                </span>
               </div>
-              <div>
-                <div className="text-2xl font-bold text-orange-500">
+              <div className="flex items-center justify-between py-3 border-b border-border">
+                <span className="text-sm font-medium text-muted-foreground">Wrong Location Checks</span>
+                <span className="text-xl font-bold text-orange-500">
                   {session.wrongLocationChecks}
-                </div>
-                <div className="text-sm text-muted-foreground">Wrong Checks</div>
+                </span>
               </div>
-              <div>
-                <div className="text-2xl font-bold text-purple-500">
+              <div className="flex items-center justify-between py-3">
+                <span className="text-sm font-medium text-muted-foreground">Wrong Puzzle Guesses</span>
+                <span className="text-xl font-bold text-purple-500">
                   {session.wrongPuzzleGuesses}
-                </div>
-                <div className="text-sm text-muted-foreground">Wrong Guesses</div>
+                </span>
               </div>
             </div>
           </CardContent>
@@ -240,14 +258,15 @@ export default function CompletePage() {
               <form onSubmit={submitLogbookEntry} className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium mb-2">
-                    Your Name (optional)
+                    Your Name
                   </label>
                   <input
                     type="text"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     className="w-full px-3 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
-                    placeholder="Anonymous Explorer"
+                    placeholder="Enter your name"
+                    required
                   />
                 </div>
                 <div>
@@ -264,11 +283,8 @@ export default function CompletePage() {
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-2">
-                    📸 Photo (optional)
+                    Photo (optional)
                   </label>
-                  <p className="text-sm text-muted-foreground mb-3">
-                    Share a selfie of your group!
-                  </p>
                   {photoPreview ? (
                     <div className="space-y-2">
                       <div className="relative w-full aspect-video rounded-lg overflow-hidden border border-border">
@@ -298,24 +314,22 @@ export default function CompletePage() {
                         className="hidden"
                         id="photo-upload"
                       />
-                      <label
-                        htmlFor="photo-upload"
-                        className="flex items-center justify-center w-full px-4 py-3 border-2 border-dashed border-border rounded-lg cursor-pointer hover:border-primary hover:bg-muted/50 transition-colors"
-                      >
-                        <div className="text-center">
-                          <div className="text-2xl mb-1">📷</div>
-                          <div className="text-sm font-medium">Choose Photo</div>
-                          <div className="text-xs text-muted-foreground">
-                            JPG, PNG, or WebP (max 5MB)
-                          </div>
-                        </div>
+                      <label htmlFor="photo-upload">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          className="w-full"
+                          onClick={() => document.getElementById('photo-upload')?.click()}
+                        >
+                          📷 Choose Photo
+                        </Button>
                       </label>
                     </div>
                   )}
                 </div>
                 <Button
                   type="submit"
-                  disabled={submitting || uploadingPhoto || (!name && !message && !selectedPhoto)}
+                  disabled={submitting || uploadingPhoto || !name}
                   className="w-full"
                 >
                   {uploadingPhoto ? 'Uploading photo...' : submitting ? 'Submitting...' : 'Sign Logbook'}
@@ -367,20 +381,11 @@ export default function CompletePage() {
         )}
 
         {/* Actions */}
-        <div className="flex gap-4">
-          <Button variant="secondary" asChild className="flex-1">
+        <div>
+          <Button asChild className="w-full">
             <Link href="/hunts">
               Browse More Hunts
             </Link>
-          </Button>
-          <Button
-            onClick={() => {
-              localStorage.removeItem('current-session-id');
-              router.push(`/hunts/${huntId}`);
-            }}
-            className="flex-1"
-          >
-            Try Again
           </Button>
         </div>
       </div>
