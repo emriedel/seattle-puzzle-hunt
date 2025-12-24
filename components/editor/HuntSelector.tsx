@@ -70,7 +70,7 @@ export function HuntSelector({ onHuntSelected, onNewHunt }: HuntSelectorProps) {
           onValueChange={handleSelectHunt}
           disabled={loading}
         >
-          <SelectTrigger className="w-full bg-white">
+          <SelectTrigger className="w-full bg-white text-slate-900">
             <SelectValue placeholder={loading ? 'Loading hunts...' : 'Choose a hunt'} />
           </SelectTrigger>
           <SelectContent>

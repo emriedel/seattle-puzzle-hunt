@@ -113,6 +113,40 @@ export default function EditorPage() {
     return () => clearTimeout(timer)
   }, [getCurrentPreviewText])
 
+  // Sticky sidebar state
+  const [isSticky, setIsSticky] = useState(false)
+  const sidebarRef = useRef<HTMLDivElement>(null)
+  const sidebarContainerRef = useRef<HTMLDivElement>(null)
+
+  // Handle sticky behavior with scroll (large screens only)
+  useEffect(() => {
+    const handleScroll = () => {
+      if (!sidebarContainerRef.current) return
+
+      // Only apply sticky on large screens (1024px+)
+      const isLargeScreen = window.innerWidth >= 1024
+      if (!isLargeScreen) {
+        setIsSticky(false)
+        return
+      }
+
+      const rect = sidebarContainerRef.current.getBoundingClientRect()
+      const shouldStick = rect.top <= 16 // 1rem = 16px
+      setIsSticky(shouldStick)
+    }
+
+    const handleResize = () => handleScroll()
+
+    window.addEventListener('scroll', handleScroll)
+    window.addEventListener('resize', handleResize)
+    handleScroll() // Check initial state
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll)
+      window.removeEventListener('resize', handleResize)
+    }
+  }, [])
+
   // Update preview position when focused field changes
   useEffect(() => {
     const updatePreviewPosition = () => {
@@ -466,33 +500,39 @@ export default function EditorPage() {
             </div>
 
             {/* Right Column: Live Preview */}
-            <div className="lg:w-[400px] lg:shrink-0">
+            <div ref={sidebarContainerRef} className="lg:w-[400px] lg:shrink-0 lg:self-start">
               <div
-                className="space-y-4 transition-all duration-300 lg:fixed lg:right-8 lg:w-[400px] lg:max-h-[calc(100vh-4rem)] lg:overflow-y-auto"
-                style={{ top: '2rem' }}
+                ref={sidebarRef}
+                className={`transition-all duration-200 ${
+                  isSticky
+                    ? 'fixed top-4 w-[400px]'
+                    : 'relative'
+                }`}
               >
-              {/* Formatting Toolbar */}
-              <Card>
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-sm">Formatting Toolbar</CardTitle>
-                </CardHeader>
-                <CardContent className="p-0">
-                  <FormattingToolbar onFormat={handleFormat} />
-                </CardContent>
-              </Card>
+                <div className="space-y-4 max-h-[calc(100vh-2rem)] overflow-y-auto">
+                  {/* Formatting Toolbar */}
+                  <Card>
+                    <CardHeader className="pb-3">
+                      <CardTitle className="text-sm">Formatting Toolbar</CardTitle>
+                    </CardHeader>
+                    <CardContent className="p-0">
+                      <FormattingToolbar onFormat={handleFormat} />
+                    </CardContent>
+                  </Card>
 
-              {/* Live Preview */}
-              <Card>
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-sm">Live Preview</CardTitle>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    {getFocusedFieldLabel()}
-                  </p>
-                </CardHeader>
-                <CardContent>
-                  {previewContent}
-                </CardContent>
-              </Card>
+                  {/* Live Preview */}
+                  <Card>
+                    <CardHeader className="pb-3">
+                      <CardTitle className="text-sm">Live Preview</CardTitle>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        {getFocusedFieldLabel()}
+                      </p>
+                    </CardHeader>
+                    <CardContent>
+                      {previewContent}
+                    </CardContent>
+                  </Card>
+                </div>
               </div>
             </div>
           </div>
