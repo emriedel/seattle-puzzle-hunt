@@ -57,7 +57,7 @@
         "lng": -122.35428457202825
       },
       "location_riddle": "You notice the two 12s on the ground outside Sully’s and enter the combination into the safe: 61-31-12-12. The handle turns and the safe clicks open.\n\nInside is yet another note:\n{{handwritten}}Head north for five blocks,\nNear where you found your first clue.\nA silent tower watches over\nThree tables of checkered blue.\n{{/handwritten}}Wherever this “silent tower” is, it sounds like your next stop to search for more clues.",
-      "location_found_text": "The **Heart of Phinney Park** is quiet, tucked just north of the Phinney Center you visited earlier. A tall, silent tower rises above the trees, watching over a handful of outdoor chess tables.\n\nAs you look around, you spot a small control panel tucked beneath a bench. Four colored buttons sit in a row, waiting.\n\nA folded note rests beside it:\n{{handwritten}}Search around for four colors,\nEnter them just as I will:\nThe siren,\nThe tower,\nB6,\nThen the mill.\n{{/handwritten}}\n",
+      "location_found_text": "The **Heart of Phinney Park** is quiet, tucked just north of the Phinney Center you visited earlier. A tall, silent tower rises above the trees, watching over a handful of outdoor chess tables.\n\nAs you look around, you spot a small control panel tucked beneath a bench. Six colored buttons sit in a row, waiting.\n\nA folded note rests beside it:\n{{handwritten}}Search around for four colors,\nEnter them just as I will:\nThe siren,\nThe tower,\nB6,\nThen the mill.\n{{/handwritten}}\n",
       "puzzle": {
         "type": "color_code",
         "colors": [
