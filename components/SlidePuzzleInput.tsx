@@ -139,13 +139,6 @@ export default function SlidePuzzleInput({
     setTimeout(() => {
       setMovingTile(null);
     }, 300);
-
-    // Check if solved
-    if (isSolved(newTiles)) {
-      setTimeout(() => {
-        onSubmit('SOLVED');
-      }, 500); // Small delay to show final animation
-    }
   };
 
   // Reset puzzle
@@ -218,9 +211,9 @@ export default function SlidePuzzleInput({
           })}
       </div>
 
-      {/* Controls - only show reset on test page */}
-      {showReset && (
-        <div className="flex gap-2">
+      {/* Controls */}
+      <div className="flex gap-2">
+        {showReset && (
           <Button
             onClick={handleReset}
             disabled={disabled}
@@ -229,15 +222,16 @@ export default function SlidePuzzleInput({
           >
             Reset Puzzle
           </Button>
-        </div>
-      )}
-
-      {/* Solved indicator */}
-      {isSolved(tiles) && (
-        <div className="text-center text-green-600 font-semibold animate-pulse">
-          Puzzle Solved!
-        </div>
-      )}
+        )}
+        <Button
+          onClick={() => onSubmit('SOLVED')}
+          disabled={disabled}
+          size="lg"
+          className={`${showReset ? 'flex-1' : 'w-full'} bg-white text-gray-900 border-2 border-gray-300 hover:bg-gray-50 shadow-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed`}
+        >
+          {disabled ? 'Checking...' : 'Submit'}
+        </Button>
+      </div>
     </Card>
   );
 }

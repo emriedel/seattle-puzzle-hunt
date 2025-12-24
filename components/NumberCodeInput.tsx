@@ -73,6 +73,7 @@ export default function NumberCodeInput({ length, onSubmit, disabled = false }: 
         onClick={handleSubmit}
         disabled={!isComplete || disabled}
         size="lg"
+        className="bg-white text-gray-900 border-2 border-gray-300 hover:bg-gray-50 shadow-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
       >
         Submit Answer
       </Button>

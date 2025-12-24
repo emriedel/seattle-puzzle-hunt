@@ -74,7 +74,7 @@ export default function LockboxSliderInput({
         onClick={handleSubmit}
         disabled={disabled}
         size="lg"
-        className="w-full max-w-xs"
+        className="w-full max-w-xs bg-white text-gray-900 border-2 border-gray-300 hover:bg-gray-50 shadow-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {disabled ? 'Checking...' : 'Submit Answer'}
       </Button>

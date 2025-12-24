@@ -89,8 +89,7 @@ export default function ToggleSwitchInput({
           onClick={handleSubmit}
           disabled={disabled}
           size="lg"
-          variant="secondary"
-          className="w-auto px-12"
+          className="w-auto px-12 bg-white text-gray-900 border-2 border-gray-300 hover:bg-gray-50 shadow-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {disabled ? 'Checking...' : 'Submit'}
         </Button>
