@@ -28,7 +28,7 @@ export async function POST(
 ) {
   try {
     const { sessionId } = await params;
-    const { locationId, lat, lng } = await request.json();
+    const { locationId, lat, lng, previousLocationId } = await request.json();
 
     if (!locationId || lat === undefined || lng === undefined) {
       return NextResponse.json(
@@ -50,7 +50,7 @@ export async function POST(
       );
     }
 
-    // Get location
+    // Get current location
     const location = await prisma.location.findUnique({
       where: { id: locationId },
     });
@@ -62,22 +62,57 @@ export async function POST(
       );
     }
 
-    // Calculate distance
-    const distance = haversineDistance(lat, lng, location.lat, location.lng);
-    const inRadius = distance <= (session.hunt.globalLocationRadiusMeters ?? 40);
+    const radius = session.hunt.globalLocationRadiusMeters ?? 40;
 
-    // If not in radius, increment wrong location checks
-    if (!inRadius) {
-      await prisma.playSession.update({
-        where: { id: sessionId },
-        data: {
-          wrongLocationChecks: { increment: 1 },
-        },
+    // Check 1: Are they at the correct (new/target) location?
+    const distance = haversineDistance(lat, lng, location.lat, location.lng);
+    const inRadius = distance <= radius;
+
+    if (inRadius) {
+      // Success! They're at the right place
+      return NextResponse.json({
+        inRadius: true,
+        distance: Math.round(distance),
       });
     }
 
+    // Check 2: Are they at the previous location?
+    if (previousLocationId) {
+      const previousLocation = await prisma.location.findUnique({
+        where: { id: previousLocationId },
+      });
+
+      if (previousLocation) {
+        const distanceFromPrevious = haversineDistance(
+          lat,
+          lng,
+          previousLocation.lat,
+          previousLocation.lng
+        );
+        const atPreviousLocation = distanceFromPrevious <= radius;
+
+        if (atPreviousLocation) {
+          // They're still at the previous location - friendly message, no strike
+          return NextResponse.json({
+            inRadius: false,
+            atPreviousLocation: true,
+            distance: Math.round(distance),
+          });
+        }
+      }
+    }
+
+    // Check 3: They're somewhere else - wrong location, increment strike
+    await prisma.playSession.update({
+      where: { id: sessionId },
+      data: {
+        wrongLocationChecks: { increment: 1 },
+      },
+    });
+
     return NextResponse.json({
-      inRadius,
+      inRadius: false,
+      atPreviousLocation: false,
       distance: Math.round(distance),
     });
   } catch (error) {

@@ -281,6 +281,11 @@ export default function PlayPage() {
       const position = await getUserLocation();
       const { latitude, longitude } = position.coords;
 
+      // Get the previous location ID if it exists
+      const previousLocationId = locationIndex > 0
+        ? hunt.locations[locationIndex - 1]?.id
+        : undefined;
+
       const res = await fetch(`/api/session/${sessionId}/location-check`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -288,11 +293,12 @@ export default function PlayPage() {
           locationId: location.id,
           lat: latitude,
           lng: longitude,
+          previousLocationId,
         }),
       });
 
       if (!res.ok) throw new Error('Location check failed');
-      const { inRadius, distance } = await res.json();
+      const { inRadius, atPreviousLocation, distance } = await res.json();
 
       // Ensure minimum 2 second loading time
       const elapsed = Date.now() - startTime;
@@ -303,6 +309,10 @@ export default function PlayPage() {
         setStatusMessage('');
         setVisitedLocations(prev => new Set([...prev, locationIndex]));
         advanceToNextPage(); // Auto-advance to puzzle page
+      } else if (atPreviousLocation) {
+        setStatusMessage(
+          "Head to the next location before searching!"
+        );
       } else {
         setStatusMessage(
           "This doesn't seem to be the right spot. Double-check the clue and try again somewhere else."
