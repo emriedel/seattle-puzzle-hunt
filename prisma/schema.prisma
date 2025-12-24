@@ -20,7 +20,7 @@ model Hunt {
   huntIntroText               String?    // Intro text shown before first location
   huntSuccessText             String?    // Success text shown after completing all locations
   estimatedTimeMinutes        Int
-  globalLocationRadiusMeters  Int?       @default(40) // Optional, defaults to 40 meters
+  globalLocationRadiusMeters  Int?       @default(25) // Optional, defaults to 25 meters
   createdAt                   DateTime   @default(now())
   updatedAt                   DateTime   @updatedAt
   locations                   Location[]
