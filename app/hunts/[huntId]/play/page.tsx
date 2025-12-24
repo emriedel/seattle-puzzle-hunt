@@ -82,6 +82,7 @@ export default function PlayPage() {
   const [restartKey, setRestartKey] = useState(0); // Force re-mount on restart
   const [isTextComplete, setIsTextComplete] = useState(false); // Track if typewriter animation is done
   const [shouldSkipAnimation, setShouldSkipAnimation] = useState(false); // Track if we should skip animation on this page
+  const [isFadingOut, setIsFadingOut] = useState(false); // Track if we're fading out before transition
 
   // Navigation state
   const [menuOpen, setMenuOpen] = useState(false);
@@ -236,13 +237,21 @@ export default function PlayPage() {
   };
 
   const advanceToNextPage = () => {
-    const nextPage = currentPage + 1;
-    setCurrentPage(nextPage);
-    if (nextPage > maxPageReached) {
-      setMaxPageReached(nextPage);
-    }
-    setStatusMessage('');
-    window.scrollTo(0, 0);
+    // Start fade-out animation
+    setIsFadingOut(true);
+
+    // Wait for fade-out to complete (500ms), then change page
+    setTimeout(() => {
+      const nextPage = currentPage + 1;
+      setCurrentPage(nextPage);
+      if (nextPage > maxPageReached) {
+        setMaxPageReached(nextPage);
+      }
+      setStatusMessage('');
+      setIsFadingOut(false);
+      setIsTextComplete(false); // Reset for typewriter on next page
+      window.scrollTo(0, 0);
+    }, 500);
   };
 
   // Get completed locations for history
@@ -265,13 +274,12 @@ export default function PlayPage() {
     if (!location) return;
 
     setIsChecking(true);
-    setStatusMessage('Getting your location...');
+    setStatusMessage('');
+    const startTime = Date.now();
 
     try {
       const position = await getUserLocation();
       const { latitude, longitude } = position.coords;
-
-      setStatusMessage('Checking if you\'re at the location...');
 
       const res = await fetch(`/api/session/${sessionId}/location-check`, {
         method: 'POST',
@@ -286,6 +294,11 @@ export default function PlayPage() {
       if (!res.ok) throw new Error('Location check failed');
       const { inRadius, distance } = await res.json();
 
+      // Ensure minimum 2 second loading time
+      const elapsed = Date.now() - startTime;
+      const remaining = Math.max(0, 2000 - elapsed);
+      await new Promise(resolve => setTimeout(resolve, remaining));
+
       if (inRadius) {
         setStatusMessage('');
         setVisitedLocations(prev => new Set([...prev, locationIndex]));
@@ -296,6 +309,11 @@ export default function PlayPage() {
         );
       }
     } catch (err) {
+      // Ensure minimum 2 second loading time even for errors
+      const elapsed = Date.now() - startTime;
+      const remaining = Math.max(0, 2000 - elapsed);
+      await new Promise(resolve => setTimeout(resolve, remaining));
+
       if (err instanceof Error && err.message.includes('User denied')) {
         setStatusMessage('Location access denied. Please enable location permissions.');
       } else {
@@ -312,7 +330,8 @@ export default function PlayPage() {
     if (!location) return;
 
     setIsChecking(true);
-    setStatusMessage('Checking your answer...');
+    setStatusMessage('');
+    const startTime = Date.now();
 
     try {
       const res = await fetch(`/api/session/${sessionId}/validate-puzzle`, {
@@ -326,6 +345,11 @@ export default function PlayPage() {
 
       if (!res.ok) throw new Error('Failed to validate answer');
       const { correct } = await res.json();
+
+      // Ensure minimum 2 second loading time
+      const elapsed = Date.now() - startTime;
+      const remaining = Math.max(0, 2000 - elapsed);
+      await new Promise(resolve => setTimeout(resolve, remaining));
 
       if (correct) {
         setStatusMessage('');
@@ -348,6 +372,11 @@ export default function PlayPage() {
         setStatusMessage('Incorrect answer. Try again!');
       }
     } catch (err) {
+      // Ensure minimum 2 second loading time even for errors
+      const elapsed = Date.now() - startTime;
+      const remaining = Math.max(0, 2000 - elapsed);
+      await new Promise(resolve => setTimeout(resolve, remaining));
+
       setStatusMessage(err instanceof Error ? err.message : 'Validation failed');
     } finally {
       setIsChecking(false);
@@ -448,7 +477,7 @@ export default function PlayPage() {
         <div key={restartKey} className="max-w-2xl mx-auto px-4 md:px-8 pt-6 md:pt-10 pb-32 space-y-6">
           {/* Hunt Intro Page */}
           {pageType === 'intro' && (
-            <div className="space-y-6">
+            <div className={`space-y-6 transition-opacity duration-500 ${isFadingOut ? 'opacity-0' : 'opacity-100'}`}>
               <h1 className="text-2xl font-bold text-center">{hunt.title}</h1>
               <TypewriterText
                 text={hunt.huntIntroText || ''}
@@ -456,7 +485,7 @@ export default function PlayPage() {
                 onComplete={() => setIsTextComplete(true)}
               />
 
-              {isTextComplete && (
+              {isTextComplete && !isFadingOut && (
                 <div className="flex justify-center">
                   <Button
                     onClick={advanceToNextPage}
@@ -472,21 +501,15 @@ export default function PlayPage() {
 
           {/* Location Riddle Page */}
           {pageType === 'riddle' && currentLocation && (
-            <div className="space-y-6">
+            <div className={`space-y-6 transition-opacity duration-500 ${isFadingOut ? 'opacity-0' : 'opacity-100'}`}>
               <TypewriterText
                 text={currentLocation.locationRiddle}
                 skipAnimation={shouldSkipAnimation}
                 onComplete={() => setIsTextComplete(true)}
               />
 
-              {isTextComplete && (
+              {isTextComplete && !isFadingOut && (
                 <>
-                  {statusMessage && (
-                    <div className="p-3 bg-blue-500/10 border border-blue-500/20 rounded-lg text-sm animate-in fade-in duration-500">
-                      {statusMessage}
-                    </div>
-                  )}
-
                   {!isLocationVisited && (
                     <>
                       <hr className="border-t border-gray-300 dark:border-gray-700 my-6" />
@@ -503,9 +526,15 @@ export default function PlayPage() {
                             className="w-full max-w-xs animate-in fade-in duration-500"
                             size="lg"
                           >
-                            {isChecking ? 'Checking location...' : (currentLocation.searchLocationButtonText || '🔍 Search here')}
+                            {isChecking ? 'Checking your location...' : (currentLocation.searchLocationButtonText || '🔍 Search here')}
                           </Button>
                         </div>
+
+                        {statusMessage && (
+                          <div className="p-3 bg-blue-500/10 border border-blue-500/20 rounded-lg text-sm text-center animate-in fade-in duration-500">
+                            {statusMessage}
+                          </div>
+                        )}
                       </div>
                     </>
                   )}
@@ -516,21 +545,15 @@ export default function PlayPage() {
 
           {/* Location Puzzle Page */}
           {pageType === 'puzzle' && currentLocation && (
-            <div className="space-y-6">
+            <div className={`space-y-6 transition-opacity duration-500 ${isFadingOut ? 'opacity-0' : 'opacity-100'}`}>
               <TypewriterText
                 text={currentLocation.locationFoundText}
                 skipAnimation={shouldSkipAnimation}
                 onComplete={() => setIsTextComplete(true)}
               />
 
-              {isTextComplete && (
+              {isTextComplete && !isFadingOut && (
                 <div className="space-y-4 animate-in fade-in duration-500">
-                  {!isLocationSolved && statusMessage && (
-                    <div className="p-3 bg-blue-500/10 border border-blue-500/20 rounded-lg text-sm">
-                      {statusMessage}
-                    </div>
-                  )}
-
                   {/* Number-based puzzle inputs */}
                   {currentLocation.puzzleType.startsWith('number_code') && (() => {
                     const subType = currentLocation.puzzleType.split('.')[1];
@@ -658,6 +681,13 @@ export default function PlayPage() {
                       disabled={isChecking}
                     />
                   )}
+
+                  {/* Status message (errors) */}
+                  {!isLocationSolved && statusMessage && (
+                    <div className="p-3 bg-blue-500/10 border border-blue-500/20 rounded-lg text-sm text-center">
+                      {statusMessage}
+                    </div>
+                  )}
                 </div>
               )}
             </div>
@@ -665,7 +695,7 @@ export default function PlayPage() {
 
           {/* Hunt Success Page */}
           {pageType === 'success' && (
-            <div className="space-y-6">
+            <div className={`space-y-6 transition-opacity duration-500 ${isFadingOut ? 'opacity-0' : 'opacity-100'}`}>
               <h2 className="text-2xl font-bold text-center">Hunt Complete!</h2>
               <TypewriterText
                 text={hunt.huntSuccessText || 'Congratulations! You completed the hunt!'}
@@ -673,7 +703,7 @@ export default function PlayPage() {
                 onComplete={() => setIsTextComplete(true)}
               />
 
-              {isTextComplete && (
+              {isTextComplete && !isFadingOut && (
                 <div className="flex justify-center">
                   <Button
                     onClick={completeHunt}
@@ -688,7 +718,7 @@ export default function PlayPage() {
           )}
 
           {/* Previous / Next Navigation */}
-          {isTextComplete && (
+          {isTextComplete && !isFadingOut && (
             <div className="flex gap-4 justify-between !mt-12 animate-in fade-in duration-500">
               {canGoBack && (
                 <Button

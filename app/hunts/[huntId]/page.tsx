@@ -81,7 +81,8 @@ export default function HuntDetailPage() {
     if (!hunt) return;
 
     setCheckingLocation(true);
-    setLocationStatus('Checking your location...');
+    setLocationStatus('');
+    const startTime = Date.now();
 
     try {
       // Get user location (or debug location)
@@ -120,6 +121,11 @@ export default function HuntDetailPage() {
       if (!checkRes.ok) throw new Error('Failed to check location');
       const { inRadius, distance } = await checkRes.json();
 
+      // Ensure minimum 2 second loading time
+      const elapsed = Date.now() - startTime;
+      const remaining = Math.max(0, 2000 - elapsed);
+      await new Promise(resolve => setTimeout(resolve, remaining));
+
       if (inRadius) {
         // Store session and navigate to play page
         localStorage.setItem('current-session-id', sessionId);
@@ -128,6 +134,11 @@ export default function HuntDetailPage() {
         setLocationStatus('Head to the starting location to begin!');
       }
     } catch (err) {
+      // Ensure minimum 2 second loading time even for errors
+      const elapsed = Date.now() - startTime;
+      const remaining = Math.max(0, 2000 - elapsed);
+      await new Promise(resolve => setTimeout(resolve, remaining));
+
       if (err instanceof Error && err.message.includes('not supported')) {
         setLocationStatus('Geolocation is not supported by your browser');
       } else if (err instanceof Error && err.message.includes('denied')) {
@@ -207,7 +218,7 @@ export default function HuntDetailPage() {
               className="w-full max-w-xs"
               size="lg"
             >
-              {checkingLocation ? 'Checking location...' : 'Start Hunt'}
+              {checkingLocation ? 'Checking your location...' : 'Start Hunt'}
             </Button>
           </div>
 
