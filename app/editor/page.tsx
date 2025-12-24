@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef, useMemo, useEffect, useCallback } from 'react'
+import { notFound } from 'next/navigation'
 import FormattingToolbar from '@/components/editor/FormattingToolbar'
 import RawTextEditor, { RawTextEditorHandle } from '@/components/editor/RawTextEditor'
 import { TextPagination } from '@/components/TextPagination'
@@ -57,6 +58,11 @@ type FocusedField = {
 }
 
 export default function EditorPage() {
+  // Block access in production
+  if (process.env.NODE_ENV === 'production') {
+    notFound()
+  }
+
   // Hunt state
   const [huntData, setHuntData] = useState<HuntData | null>(null)
   const [currentFilename, setCurrentFilename] = useState<string | null>(null)

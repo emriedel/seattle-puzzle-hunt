@@ -10,6 +10,11 @@ interface HuntSummary {
 }
 
 export async function GET() {
+  // Block access in production
+  if (process.env.NODE_ENV === 'production') {
+    return NextResponse.json({ error: 'Not available in production' }, { status: 404 });
+  }
+
   try {
     const huntsDir = path.join(process.cwd(), 'data', 'hunts');
 

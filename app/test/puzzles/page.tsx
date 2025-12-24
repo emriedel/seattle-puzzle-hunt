@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -24,6 +25,11 @@ interface PuzzleTest {
 }
 
 export default function PuzzleTestPage() {
+  // Block access in production
+  if (process.env.NODE_ENV === 'production') {
+    notFound();
+  }
+
   const [results, setResults] = useState<Record<string, 'correct' | 'incorrect' | null>>({});
 
   const handleTest = (puzzleType: string, answer: string | number[], expected: string | number[]) => {
