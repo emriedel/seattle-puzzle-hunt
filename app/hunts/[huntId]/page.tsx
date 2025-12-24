@@ -125,9 +125,7 @@ export default function HuntDetailPage() {
         localStorage.setItem('current-session-id', sessionId);
         router.push(`/hunts/${huntId}/play`);
       } else {
-        setLocationStatus(
-          `You're ${distance}m away from the starting point. Please get within ${hunt.globalLocationRadiusMeters ?? 40}m to start.`
-        );
+        setLocationStatus('Head to the starting location to begin!');
       }
     } catch (err) {
       if (err instanceof Error && err.message.includes('not supported')) {
@@ -201,6 +199,27 @@ export default function HuntDetailPage() {
             )}
           </div>
 
+          {/* Start button */}
+          <div className="px-4 md:px-6 mb-4 flex justify-center">
+            <Button
+              onClick={handleStartHunt}
+              disabled={checkingLocation}
+              className="w-full max-w-xs"
+              size="lg"
+            >
+              {checkingLocation ? 'Checking location...' : 'Start Hunt'}
+            </Button>
+          </div>
+
+          {/* Location status message */}
+          {locationStatus && (
+            <div className="px-4 md:px-6 mb-6">
+              <div className="p-3 bg-blue-500/10 border border-blue-500/20 rounded-lg text-sm text-center">
+                {locationStatus}
+              </div>
+            </div>
+          )}
+
         {/* Map section */}
         <div className="px-4 md:px-6 mb-6">
           <Card>
@@ -229,26 +248,8 @@ export default function HuntDetailPage() {
                 startLocationName={startingLocation.name}
                 radius={hunt.globalLocationRadiusMeters ?? 40}
               />
-
-              {locationStatus && (
-                <div className="p-3 bg-blue-500/10 border border-blue-500/20 rounded-lg text-sm">
-                  {locationStatus}
-                </div>
-              )}
             </CardContent>
           </Card>
-        </div>
-
-        {/* Start button */}
-        <div className="px-4 md:px-6 flex justify-center">
-          <Button
-            onClick={handleStartHunt}
-            disabled={checkingLocation}
-            className="w-full max-w-xs"
-            size="lg"
-          >
-            {checkingLocation ? 'Checking location...' : 'Start Hunt'}
-          </Button>
         </div>
       </div>
 
