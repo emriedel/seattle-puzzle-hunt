@@ -115,9 +115,20 @@
   * {
     @apply border-border;
   }
-  html, body {
+  html {
     @apply bg-background text-foreground;
     overflow-x: hidden;
+    overflow-y: auto;
     overscroll-behavior-x: none;
+    height: 100%;
+  }
+  body {
+    @apply bg-background text-foreground;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior-x: none;
+    min-height: 100%;
+    -webkit-overflow-scrolling: touch;
+    position: relative;
   }
 }

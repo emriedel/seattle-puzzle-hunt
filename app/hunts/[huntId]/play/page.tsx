@@ -444,8 +444,8 @@ export default function PlayPage() {
         onOpenChange={(open) => !open && setViewingLocationId(null)}
       />
 
-      <div className="min-h-screen p-4 md:p-8 pb-20">
-        <div key={restartKey} className="max-w-2xl mx-auto space-y-6">
+      <div className="w-full">
+        <div key={restartKey} className="max-w-2xl mx-auto px-4 md:px-8 pt-6 md:pt-10 pb-32 space-y-6">
           {/* Hunt Intro Page */}
           {pageType === 'intro' && (
             <div className="space-y-6">
@@ -491,9 +491,11 @@ export default function PlayPage() {
                     <>
                       <hr className="border-t border-gray-300 dark:border-gray-700 my-6" />
                       <div className="space-y-4 my-6">
-                        <p className="text-sm text-muted-foreground text-center">
-                          Head to the next location before searching
-                        </p>
+                        {locationIndex > 0 && (
+                          <p className="text-sm text-muted-foreground text-center">
+                            Head to the next location before searching
+                          </p>
+                        )}
                         <div className="flex justify-center">
                           <Button
                             onClick={() => checkLocation(locationIndex)}
@@ -687,7 +689,7 @@ export default function PlayPage() {
 
           {/* Previous / Next Navigation */}
           {isTextComplete && (
-            <div className="flex gap-4 justify-between animate-in fade-in duration-500">
+            <div className="flex gap-4 justify-between !mt-12 animate-in fade-in duration-500">
               {canGoBack && (
                 <Button
                   onClick={goToPreviousPage}

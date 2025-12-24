@@ -3,14 +3,19 @@
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { v4 as uuidv4 } from 'uuid';
+import dynamic from 'next/dynamic';
 import { getUserLocation } from '@/lib/debug';
 import DebugPanel from '@/components/DebugPanel';
-import { MapView } from '@/components/MapView';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { MapPin, Clock, Navigation } from 'lucide-react';
 import { Header } from '@/components/Header';
 import { NavigationMenu } from '@/components/NavigationMenu';
+
+const MapView = dynamic(() => import('@/components/MapView').then(mod => ({ default: mod.MapView })), {
+  ssr: false,
+  loading: () => <div className="h-64 bg-muted animate-pulse rounded-lg" />
+});
 
 interface Location {
   id: string;
@@ -173,10 +178,10 @@ export default function HuntDetailPage() {
         allHunts={allHunts}
       />
 
-      <div className="min-h-screen pb-8">
+      <div className="min-h-screen pb-12">
         <div className="max-w-3xl mx-auto">
           {/* Hunt info */}
-          <div className="p-4 md:p-6 text-center">
+          <div className="px-4 md:px-6 pt-6 md:pt-8 pb-4 md:pb-6 text-center">
             <h1 className="text-3xl md:text-4xl font-bold mb-3">{hunt.title}</h1>
 
             {/* Quick stats */}

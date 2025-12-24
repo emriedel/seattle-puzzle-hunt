@@ -58,7 +58,7 @@ function renderBlock(block: TextBlock, index: number): React.ReactNode {
       return (
         <div
           key={index}
-          className={`${fontClass} text-2xl text-center text-amber-900 p-6 my-6 mx-auto max-w-md border border-[#d4c5a9]`}
+          className={`${fontClass} text-2xl text-center text-amber-900 p-6 my-6 mx-auto w-fit max-w-md min-w-[200px] border border-[#d4c5a9]`}
           style={{
             transform: 'rotate(-0.5deg)',
             background: 'linear-gradient(to bottom, #f9f5e7 0%, #f4ecd8 100%)',

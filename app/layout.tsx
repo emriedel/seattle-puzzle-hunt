@@ -32,6 +32,12 @@ const permanentMarker = Permanent_Marker({
 export const metadata: Metadata = {
   title: "Seattle Puzzle Hunt",
   description: "Explore Seattle through interactive puzzle hunts",
+  viewport: {
+    width: 'device-width',
+    initialScale: 1,
+    maximumScale: 5,
+    userScalable: true,
+  },
 };
 
 export default function RootLayout({

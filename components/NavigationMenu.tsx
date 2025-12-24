@@ -91,7 +91,15 @@ export function NavigationMenu({
   };
 
   const handleConfirmRestart = () => {
+    // Clear session ID
     localStorage.removeItem('current-session-id');
+
+    // Clear hunt progress data
+    if (currentHunt) {
+      const progressKey = `hunt-progress-${currentHunt.id}`;
+      localStorage.removeItem(progressKey);
+    }
+
     setShowRestartConfirm(false);
     if (currentHunt) {
       handleNavigate(`/hunts/${currentHunt.id}`);
