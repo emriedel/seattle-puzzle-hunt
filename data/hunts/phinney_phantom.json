@@ -2,9 +2,8 @@
   "id": "phinney_phantom",
   "title": "The Phinney Phantom",
   "neighborhood": "Phinney Ridge",
-  "description": "A mysterious figure known as the Phinney Phantom has been leaving puzzles around Phinney Ridge. Follow the trail, solve each clue, and uncover what they're trying to reveal.",
-  "image_url": "/hunt-images/phinney-phantom.png",
-  "hunt_intro_text": "Welcome to the **Neighborhood Investigations Bureau**. We look into the small mysteries most people overlook.\n\nLately, someone calling themselves the **Phinney Phantom** has been leaving strange clues in familiar places around Phinney Ridge. Each one leads to another location and puzzle, but our team stalled while following the trail. We need fresh eyes.\n\nThis morning, a new note appeared at the Phinney Center that matches the Phantom's earlier work. It looks like an invitation.\n\n{{handwritten}}I need someone more clever,\nSomeone who won't be vexed.\nFind and solve the first puzzle,\nI'll show you where to go next.\n— PP\n{{/handwritten}}\n\nThis is your case now. Follow the Phantom's trail, solve what they've left behind, and see where it leads.",
+  "description": "A mysterious figure known as the Phinney Phantom has been leaving puzzles around Phinney Ridge. Follow the trail, solve each clue, and uncover what they’re trying to reveal.",
+  "hunt_intro_text": "Welcome to the **Neighborhood Investigations Bureau**. We look into the small mysteries most people overlook.\n\nLately, someone calling themselves the **Phinney Phantom** has been leaving strange clues in familiar places around Phinney Ridge. Each one leads to another location and puzzle, but our team stalled while following the trail. We need fresh eyes.\n\nThis morning, a new note appeared at the Phinney Center that matches the Phantom’s earlier work. It looks like an invitation.\n{{handwritten}}I need someone more clever,\nSomeone who won’t be vexed.\nFind and solve the first puzzle,\nI’ll show you where to go next.\n— PP\n{{/handwritten}}This is your case now. Follow the Phantom’s trail, solve what they’ve left behind, and see where it leads.",
   "estimated_time_minutes": 60,
   "locations": [
     {
@@ -17,7 +16,7 @@
         "lng": -122.3541654089936
       },
       "location_riddle": "You start by searching around the **Phinney Center** for the puzzle the Phantom mentioned.",
-      "location_found_text": "In the bushes nearby, you find a small lockbox with a note attached. It looks like a clue to the combination.\n\n{{handwritten}}**Address** me as the Phinney Phantom.\nI’ll start you off with something plain:\nThe lock opens with the numbers\nThat mark your place upon this lane.\n{{/handwritten}}",
+      "location_found_text": "In the bushes nearby, you find a small lockbox with a note attached. It looks like a clue to the combination.\n{{handwritten}}**Address** me as the Phinney Phantom.\nI’ll start you with something plain:\nThe lock opens with the numbers\nThat mark your place upon this lane.\n{{/handwritten}}",
       "puzzle": {
         "type": "number_code.cryptex",
         "answer": "6532",
@@ -34,8 +33,8 @@
         "lat": 47.67376668072121,
         "lng": -122.35456706342063
       },
-      "location_riddle": "You enter the address of the Phinney Center into the lock, and it springs open! Inside is another piece of paper. You unfold it and read:\n\n{{handwritten}}So you accepted my challenge,\nUnpacked what I hid.\nLooking for more clues?\nLeave here and go south.\nYou take the first letters,\nSpell out your next stop.\n{{/handwritten}}\n\nWhatever the Phantom is pointing to, it’s not here. You’ll need to head to the next location to continue the investigation.",
-      "location_found_text": "You head down the street and step into **Sully’s Snow Goose Saloon** to see what the Phantom has left for you here. The bartender notices you looking around, slides a small safe across the counter, and nods toward it.\n\n“We found this outside last night,” he says. “Maybe you can make some sense of it.”\n\nAttached is another note.\n\n{{handwritten}}The street to the south,\nThen half the street to the north.\nThe numbers flanking the door\nAre the third and the fourth.\n{{/handwritten}}",
+      "location_riddle": "You enter the address of the Phinney Center into the lock, and it springs open! Inside is another piece of paper. You unfold it and read:\n{{handwritten}}So you accepted my challenge,\nUnpacked what I hid.\nLooking for more clues?\nLeave here and go south.\nYou take the first letters,\nSpell out your next stop.\n{{/handwritten}}Whatever the Phantom is pointing to, it’s not here. You’ll need to head somewhere else to continue the investigation.",
+      "location_found_text": "You head down the street and step into **Sully’s Snow Goose Saloon** to see if the Phantom has left anything for you here. The bartender notices you looking around, slides a small safe across the counter, and nods toward it.\n\n“We found this outside last night,” he says. “Maybe you can make some sense of it.”\n\nAttached is another note.\n{{handwritten}}The street to the south,\nThen half the street to the north.\nThe numbers flanking the door\nAre the third and the fourth.\n{{/handwritten}}",
       "puzzle": {
         "type": "number_code.safe",
         "answer": [
@@ -57,7 +56,7 @@
         "lat": 47.677626449110186,
         "lng": -122.35428457202825
       },
-      "location_riddle": "You notice the two 12s on the ground outside Sully’s and enter the combination into the safe: 61-31-12-12. The handle turns and the safe clicks open.\n\nInside is yet another note:\n{{handwritten}}Head north for five blocks,\nNear where you found your first clue.\nA silent tower watches over\nThree tables of checkered blue.\n{{/handwritten}}\n\nWherever this “silent tower” is, it sounds like your next stop to search for more clues.",
+      "location_riddle": "You notice the two 12s on the ground outside Sully’s and enter the combination into the safe: 61-31-12-12. The handle turns and the safe clicks open.\n\nInside is yet another note:\n{{handwritten}}Head north for five blocks,\nNear where you found your first clue.\nA silent tower watches over\nThree tables of checkered blue.\n{{/handwritten}}Wherever this “silent tower” is, it sounds like your next stop to search for more clues.",
       "location_found_text": "The **Heart of Phinney Park** is quiet, tucked just north of the Phinney Center you visited earlier. A tall, silent tower rises above the trees, watching over a handful of outdoor chess tables.\n\nAs you look around, you spot a small control panel tucked beneath a bench. Four colored buttons sit in a row, waiting.\n\nA folded note rests beside it:\n{{handwritten}}Search around for four colors,\nEnter them just as I will:\nThe siren,\nThe tower,\nB6,\nThen the mill.\n{{/handwritten}}\n",
       "puzzle": {
         "type": "color_code",
@@ -107,8 +106,8 @@
         "lat": 47.68089352450108,
         "lng": -122.35563543957042
       },
-      "location_riddle": "As you enter the final color, the panel responds with a soft click. One of its seams opens just enough for a folded note to slip free.\n\nYou take it and read:\n{{handwritten}}Where tools line the walls,\nAnd home fixes begin.\nKeys, paint, and screws\nWait patiently within.\n{{/handwritten}}\n\nIt sounds like the Phantom wants you to pay a visit to another place in the neighborhood.",
-      "location_found_text": "You stop outside **Greenwood Hardware**, the windows packed full of merchandise and posters, as usual.\n\nAs you look around, you spot a small metal box tucked near the sidewalk, its face covered in sliding tiles. There’s no note this time, but you can guess that this is another puzzle from the Phantom.",
+      "location_riddle": "As you enter the final color, the panel responds with a soft click. One of its seams opens just enough for a folded note to slip free.\n\nYou take it and read:\n{{handwritten}}Where tools line the walls,\nAnd home fixes begin.\nKeys, paint, and screws\nWait patiently within.\n{{/handwritten}}It sounds like the Phantom wants you to pay a visit to another place in the neighborhood.",
+      "location_found_text": "You stop outside **Greenwood Hardware**, the sidewalk packed full of merchandise, as usual.\n\nAs you look around, you spot a small metal box tucked near the sidewalk, its face covered in sliding tiles. There’s no note this time, but you can guess that this is another puzzle from the Phantom.",
       "puzzle": {
         "type": "slide_puzzle",
         "image": "/puzzle-images/phinney-phantom/greenwoodhardware.png",
@@ -126,7 +125,7 @@
         "lat": 47.68277370991226,
         "lng": -122.35548774572331
       },
-      "location_riddle": "As the last tile clicks into place, the box gives a soft metallic snap.\n\nThe front panel drops open just enough to reveal a familiar scrap of paper inside.\n\n{{handwritten}}Head north up the street,\nYou will pass along the way:\na house of engines, a hall of steins,\nA place where beans are ground each day.\n\nNear a bar named for a road,\nWindows framed in red and blue,\nA cozy home of stories waits,\nOutside will be your next clue.\n{{/handwritten}}",
+      "location_riddle": "As the last tile clicks into place, the box gives a soft metallic snap.\n\nThe front panel drops open just enough to reveal a familiar scrap of paper inside.\n{{handwritten}}Head north up the street,\nYou will pass along the way:\na house of engines, a hall of steins,\nA place where beans are ground each day.\n\nNear a bar named for a street,\nWindows framed in red and blue,\nA cozy home of stories waits,\nOutside will be your next clue.\n{{/handwritten}}",
       "location_found_text": "You arrive outside **Phinney Books**, its front windows packed tight with the book display of the month.\n\nJust off to the side, near the entrance, you spot a small lettered cryptex resting where it doesn’t quite belong. A note is tied to it:\n{{handwritten}}Peer in through the windows,\nOr poke your head in the door.\nOn the north wall there’s a sign,\nA word of golden letters four.\n{{/handwritten}}",
       "puzzle": {
         "type": "word_code",
@@ -144,7 +143,7 @@
         "lat": 47.68165132083815,
         "lng": -122.35549510591811
       },
-      "location_riddle": "The cryptex clicks and comes apart in your hands. Inside is a small strip of paper, rolled tight.\n{{handwritten}}One more stop to go,\nHead back the way you came.\nYou’ve already passed it —\nGroceries sold in a man’s name.{{/handwritten}}\n\nSounds like the Phantom is sending you back down the street for one final clue.",
+      "location_riddle": "The cryptex clicks and comes apart in your hands. Inside is a small strip of paper, rolled tight.\n{{handwritten}}One more stop to go,\nHead back the way you came.\nYou’ve already passed it —\nGroceries sold in a man’s name.{{/handwritten}}Sounds like the Phantom is sending you back down the street for one final clue.",
       "location_found_text": "You head down the street to **Ken’s Market**, just as the note suggested.\n\nAlong the side of the building, you notice a small frame set near the wall. Inside are three picture tiles, out of order. It doesn’t take much guessing to figure out who left this behind, or what you need to do.",
       "puzzle": {
         "type": "tile_image",
@@ -159,5 +158,6 @@
       "next_location_id": null
     }
   ],
-  "hunt_success_text": "As the last tile slides into place, the frame gives a soft click.\n\nThe backing loosens and drops away, revealing a final folded note tucked inside.\n\n{{handwritten}}You scoured the Ridge,\nYou followed my trail.\nNow it’s time for me\nTo lift up my veil.\n\nI’m just one of you—\nA neighbor, a friend.\nSomeone who doesn’t want\nThe charm of this place to end\n\nI left you these stops\nSo they wouldn’t be lost,\nThese spots need to be remembered\nNo matter the cost.\n\nSo look a little closer,\nThese locations weren’t random.\nThey’re what makes this place special.\nSincerely, **The Phinney Phantom**\n{{/handwritten}}\n\nBack at the Phinney Center, you check in with the Neighborhood Investigations Bureau. There’s no Phantom to arrest, but the trail makes sense now.\n\nCase closed."
+  "hunt_success_text": "As the last tile slides into place, the frame gives a soft click.\n\nThe backing loosens and drops away, revealing a final folded note tucked inside.\n{{handwritten}}You scoured the Ridge,\nYou followed my trail.\nNow all that's left\nIs to lift up my veil.\n\nI’m just one of you—\nA neighbor, a friend.\nSomeone who won't let\nThe charm of this place end\n\nI left you these stops\nSo they wouldn’t be lost,\nThese spots must be remembered\nNo matter the cost.\n\nSo look a little closer,\nThese places weren’t random.\nThey’re what makes Seattle special.\nSincerely, **The Phinney Phantom**\n{{/handwritten}}\n\nBack at the Phinney Center, you check in with the Neighborhood Investigations Bureau. There’s no Phantom to arrest, but the trail makes sense now.\n\n*Case closed.*",
+  "global_location_radius_meters": 25
 }
