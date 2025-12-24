@@ -62,43 +62,39 @@ export function HuntCard({ hunt }: HuntCardProps) {
   return (
     <Link href={`/hunts/${hunt.id}`}>
       <Card className="hover:shadow-lg transition-all cursor-pointer overflow-hidden">
-        <div className="flex">
-          {/* Hunt image or colored placeholder */}
-          {hunt.imageUrl ? (
-            <div className="relative w-24 md:w-32 h-full flex-shrink-0 bg-muted">
-              <Image
-                src={hunt.imageUrl}
-                alt={hunt.title}
-                fill
-                className="object-cover"
-                sizes="(max-width: 768px) 96px, 128px"
-              />
-            </div>
-          ) : (
-            <div className={`${colorClass} w-24 md:w-32 flex-shrink-0 flex items-center justify-center`}>
-              <span className="text-white text-3xl md:text-4xl font-bold">
-                {initials}
-              </span>
-            </div>
-          )}
+        {/* Title - full width */}
+        <CardHeader className="pb-3">
+          <h3 className="text-2xl md:text-3xl font-bold leading-tight text-center">{hunt.title}</h3>
+        </CardHeader>
 
-          {/* Content */}
-          <div className="flex-1">
-            <CardHeader className="pb-3">
-              <h3 className="text-xl font-bold leading-tight">{hunt.title}</h3>
-              {hunt.description && (
-                <p className="text-sm text-muted-foreground mt-2 line-clamp-2">
-                  {hunt.description}
-                </p>
-              )}
-            </CardHeader>
+        <CardContent className="space-y-3">
+          <div className="flex gap-4">
+            {/* Hunt image or colored placeholder */}
+            {hunt.imageUrl ? (
+              <div className="relative w-20 md:w-24 h-20 md:h-24 flex-shrink-0 bg-muted rounded-md overflow-hidden">
+                <Image
+                  src={hunt.imageUrl}
+                  alt={hunt.title}
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 80px, 96px"
+                />
+              </div>
+            ) : (
+              <div className={`${colorClass} w-20 md:w-24 h-20 md:h-24 flex-shrink-0 rounded-md flex items-center justify-center`}>
+                <span className="text-white text-2xl md:text-3xl font-bold">
+                  {initials}
+                </span>
+              </div>
+            )}
 
-            <CardContent className="space-y-2 text-sm">
+            {/* Details column */}
+            <div className="flex-1 space-y-2 text-sm flex flex-col items-center justify-center">
               {/* Starting location */}
               {startingLocation && (
-                <div className="flex items-start gap-2">
-                  <Navigation className="w-4 h-4 mt-0.5 flex-shrink-0 text-muted-foreground" />
-                  <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2">
+                  <Navigation className="w-4 h-4 flex-shrink-0 text-muted-foreground" />
+                  <div className="text-center">
                     <div className="font-medium">{startingLocation.name}</div>
                     {startingLocation.address && (
                       <div className="text-xs text-muted-foreground">
@@ -110,7 +106,7 @@ export function HuntCard({ hunt }: HuntCardProps) {
               )}
 
               {/* Stats row */}
-              <div className="flex items-center gap-4 pt-1">
+              <div className="flex items-center gap-4">
                 <div className="flex items-center gap-1.5 text-muted-foreground">
                   <MapPin className="w-4 h-4" />
                   <span>{stopCount} {stopCount === 1 ? 'stop' : 'stops'}</span>
@@ -120,9 +116,9 @@ export function HuntCard({ hunt }: HuntCardProps) {
                   <span>~{hunt.estimatedTimeMinutes} min</span>
                 </div>
               </div>
-            </CardContent>
+            </div>
           </div>
-        </div>
+        </CardContent>
       </Card>
     </Link>
   );
