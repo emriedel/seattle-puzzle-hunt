@@ -21,6 +21,7 @@ model Hunt {
   huntSuccessText             String?    // Success text shown after completing all locations
   estimatedTimeMinutes        Int
   globalLocationRadiusMeters  Int?       @default(25) // Optional, defaults to 25 meters
+  order                       Int        @default(999) // Display order (lower = first)
   createdAt                   DateTime   @default(now())
   updatedAt                   DateTime   @updatedAt
   locations                   Location[]

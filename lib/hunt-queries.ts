@@ -27,6 +27,9 @@ export const getCachedHunts = unstable_cache(
           },
         },
       },
+      orderBy: {
+        order: 'asc',
+      },
     });
   },
   ['hunts-list'],

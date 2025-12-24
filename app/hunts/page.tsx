@@ -75,7 +75,7 @@ export default function HuntsPage() {
             </Card>
           ) : (
             <>
-              <div className="space-y-6">
+              <div className="space-y-8">
                 {hunts.map((hunt) => (
                   <HuntCard key={hunt.id} hunt={hunt} />
                 ))}

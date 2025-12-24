@@ -189,8 +189,19 @@ export default function HuntDetailPage() {
 
       <div className="min-h-screen pb-12">
         <div className="max-w-3xl mx-auto">
+          {/* Back button */}
+          <div className="px-4 md:px-6 pt-4 md:pt-6">
+            <Button
+              variant="ghost"
+              onClick={() => router.push('/hunts')}
+              className="gap-2"
+            >
+              ← Back to all hunts
+            </Button>
+          </div>
+
           {/* Hunt info */}
-          <div className="px-4 md:px-6 pt-6 md:pt-8 pb-4 md:pb-6 text-center">
+          <div className="px-4 md:px-6 pt-2 md:pt-4 pb-4 md:pb-6 text-center">
             <h1 className="text-3xl md:text-4xl font-bold mb-3">{hunt.title}</h1>
 
             {/* Quick stats */}

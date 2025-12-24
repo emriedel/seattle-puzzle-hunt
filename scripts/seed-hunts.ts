@@ -42,6 +42,7 @@ interface HuntData {
   hunt_success_text?: string;
   estimated_time_minutes: number;
   global_location_radius_meters?: number;
+  order?: number;
   locations: LocationData[];
 }
 
@@ -60,6 +61,7 @@ async function seedHunt(huntData: HuntData) {
       huntSuccessText: huntData.hunt_success_text,
       estimatedTimeMinutes: huntData.estimated_time_minutes,
       globalLocationRadiusMeters: huntData.global_location_radius_meters ?? 40,
+      order: huntData.order ?? 999,
     },
     create: {
       id: huntData.id,
@@ -71,6 +73,7 @@ async function seedHunt(huntData: HuntData) {
       huntSuccessText: huntData.hunt_success_text,
       estimatedTimeMinutes: huntData.estimated_time_minutes,
       globalLocationRadiusMeters: huntData.global_location_radius_meters ?? 40,
+      order: huntData.order ?? 999,
     },
   });
 
