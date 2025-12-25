@@ -87,9 +87,11 @@ export default function HuntsPage() {
             </Card>
           ) : (
             <>
-              <div className="space-y-8">
-                {hunts.map((hunt) => (
-                  <HuntCard key={hunt.id} hunt={hunt} />
+              <div className="space-y-6">
+                {hunts.map((hunt, index) => (
+                  <div key={hunt.id} className={index < hunts.length - 1 ? "mb-6" : ""}>
+                    <HuntCard hunt={hunt} />
+                  </div>
                 ))}
               </div>
 
