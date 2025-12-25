@@ -17,7 +17,7 @@
         "lng": -122.3541654089936
       },
       "location_riddle": "You start by searching around the **Phinney Center** for the puzzle the Phantom mentioned.",
-      "location_found_text": "In the bushes nearby, you find a small lockbox with a note attached. It looks like a clue to the combination.\n{{handwritten}}**Address** me as the Phinney Phantom.\nI’ll start you with something plain:\nThe lock opens with the numbers\nThat mark your place upon this lane.\n{{/handwritten}}",
+      "location_found_text": "Around the Phinney Center, you find a small lockbox with a note attached. It looks like a clue to the combination.\n{{handwritten}}**Address** me as the Phinney Phantom.\nI’ll start you with something plain:\nThe lock opens with the numbers\nThat mark your place upon this lane.\n{{/handwritten}}",
       "puzzle": {
         "type": "number_code.cryptex",
         "answer": "6532",
@@ -35,7 +35,7 @@
         "lng": -122.35456706342063
       },
       "location_riddle": "You enter the address of the Phinney Center into the lock, and it springs open! Inside is another piece of paper. You unfold it and read:\n{{handwritten}}So you accepted my challenge,\nUnpacked what I hid.\nLooking for more clues?\nLeave here and go south.\nYou take the first letters,\nSpell out your next stop.\n{{/handwritten}}Whatever the Phantom is pointing to, it’s not here. You’ll need to head somewhere else to continue the investigation.",
-      "location_found_text": "You head down the street and step into **Sully’s Snow Goose Saloon** to see if the Phantom has left anything for you here. The bartender notices you looking around, slides a small safe across the counter, and nods toward it.\n\n“We found this outside last night,” he says. “Maybe you can make some sense of it.”\n\nAttached is another note.\n{{handwritten}}The street to the south,\nThen half the street to the north.\nThe numbers flanking the door\nAre the third and the fourth.\n{{/handwritten}}",
+      "location_found_text": "You head down the street and step into **Sully’s Snow Goose Saloon** to see if the Phantom has left anything for you here. The bartender notices you looking around, slides a small safe across the counter, and nods toward it.\n\n“We found this outside last night,” he says. “Maybe you can make some sense of it.”\n\nAttached is another note.\n{{handwritten}}The street to the south,\nThen half the street that's just north.\nOn the ground by the door,\nAre the third and the fourth.\n{{/handwritten}}",
       "puzzle": {
         "type": "number_code.safe",
         "answer": [
