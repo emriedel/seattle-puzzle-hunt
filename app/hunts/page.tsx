@@ -25,6 +25,7 @@ interface Hunt {
 export default function HuntsPage() {
   const [hunts, setHunts] = useState<Hunt[]>([]);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     async function fetchHunts() {
@@ -34,12 +35,15 @@ export default function HuntsPage() {
         });
         if (!res.ok) {
           console.error('Failed to fetch hunts');
+          setIsLoading(false);
           return;
         }
         const data = await res.json();
         setHunts(data);
+        setIsLoading(false);
       } catch (error) {
         console.error('Error fetching hunts:', error);
+        setIsLoading(false);
       }
     }
     fetchHunts();
@@ -65,7 +69,15 @@ export default function HuntsPage() {
         <div className="max-w-2xl mx-auto">
           <h1 className="text-3xl md:text-4xl font-bold mb-6 md:mb-8 mt-4 md:mt-6 text-center">Available Hunts</h1>
 
-          {hunts.length === 0 ? (
+          {isLoading ? (
+            <Card>
+              <CardContent className="pt-6">
+                <p className="text-muted-foreground">
+                  Loading hunts...
+                </p>
+              </CardContent>
+            </Card>
+          ) : hunts.length === 0 ? (
             <Card>
               <CardContent className="pt-6">
                 <p className="text-muted-foreground">

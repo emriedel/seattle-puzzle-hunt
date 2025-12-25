@@ -116,12 +116,23 @@ export async function POST(
     // Check if correct
     const correct = normalizedAnswer === location.puzzleAnswer;
 
-    // If incorrect, increment wrong puzzle guesses
+    // If incorrect, only increment if it's different from the last incorrect answer
     if (!correct) {
+      const isDifferentFromLast = session.lastIncorrectPuzzleAnswer !== normalizedAnswer;
+
       await prisma.playSession.update({
         where: { id: sessionId },
         data: {
-          wrongPuzzleGuesses: { increment: 1 },
+          wrongPuzzleGuesses: isDifferentFromLast ? { increment: 1 } : undefined,
+          lastIncorrectPuzzleAnswer: normalizedAnswer,
+        },
+      });
+    } else {
+      // Clear last incorrect answer when puzzle is solved
+      await prisma.playSession.update({
+        where: { id: sessionId },
+        data: {
+          lastIncorrectPuzzleAnswer: null,
         },
       });
     }

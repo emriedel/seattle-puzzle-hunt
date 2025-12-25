@@ -27,6 +27,7 @@ export default function SafeDialInput({ length, onSubmit, disabled, initialValue
   const [dialRotation, setDialRotation] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   const [lastAngle, setLastAngle] = useState(0);
+  const [rotationVelocity, setRotationVelocity] = useState(0); // For damping
 
   const dialRef = useRef<HTMLDivElement>(null);
 
@@ -87,8 +88,14 @@ export default function SafeDialInput({ length, onSubmit, disabled, initialValue
       if (disabled) return;
       e.preventDefault(); // Prevent page scrolling while dragging
       const currentAngle = getAngleFromCenter(e.touches[0].clientX, e.touches[0].clientY);
-      const deltaAngle = currentAngle - lastAngle;
+      let deltaAngle = currentAngle - lastAngle;
+
+      // Apply damping to make movement less sensitive
+      const dampingFactor = 0.7;
+      deltaAngle *= dampingFactor;
+
       setDialRotation(prev => prev + deltaAngle);
+      setRotationVelocity(deltaAngle);
       setLastAngle(currentAngle);
     };
 
@@ -105,6 +112,7 @@ export default function SafeDialInput({ length, onSubmit, disabled, initialValue
       newNumbers[currentPosition] = selectedNum;
       setSelectedNumbers(newNumbers);
       setCurrentPosition(prev => prev + 1);
+      setRotationVelocity(0);
     };
 
     document.addEventListener('touchmove', handleTouchMove);
@@ -125,8 +133,14 @@ export default function SafeDialInput({ length, onSubmit, disabled, initialValue
     const handleMouseMove = (e: MouseEvent) => {
       if (disabled) return;
       const currentAngle = getAngleFromCenter(e.clientX, e.clientY);
-      const deltaAngle = currentAngle - lastAngle;
+      let deltaAngle = currentAngle - lastAngle;
+
+      // Apply damping to make movement less sensitive
+      const dampingFactor = 0.7;
+      deltaAngle *= dampingFactor;
+
       setDialRotation(prev => prev + deltaAngle);
+      setRotationVelocity(deltaAngle);
       setLastAngle(currentAngle);
     };
 
@@ -143,6 +157,7 @@ export default function SafeDialInput({ length, onSubmit, disabled, initialValue
       newNumbers[currentPosition] = selectedNum;
       setSelectedNumbers(newNumbers);
       setCurrentPosition(prev => prev + 1);
+      setRotationVelocity(0);
     };
 
     document.addEventListener('mousemove', handleMouseMove);
@@ -167,6 +182,20 @@ export default function SafeDialInput({ length, onSubmit, disabled, initialValue
     setDialRotation(0);
   };
 
+  const handleEditNumber = (index: number) => {
+    if (disabled || readOnly || selectedNumbers[index] === null) return;
+    // Set position to this index to allow re-entry
+    setCurrentPosition(index);
+    // Clear numbers from this position onwards
+    const newNumbers = [...selectedNumbers];
+    for (let i = index; i < length; i++) {
+      newNumbers[i] = null;
+    }
+    setSelectedNumbers(newNumbers);
+    // Reset dial to zero position
+    setDialRotation(0);
+  };
+
   const currentNumber = getCurrentNumber(dialRotation);
   const isComplete = currentPosition >= length;
 
@@ -177,11 +206,12 @@ export default function SafeDialInput({ length, onSubmit, disabled, initialValue
         {selectedNumbers.map((num, index) => (
           <div
             key={index}
-            className={`w-14 h-14 flex items-center justify-center rounded-lg border-2 font-bold text-2xl font-mono ${
+            onClick={() => handleEditNumber(index)}
+            className={`w-14 h-14 flex items-center justify-center rounded-lg border-2 font-bold text-2xl font-mono transition-all ${
               index === currentPosition
                 ? 'border-primary bg-primary/10'
                 : num !== null
-                ? 'border-green-500 bg-green-500/10 text-foreground'
+                ? 'border-green-500 bg-green-500/10 text-foreground cursor-pointer hover:bg-green-500/20 active:scale-95'
                 : 'border-muted bg-muted/10 text-muted-foreground'
             }`}
           >
@@ -218,7 +248,7 @@ export default function SafeDialInput({ length, onSubmit, disabled, initialValue
             className="absolute inset-0 transition-transform"
             style={{
               transform: `rotate(${dialRotation}deg)`,
-              transition: isDragging ? 'none' : 'transform 0.3s ease-out',
+              transition: isDragging ? 'none' : 'transform 0.5s cubic-bezier(0.4, 0.0, 0.2, 1)',
             }}
           >
             {NUMBERS.map((num) => {
