@@ -1,0 +1,31 @@
+{
+  "id": "fremont_figures",
+  "title": "The Fremont Figures",
+  "neighborhood": "Fremont",
+  "description": "Coming soon!",
+  "hunt_intro_text": "Coming soon!",
+  "hunt_success_text": "Thanks for playing!",
+  "estimated_time_minutes": 90,
+  "global_location_radius_meters": 25,
+  "locations": [
+    {
+      "id": "fremont-troll",
+      "name": "Fremont Troll",
+      "address": "North 36th Street, Troll Ave N, Seattle, WA 98103",
+      "order": 1,
+      "coordinates": {
+        "lat": 47.65109168085383,
+        "lng": -122.34747734569352
+      },
+      "location_riddle": "Head to the Fremont Troll.",
+      "location_found_text": "Enter 0000",
+      "search_location_button_text": "",
+      "puzzle": {
+        "type": "number_code.cryptex",
+        "answer": "0000",
+        "answer_length": 4
+      },
+      "next_location_id": null
+    }
+  ]
+}

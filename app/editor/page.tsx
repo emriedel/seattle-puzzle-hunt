@@ -172,14 +172,12 @@ export default function EditorPage() {
     }
   }, [focusedField])
 
-  // Track unsaved changes
+  // Clear unsaved changes flag when saved
   useEffect(() => {
     if (saveStatus === 'saved') {
       setHasUnsavedChanges(false)
-    } else if (saveStatus === 'idle' && huntData) {
-      setHasUnsavedChanges(true)
     }
-  }, [huntData, saveStatus])
+  }, [saveStatus])
 
   // Warn before closing if there are unsaved changes
   useEffect(() => {
@@ -303,6 +301,7 @@ export default function EditorPage() {
       ...metadata,
     })
     setSaveStatus('idle')
+    setHasUnsavedChanges(true)
   }
 
   const handleLocationChange = (index: number, location: LocationData) => {
@@ -314,6 +313,7 @@ export default function EditorPage() {
       locations: newLocations,
     })
     setSaveStatus('idle')
+    setHasUnsavedChanges(true)
   }
 
   const handleAddLocation = () => {
@@ -340,6 +340,7 @@ export default function EditorPage() {
     })
     setSelectedLocationIndex(huntData.locations.length)
     setSaveStatus('idle')
+    setHasUnsavedChanges(true)
   }
 
   const handleRemoveLocation = (index: number) => {
@@ -358,6 +359,7 @@ export default function EditorPage() {
       setSelectedLocationIndex(selectedLocationIndex - 1)
     }
     setSaveStatus('idle')
+    setHasUnsavedChanges(true)
   }
 
   const handleMoveLocation = (index: number, direction: 'up' | 'down') => {
@@ -376,6 +378,7 @@ export default function EditorPage() {
     })
     setSelectedLocationIndex(targetIndex)
     setSaveStatus('idle')
+    setHasUnsavedChanges(true)
   }
 
   const handleSaveHunt = async () => {
