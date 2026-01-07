@@ -3,6 +3,7 @@ import { Caveat, Indie_Flower, Dancing_Script, Permanent_Marker } from "next/fon
 import "./globals.css";
 
 // Handwriting fonts for rich text
+import { FastPrAnalytics } from '@/components/fast-pr-analytics';
 const caveat = Caveat({
   subsets: ["latin"],
   variable: "--font-handwritten",
@@ -49,7 +50,8 @@ export default function RootLayout({
     <html lang="en" className="dark">
       <body className={`antialiased ${caveat.variable} ${indieFlower.variable} ${dancingScript.variable} ${permanentMarker.variable}`}>
         {children}
-      </body>
+            <FastPrAnalytics />
+</body>
     </html>
   );
 }
